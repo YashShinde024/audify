@@ -43,19 +43,24 @@ export const viewport: Viewport = {
   themeColor: "#19181F",
 };
 
+import { ThemeProvider } from "@/components/layout/theme-provider";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-canvas text-fg antialiased">
-        <SiteHeader />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <SiteFooter />
-        <ToastProvider />
+      <body className="flex min-h-full flex-col bg-canvas text-fg antialiased transition-colors duration-200">
+        <ThemeProvider>
+          <SiteHeader />
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <SiteFooter />
+          <ToastProvider />
+        </ThemeProvider>
       </body>
     </html>
   );

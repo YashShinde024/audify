@@ -13,9 +13,8 @@ export function SiteFooter() {
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4 lg:gap-12">
           {/* Brand Column */}
           <div className="sm:col-span-2">
-            <Link href="/" className="inline-flex items-center gap-2.5" aria-label="Svaraya homepage">
-              <Logo />
-              <span className="text-base font-semibold tracking-tight text-fg">Svaraya</span>
+            <Link href="/" className="inline-flex items-center select-none" aria-label="Svaraya homepage">
+              <Logo height={34} variant="by-nyxen" />
             </Link>
             <p className="mt-2 text-xs font-medium text-violet tracking-wide">
               {siteConfig.tagline}

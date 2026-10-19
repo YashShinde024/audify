@@ -1,44 +1,53 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+interface LogoProps {
+  className?: string;
+  variant?: "standard" | "by-nyxen";
+  height?: number;
+  priority?: boolean;
+}
+
 /**
- * Svaraya brand mark: an audio waveform inside a deep-indigo tile with a
- * violet→blue gradient stroke. Purely decorative; the wordmark sits next to it.
+ * Official Svaraya Brand Wordmark:
+ * Elegant high-contrast serif typography with sweeping flourish ligature
+ * and signature crimson red terminal 'a'.
+ * Supports automatic light/dark mode switching via CSS classes.
  */
-export function Logo({ className }: { className?: string }) {
-  const barTops = [
-    { x: 3.4, top: 6.4, bottom: 9.6 },
-    { x: 8.2, top: 4.4, bottom: 11.6 },
-    { x: 15.8, top: 3.2, bottom: 12.8 },
-    { x: 20.6, top: 5.4, bottom: 10.6 },
-  ];
+export function Logo({
+  className,
+  variant = "by-nyxen",
+  height = 28,
+  priority = true,
+}: LogoProps) {
+  // Correct aspect ratios:
+  // standard: 943x303 (~3.11:1)
+  // by-nyxen: 967x286 (~3.38:1)
+  const width = variant === "by-nyxen" ? Math.round(height * 3.38) : Math.round(height * 3.11);
+  const lightSrc = variant === "by-nyxen" ? "/images/logo-by-nyxen-light.png" : "/images/logo-light.png";
+  const darkSrc = variant === "by-nyxen" ? "/images/logo-by-nyxen-dark.png" : "/images/logo-dark.png";
+
   return (
-    <span
-      className={cn(
-        "inline-flex h-7 w-7 items-center justify-center rounded-lg border border-line-strong bg-raised",
-        className,
-      )}
-      aria-hidden="true"
-    >
-      <svg viewBox="0 0 24 16" fill="none" className="h-4 w-6">
-        <defs>
-          <linearGradient id="svaraya-mark" x1="2" y1="8" x2="22" y2="8" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#A78BFA" />
-            <stop offset="1" stopColor="#6366F1" />
-          </linearGradient>
-        </defs>
-        {barTops.map((bar) => (
-          <line
-            key={bar.x}
-            x1={bar.x}
-            y1={bar.top}
-            x2={bar.x}
-            y2={bar.bottom}
-            stroke="url(#svaraya-mark)"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        ))}
-      </svg>
+    <span className={cn("relative inline-flex items-center select-none shrink-0", className)}>
+      {/* Light theme logo: Shown on light surfaces, hidden when inside .dark or .studio-theme */}
+      <Image
+        src={lightSrc}
+        alt="Svaraya"
+        width={width}
+        height={height}
+        priority={priority}
+        className="h-auto max-w-full object-contain block [.dark_&]:hidden [.studio-theme_&]:hidden"
+      />
+
+      {/* Dark theme logo: Shown only when inside .dark or .studio-theme */}
+      <Image
+        src={darkSrc}
+        alt="Svaraya"
+        width={width}
+        height={height}
+        priority={priority}
+        className="h-auto max-w-full object-contain hidden [.dark_&]:block [.studio-theme_&]:block"
+      />
     </span>
   );
 }

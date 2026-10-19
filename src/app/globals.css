@@ -39,7 +39,8 @@
   --color-error: #d64545;
 }
 
-/* ── Studio theme: Professional Dark Graphite ──────────────────────────────── */
+/* ── Dark theme & Studio theme: Professional Dark Graphite ──────────────────── */
+.dark,
 .studio-theme {
   color-scheme: dark;
   --color-canvas: #19181f;
