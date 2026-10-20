@@ -7,6 +7,7 @@ import { HowItSteps } from "@/components/marketing/how-it-works";
 import { ProcessingNote } from "@/components/marketing/processing-note";
 import { FAQAccordion } from "@/components/marketing/faq-accordion";
 import { SonicCanvas } from "@/components/marketing/sonic-canvas";
+import { WaveField } from "@/components/marketing/wave-field";
 import { EditorShell } from "@/components/editor/editor-shell";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
@@ -173,8 +174,9 @@ export default function HomePage() {
       </section>
 
       {/* 8. Final CTA band */}
-      <section aria-labelledby="cta-heading" className="studio-theme bg-deep">
-        <SonicCanvas className="opacity-80" />
+      <section aria-labelledby="cta-heading" className="studio-theme relative overflow-hidden bg-deep">
+        <WaveField className="opacity-70" />
+        <SonicCanvas className="opacity-60" />
         <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 sm:py-24 lg:px-8">
           <p className="eyebrow text-violet">Begin</p>
           <h2

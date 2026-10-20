@@ -55,7 +55,7 @@ export function EditorShell() {
 
         {/* 6-Step Workflow Guide Indicator */}
         <div className="mb-8 overflow-x-auto pb-2 scrollbar-none">
-          <div className="flex items-center justify-between min-w-[620px] bg-neutral-900/60 p-2 rounded-xl border border-line/80">
+          <div className="flex items-center justify-between min-w-[620px] rounded-xl border border-line/80 bg-deep/60 p-2 backdrop-blur-sm">
             {steps.map((step, idx) => {
               const Icon = step.icon;
               const isPast = currentStep > step.num;
@@ -68,8 +68,8 @@ export function EditorShell() {
                       isCurrent
                         ? "bg-violet text-white font-semibold shadow-xs"
                         : isPast
-                        ? "text-violet-300 font-medium bg-violet-950/40"
-                        : "text-neutral-300 hover:text-neutral-200"
+                        ? "bg-violet/10 font-medium text-violet"
+                        : "text-faint hover:text-muted"
                     }`}
                   >
                     <Icon size={14} weight={isCurrent ? "duotone" : "regular"} />
@@ -77,7 +77,7 @@ export function EditorShell() {
                   </div>
 
                   {idx < steps.length - 1 && (
-                    <div className="h-[1px] w-4 bg-neutral-800" />
+                    <div className="h-px w-4 bg-line-strong" />
                   )}
                 </div>
               );

@@ -408,3 +408,40 @@ html.dark .sonic-canvas__glow {
     animation: none;
   }
 }
+
+/* -- Prism Dock ----------------------------------------------- */
+
+/* Active-route pulse equalizer: three tiny bars, CSS only. */
+.dock-eq span {
+  width: 2px;
+  border-radius: 1px;
+  background: var(--color-accent);
+  transform-origin: bottom;
+  animation: dock-eq-pulse 1.1s ease-in-out infinite;
+}
+.dock-eq span:nth-child(1) { height: 55%; animation-delay: 0s; }
+.dock-eq span:nth-child(2) { height: 100%; animation-delay: 0.18s; }
+.dock-eq span:nth-child(3) { height: 75%; animation-delay: 0.36s; }
+@keyframes dock-eq-pulse {
+  0%, 100% { transform: scaleY(0.3); }
+  50%      { transform: scaleY(1); }
+}
+
+/* Viewport hairline light sweep (slow, single direction, no loop jump). */
+.site-hairline-sweep {
+  animation: hairline-sweep 16s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+}
+@keyframes hairline-sweep {
+  0%   { transform: translateX(-110%); }
+  60%  { transform: translateX(410%); }
+  100% { transform: translateX(410%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-eq span,
+  .site-hairline-sweep {
+    animation: none;
+  }
+  .dock-eq span { transform: scaleY(0.8); }
+}

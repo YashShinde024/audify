@@ -10,29 +10,22 @@ import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils";
 
 /**
- * The Console Rack.
+ * The Prism Dock.
  *
- * A rack-equipment take on site navigation, distinct from a floating pill
- * or a sliding-underline ribbon:
- *
- * - a full-width architectural bar with hairline top accent and rail dividers;
- * - index-numbered monospaced labels ("01 Studio");
- * - the active route is an inset patch chip (filled pocket + ember dot),
- *   not an underline;
- * - the far right carries a segmented LEVEL meter driven by real scroll
- *   progress — an honest indicator of position down the page, not decoration;
- * - mobile folds into a right-hand rack drawer with full keyboard/ARIA support.
+ * Third-generation navigation, distinct from the pill bar and the rack:
+ * a centered floating glass island that hovers over the page with a
+ * breathing hairline sweep running along the very top edge of the
+ * viewport. Links are set in tight uppercase mono; the active route is a
+ * lifted "key" carrying a three-bar pulse equalizer — the only kinetic
+ * element, and only while active. Mobile folds into a right-hand drawer
+ * with the full keyboard/ARIA contract preserved.
  */
-
-const METER_SEGMENTS = 12;
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [level, setLevel] = useState(0);
 
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const drawerRef = useRef<HTMLDivElement>(null);
   const lastPathRef = useRef(pathname);
 
   const isActive = useCallback(
@@ -70,53 +63,32 @@ export function SiteHeader() {
     };
   }, [drawerOpen]);
 
-  // Real scroll progress → the level meter segments.
-  useEffect(() => {
-    const update = () => {
-      const doc = document.documentElement;
-      const max = doc.scrollHeight - window.innerHeight;
-      setLevel(max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0);
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, []);
-
-  const litSegments = Math.round(level * METER_SEGMENTS);
-
   return (
-    <header className="sticky top-0 z-50">
-      {/* Hairline accent rail across the very top of the page chrome */}
+    <>
+      {/* Breathing hairline: a 1px rail with a slow light sweep, viewport-wide */}
       <div
         aria-hidden="true"
-        className="h-px w-full bg-gradient-to-r from-accent via-transparent to-transparent"
-      />
+        className="pointer-events-none fixed top-0 z-[60] h-px w-full overflow-hidden bg-line/60"
+      >
+        <span className="site-hairline-sweep absolute inset-y-0 w-1/4 bg-gradient-to-r from-transparent via-accent/80 to-transparent" />
+      </div>
 
-      {/* Rack bar */}
-      <div className="border-b border-line bg-canvas/90 backdrop-blur supports-[backdrop-filter]:bg-canvas/75">
-        <div className="mx-auto flex h-16 max-w-7xl items-stretch justify-between px-4 sm:px-6 lg:px-8">
-          {/* Wordmark cell */}
-          <div className="flex items-center border-r border-line pr-4 sm:pr-6">
-            <Link
-              href="/"
-              aria-label="Svaraya — home"
-              className="rounded-sm px-1 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet"
-            >
-              <Logo />
-            </Link>
-          </div>
-
-          {/* Index-numbered route labels (desktop) */}
-          <nav
-            aria-label="Primary"
-            className="hidden md:flex md:items-center md:gap-1 md:border-r md:border-line md:pr-4"
+      <header className="sticky top-3 z-50 px-3 sm:px-6">
+        {/* The dock itself */}
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 rounded-2xl border border-line-strong/50 bg-canvas/70 px-2.5 py-2 pl-3 shadow-[0_8px_30px_rgb(0_0_0/0.07)] backdrop-blur-xl supports-[backdrop-filter]:bg-canvas/55 sm:px-3">
+          {/* Wordmark */}
+          <Link
+            href="/"
+            aria-label="Svaraya — home"
+            className="rounded-lg px-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet"
           >
-            <ul className="flex items-center gap-1">
-              {primaryNav.map((item, index) => {
+            <Logo />
+          </Link>
+
+          {/* Desktop routes */}
+          <nav aria-label="Primary" className="hidden min-w-0 md:block">
+            <ul className="flex items-center gap-0.5">
+              {primaryNav.map((item) => {
                 const active = isActive(item.href);
                 return (
                   <li key={item.href}>
@@ -124,33 +96,24 @@ export function SiteHeader() {
                       href={item.href}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "group inline-flex items-center gap-2 rounded-sm px-2.5 py-1.5 transition-colors duration-150",
-                        "font-mono text-[11px] uppercase tracking-[0.14em]",
+                        "group relative inline-flex h-9 items-center gap-2 rounded-xl px-3.5 text-[13px] font-medium transition-all duration-200",
                         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
                         active
-                          ? "bg-raised text-fg shadow-[inset_0_0_0_1px_var(--color-line-strong)]"
-                          : "text-muted hover:text-fg",
+                          ? "bg-deep/70 text-fg shadow-[inset_0_0_0_1px_var(--color-line)]"
+                          : "text-muted hover:bg-surface hover:text-fg",
                       )}
                     >
-                      {/* Index number */}
-                      <span
-                        aria-hidden="true"
-                        className={cn(
-                          "tnum transition-colors",
-                          active
-                            ? "text-accent"
-                            : "text-faint group-hover:text-faint",
-                        )}
-                      >
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
                       {item.label}
-                      {/* Ember patch dot when active */}
+                      {/* Active-route pulse equalizer (three bars, CSS only) */}
                       {active && (
                         <span
                           aria-hidden="true"
-                          className="ml-0.5 h-1.5 w-1.5 rounded-full bg-accent"
-                        />
+                          className="dock-eq flex h-3 items-end gap-[2px]"
+                        >
+                          <span />
+                          <span />
+                          <span />
+                        </span>
                       )}
                     </Link>
                   </li>
@@ -159,40 +122,19 @@ export function SiteHeader() {
             </ul>
           </nav>
 
-          {/* Right cell: level meter, theme, studio action, drawer toggle */}
-          <div className="flex items-center gap-3 pl-4">
-            {/* Segmented LEVEL meter (decorative label is honest: it shows real page position) */}
-            <div
-              aria-hidden="true"
-              className="hidden lg:flex items-end gap-[3px] pb-0 pt-[1px]"
-            >
-              {Array.from({ length: METER_SEGMENTS }, (_, i) => (
-                <span
-                  key={i}
-                  className={cn(
-                    "w-[3px] rounded-[1px] transition-colors duration-150",
-                    i < litSegments ? "bg-accent" : "bg-line-strong",
-                  )}
-                  style={{ height: `${6 + i * 1.2}px` }}
-                />
-              ))}
-              <span className="ml-1.5 font-mono text-[9px] uppercase tracking-widest text-faint">
-                lvl
-              </span>
-            </div>
-
+          {/* Right controls */}
+          <div className="flex items-center gap-1.5">
             <ThemeToggle />
 
             <Link
               href="/studio"
               className={cn(
-                "hidden sm:inline-flex items-center gap-1.5 rounded-sm px-3.5 py-2 text-sm",
-                "bg-accent font-medium text-white",
+                "hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white",
                 "transition-colors duration-150 hover:bg-accent-hover",
                 "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
               )}
             >
-              Open Studio
+              Studio
               <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
             </Link>
 
@@ -201,9 +143,9 @@ export function SiteHeader() {
               type="button"
               onClick={() => setDrawerOpen((open) => !open)}
               aria-expanded={drawerOpen}
-              aria-controls="console-rack-drawer"
+              aria-controls="prism-dock-drawer"
               className={cn(
-                "inline-flex h-9 w-9 items-center justify-center rounded-sm border border-line md:hidden",
+                "inline-flex h-9 w-9 items-center justify-center rounded-xl border border-line md:hidden",
                 "text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
               )}
             >
@@ -225,73 +167,72 @@ export function SiteHeader() {
             </button>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile rack drawer */}
+      {/* Mobile drawer */}
       <div
-        id="console-rack-drawer"
-        ref={drawerRef}
+        id="prism-dock-drawer"
         className={drawerOpen ? "" : "hidden"}
       >
-        {/* Overlay */}
         <button
           aria-hidden="true"
           tabIndex={-1}
-          className="fixed inset-0 top-16 z-40 cursor-default bg-canvas/60 backdrop-blur-[2px]"
+          className="fixed inset-0 z-40 cursor-default bg-deep/40 backdrop-blur-[2px]"
           onClick={() => setDrawerOpen(false)}
         />
-        {/* Panel: right-hand rack drawer */}
-        <div className="fixed right-0 top-16 z-50 flex h-[calc(100dvh-4rem)] w-72 flex-col border-l border-line bg-surface shadow-2xl">
+        <div className="fixed right-0 top-0 z-50 flex h-[100dvh] w-72 flex-col border-l border-line bg-canvas shadow-2xl">
+          <div className="flex h-14 items-center justify-between border-b border-line px-4">
+            <Logo />
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(false)}
+              className={cn(
+                "inline-flex h-9 w-9 items-center justify-center rounded-xl border border-line",
+                "text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
+              )}
+            >
+              <X aria-hidden="true" className="h-4 w-4" />
+              <span className="sr-only">Close menu</span>
+            </button>
+          </div>
           <nav aria-label="Mobile primary" className="flex-1 overflow-y-auto">
-            <p className="px-4 pb-1 pt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-faint">
-              Routes
-            </p>
-            <ul className="px-2">
-              {primaryNav.map((item, index) => {
+            <ul className="px-2 pt-2">
+              {primaryNav.map((item) => {
                 const active = isActive(item.href);
                 return (
                   <li key={item.href}>
                     <Link
                       href={item.href}
                       aria-current={active ? "page" : undefined}
-                      onClick={() => setDrawerOpen(false)}
                       className={cn(
-                        "flex items-center justify-between rounded-sm px-2.5 py-2.5 text-sm",
+                        "flex items-center justify-between rounded-xl px-3 py-2.5 text-sm",
                         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
-                        active ? "text-fg" : "text-muted hover:text-fg",
+                        active ? "bg-deep/70 text-fg" : "text-muted hover:text-fg",
                       )}
                     >
-                      <span className="flex items-center gap-2.5">
-                        <span
-                          aria-hidden="true"
-                          className={cn(
-                            "tnum font-mono text-[10px]",
-                            active ? "text-accent" : "text-faint",
-                          )}
-                        >
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        <span className={active ? "font-medium" : undefined}>
-                          {item.label}
-                        </span>
+                      <span className={active ? "font-medium" : undefined}>
+                        {item.label}
                       </span>
                       {active && (
                         <span
                           aria-hidden="true"
-                          className="h-1.5 w-1.5 rounded-full bg-accent"
-                        />
+                          className="dock-eq flex h-3 items-end gap-[2px]"
+                        >
+                          <span />
+                          <span />
+                          <span />
+                        </span>
                       )}
                     </Link>
                   </li>
                 );
               })}
             </ul>
-            <div className="mt-2 border-t border-line px-4 pt-4">
+            <div className="border-t border-line p-4">
               <Link
                 href="/studio"
-                onClick={() => setDrawerOpen(false)}
                 className={cn(
-                  "flex items-center justify-center gap-2 rounded-sm bg-accent px-4 py-3 text-sm font-medium text-white",
+                  "flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-medium text-white",
                   "transition-colors duration-150 hover:bg-accent-hover",
                   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
                 )}
@@ -306,6 +247,6 @@ export function SiteHeader() {
           </p>
         </div>
       </div>
-    </header>
+    </>
   );
 }

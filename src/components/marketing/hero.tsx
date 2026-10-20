@@ -3,6 +3,7 @@ import { ArrowRight, Faders } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button";
 import { HeroVisual } from "./hero-visual";
 import { SonicCanvas } from "./sonic-canvas";
+import { WaveField } from "./wave-field";
 
 /**
  * The Stage.
@@ -17,6 +18,8 @@ export function Hero() {
   return (
     <section className="studio-theme relative overflow-hidden border-b border-line bg-deep">
       <SonicCanvas className="opacity-90" />
+      {/* Traveling wave layers along the base of the stage */}
+      <WaveField className="opacity-80" />
       {/* Contrast veil over the mesh for text readability */}
       <div
         aria-hidden="true"
