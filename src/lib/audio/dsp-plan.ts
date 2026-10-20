@@ -207,6 +207,32 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
     case "vocal-reverb":
       reverbSpec = reverb(wet, 1.8, 0.65, 0.035);
       break;
+    case "slapback-echo":
+      if (num("echo", 35) > 0) {
+        echoSpec = {
+          wet: clamp(num("echo", 35) / 100, 0, 1),
+          timeSeconds: 0.115,
+          feedback: 0.15,
+          pingPong: false,
+          tailSeconds: computeEchoTailSeconds(0.115, 0.15),
+        };
+      }
+      break;
+    case "echo-chamber": {
+      if (num("echo", 25) > 0) {
+        const feedback = clamp(0.2 + (num("size", 50) / 100) * 0.55, 0.05, 0.8);
+        const timeSeconds = 0.28;
+        echoSpec = {
+          wet: clamp(num("echo", 25) / 100, 0, 1),
+          timeSeconds,
+          feedback,
+          pingPong: true,
+          tailSeconds: computeEchoTailSeconds(timeSeconds * 2, feedback),
+        };
+      }
+      reverbSpec = reverb(wet, 2.2, 0.3, 0.02);
+      break;
+    }
     case "slowed-reverb": {
       const decay = 1.2 + (num("size", 75) / 100) * 4.0;
       reverbSpec = reverb(wet, decay, 0.3, 0.015);
@@ -264,6 +290,13 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
     case "treble-air":
       filters.push({ type: "highshelf", frequency: 9000, gain: num("treble", 5) });
       break;
+    case "mid-scoop": {
+      const cut = clamp(num("cut", -3), -6, 0);
+      const brightness = clamp(num("brightness", 3), 0, 6);
+      if (cut !== 0) filters.push({ type: "peaking", frequency: 350, q: 1.0, gain: cut });
+      if (brightness !== 0) filters.push({ type: "highshelf", frequency: 8000, gain: brightness });
+      break;
+    }
     case "nightcore":
       filters.push({ type: "highshelf", frequency: 10000, gain: num("treble", 4) });
       break;
@@ -276,6 +309,15 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
         filters.push({ type: "lowshelf", frequency: 120, gain: warmth * 0.06 });
         filters.push({ type: "lowpass", frequency: 14000, q: 0.707 });
       }
+      break;
+    }
+
+    case "vaporwave": {
+      const haze = clamp(num("haze", 50), 0, 100);
+      if (haze > 0) {
+        filters.push({ type: "lowpass", frequency: clamp(18000 - (haze / 100) * 10000, 8000, 18000), q: 0.707 });
+      }
+      reverbSpec = reverb(wet, 3.6, 0.45, 0.02);
       break;
     }
 
@@ -298,6 +340,15 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
       filters.push({ type: "lowpass", frequency: 9500, q: 0.6 });
       saturation = num("saturation", 50);
       break;
+
+    case "podcast-voice": {
+      // Static EQ shaping only — no compressor stage, no spectral noise reduction.
+      if (bool("mud-cut", true)) filters.push({ type: "highpass", frequency: 95, q: 0.707 });
+      const presence = clamp(num("presence", 3), 0, 6);
+      if (presence !== 0) filters.push({ type: "peaking", frequency: 3200, q: 1.0, gain: presence });
+      if (bool("smooth", true)) filters.push({ type: "highshelf", frequency: 8000, gain: -2 });
+      break;
+    }
 
     case "noise-reducer":
       // This is a rumble filter, not spectral noise reduction. Labelled as such.

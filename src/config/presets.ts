@@ -66,6 +66,21 @@ export const presets: Preset[] = [
     defaults: { speed: 50, warmth: 40 },
   },
   {
+    id: "vaporwave",
+    name: "Vaporwave",
+    kind: "preset",
+    category: "speed-viral",
+    description: "Deeper-than-slowed varispeed drag with a soft room reverb and a low-pass haze. Pitch falls with tempo — this is playback-rate resampling, not pitch-preserving stretch.",
+    supportedOps: ["AudioBufferSourceNode.playbackRate", "ImpulseConvolver", "BiquadLowPass"],
+    tags: ["vaporwave", "aesthetic", "dreamy", "signal", "memphis", "retro"],
+    params: [
+      slider("speed", "Playback Speed", 55, 90, 1, "%", "0.72x drag at the default. Pitch drops in tandem."),
+      slider("reverb", "Surf Reverb", 0, 80, 1, "%", "Soft, damped room tail under the drag."),
+      slider("haze", "Frequency Haze", 0, 100, 1, "%", "How aggressively the top end is fogged by the low-pass."),
+    ],
+    defaults: { speed: 72, reverb: 30, haze: 50 },
+  },
+  {
     id: "sped-up",
     name: "Sped Up",
     kind: "preset",
@@ -257,6 +272,20 @@ export const presets: Preset[] = [
     ],
     defaults: { treble: 5 },
   },
+  {
+    id: "mid-scoop",
+    name: "Mid Scoop",
+    kind: "preset",
+    category: "bass-equalizer",
+    description: "A centered dip around 350 Hz to clear boxy mud, plus a high shelf above 8 kHz for gloss. Static EQ only — nothing dynamic, no compression.",
+    supportedOps: ["BiquadPeaking", "BiquadHighShelf"],
+    tags: ["mid scoop", "mud", "boxy", "clarity", "mix", "gloss"],
+    params: [
+      slider("cut", "Low-Mid Cut", -6, 0, 0.5, "dB", "Bell cut centred at 350 Hz (Q 1.0)."),
+      slider("brightness", "High Gloss", 0, 6, 0.5, "dB", "Shelf boost above 8 kHz."),
+    ],
+    defaults: { cut: -3, brightness: 3 },
+  },
 
   /* ----------------------------------------------------
    * 4. Reverb & Echo
@@ -352,6 +381,34 @@ export const presets: Preset[] = [
       slider("reverb", "Vocal Wet Mix", 0, 70, 1, "%", "Audible vocal reverberation."),
     ],
     defaults: { reverb: 28 },
+  },
+  {
+    id: "slapback-echo",
+    name: "Slapback Echo",
+    kind: "preset",
+    category: "reverb-echo",
+    description: "One tight ~115 ms repeat with light feedback — the classic rockabilly / vocal slap. No reverb tail, just a single bouncing ghost.",
+    supportedOps: ["DelayNode", "PingPongFeedbackLoop"],
+    tags: ["slapback", "echo", "rockabilly", "ghost", "ambience"],
+    params: [
+      slider("echo", "Slap Level", 0, 80, 1, "%", "Audibility of the single repeat."),
+    ],
+    defaults: { echo: 35 },
+  },
+  {
+    id: "echo-chamber",
+    name: "Echo Chamber",
+    kind: "preset",
+    category: "reverb-echo",
+    description: "Ping-pong delay and a room reverb run together, so repeats melt straight into a diffuse tail. Tail time is the longer of the two.",
+    supportedOps: ["DelayNode", "PingPongFeedbackLoop", "ImpulseConvolver"],
+    tags: ["echo", "chamber", "dub", "space", "delay", "ambient"],
+    params: [
+      slider("echo", "Echo Mix", 0, 70, 1, "%", "Wet level of the bouncing delay."),
+      slider("size", "Feedback Density", 0, 100, 1, "%", "How many repeats survive before they die out."),
+      slider("reverb", "Room Tail", 0, 60, 1, "%", "Convolution room behind the echoes."),
+    ],
+    defaults: { echo: 25, size: 50, reverb: 18 },
   },
 
   /* ----------------------------------------------------
@@ -498,6 +555,21 @@ export const presets: Preset[] = [
       slider("treble", "Treble Taming", -8, 0, 1, "dB", "Softens upper-treble bite."),
     ],
     defaults: { treble: -3.5 },
+  },
+  {
+    id: "podcast-voice",
+    name: "Podcast Voice Polish",
+    kind: "preset",
+    category: "cleanup",
+    description: "Static EQ shaping for spoken word: a high-pass under ~95 Hz, presence lift at 3.2 kHz, and an optional high-shelf smoothing. Not a compressor, not noise reduction.",
+    supportedOps: ["BiquadHighPass", "BiquadPeaking", "BiquadHighShelf"],
+    tags: ["podcast", "voice", "spoken", "broadcast", "presence", "talking"],
+    params: [
+      slider("presence", "Presence Lift", 0, 6, 0.5, "dB", "Bell boost centred at 3.2 kHz for intelligibility."),
+      toggle("mud-cut", "Low-End Mud Cut", "High-pass at 95 Hz removes desk rumble and pops."),
+      toggle("smooth", "Smooth the Sizzle", "Static −2 dB high shelf above 8 kHz for softer highs."),
+    ],
+    defaults: { presence: 3, "mud-cut": true, smooth: true },
   },
 
   /* ----------------------------------------------------

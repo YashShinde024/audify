@@ -83,6 +83,7 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "nightcore": TrendUp,
   "daycore": SunHorizon,
   "sped-up": FastForward,
+"vaporwave": InfinityIcon,
 
   // Stereo & Spatial Effects
   "8d-audio": Planet,
@@ -98,6 +99,7 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "bass-boost-extreme": WaveSawtooth,
   "equalizer": Equalizer,
   "treble-air": Wind,
+"mid-scoop": Equalizer,
 
   // Reverb & Echo
   "bathroom-reverb": Drop,
@@ -107,6 +109,8 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "church-hall-reverb": Church,
   "cathedral-reverb": Church,
   "vocal-reverb": MicrophoneStage,
+"slapback-echo": Pulse,
+"echo-chamber": Columns,
 
   // Pitch & Tempo
   "pitch-432hz": PianoKeys,
@@ -123,6 +127,7 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "noise-reducer": ShieldCheck,
   "vocal-clarity": Sparkle,
   "de-harsh": WaveSine,
+"podcast-voice": MicrophoneStage,
 
   // Utilities & Export
   "volume-changer": SpeakerHigh,

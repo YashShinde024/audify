@@ -24,6 +24,32 @@ import { cn } from "@/lib/utils";
 export function SiteHeader() {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  const [cometRect, setCometRect] = useState({ left: 0, width: 0 });
+  const navListRef = useRef<HTMLUListElement>(null);
+  const linkRefs = useRef<Array<HTMLLIElement | null>>([]);
+
+  // Measure the hovered link (relative to the list) and place the comet under it.
+  useEffect(() => {
+    if (hoverIdx === null) return;
+    const li = linkRefs.current[hoverIdx];
+    const ul = navListRef.current;
+    if (!li || !ul) return;
+    setCometRect({ left: li.offsetLeft, width: li.offsetWidth });
+  }, [hoverIdx]);
+
+  // Keep the comet aligned if the viewport reflows while hovering.
+  useEffect(() => {
+    const onResize = () => {
+      if (hoverIdx === null) return;
+      const li = linkRefs.current[hoverIdx];
+      const ul = navListRef.current;
+      if (!li || !ul) return;
+      setCometRect({ left: li.offsetLeft, width: li.offsetWidth });
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [hoverIdx]);
 
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const lastPathRef = useRef(pathname);
@@ -87,11 +113,30 @@ export function SiteHeader() {
 
           {/* Desktop routes */}
           <nav aria-label="Primary" className="hidden min-w-0 md:block">
-            <ul className="flex items-center gap-0.5">
-              {primaryNav.map((item) => {
+            <ul
+              ref={navListRef}
+              className="relative flex items-center gap-0.5"
+              onMouseLeave={() => setHoverIdx(null)}
+            >
+              {/* Hover comet: sliding glow measured against the hovered link */}
+              <span
+                aria-hidden="true"
+                className="dock-comet"
+                data-visible={hoverIdx !== null}
+                style={{ left: cometRect.left, width: cometRect.width }}
+              />
+              {primaryNav.map((item, idx) => {
                 const active = isActive(item.href);
                 return (
-                  <li key={item.href}>
+                  <li
+                    key={item.href}
+                    ref={(node) => {
+                      linkRefs.current[idx] = node;
+                    }}
+                    className="dock-rise"
+                    style={{ animationDelay: `${idx * 55}ms` }}
+                    onMouseEnter={() => setHoverIdx(idx)}
+                  >
                     <Link
                       href={item.href}
                       aria-current={active ? "page" : undefined}
@@ -100,7 +145,7 @@ export function SiteHeader() {
                         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
                         active
                           ? "bg-deep/70 text-fg shadow-[inset_0_0_0_1px_var(--color-line)]"
-                          : "text-muted hover:bg-surface hover:text-fg",
+                          : "text-muted hover:text-fg",
                       )}
                     >
                       {item.label}

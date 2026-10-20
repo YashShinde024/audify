@@ -58,21 +58,31 @@ export function WaveField({ className }: { className?: string }) {
       paint(performance.now());
     };
 
-    /** One sine layer as an open fill-down region. */
+    /** One sine layer as an open fill-down region.
+     *  Breathing: amplitude is modulated by a slow LFO so the surface
+     *  visibly swells and relaxes; parallax shifts the layer's base line
+     *  with page scroll at a per-layer factor for layered depth. */
     const drawWave = (
       t: number,
-      amp: number,
+      ampBase: number,
       wavelength: number,
       speed: number,
       yBase: number,
       color: string,
       alpha: number,
+      breathPhase: number,
+      parallax: number,
     ) => {
+      // Breathing LFO (period ~9s) + long slow swell (two incommensurate
+      // sines) so amplitude never reads as a metronome.
+      const breathe = 1 + 0.16 * Math.sin(t / 9 + breathPhase);
+      const swell = 1 + 0.1 * (Math.sin(t / 17 + breathPhase * 1.7) + Math.sin(t / 5.3)) * 0.5;
+      const amp = ampBase * breathe * swell;
       ctx.beginPath();
       ctx.moveTo(-10, height + 10);
       for (let x = -10; x <= width + 10; x += 4) {
         const phase = (x / wavelength) * Math.PI * 2 + t * speed;
-        const y = yBase + Math.sin(phase) * amp + Math.sin(phase * 0.41) * amp * 0.18;
+        const y = yBase + parallax + Math.sin(phase) * amp + Math.sin(phase * 0.41) * amp * 0.18;
         ctx.lineTo(x, y);
       }
       ctx.lineTo(width + 10, height + 10);
@@ -87,10 +97,14 @@ export function WaveField({ className }: { className?: string }) {
       const { waveA, waveB, waveC } = readColors();
       // Seconds since page load, not wall clock → stable under pause.
       const s = t / 1000;
+      // Scroll parallax: each layer reads the canvas's position in the
+      // viewport (cheap, no listeners — getBoundingClientRect runs inside
+      // paint anyway when resized) and offsets at a per-layer factor.
+      const top = canvas.getBoundingClientRect().top;
       ctx.clearRect(0, 0, width, height);
-      drawWave(s, 14, 340, 0.10, height * 0.52, waveC, 0.10);
-      drawWave(s, 18, 520, 0.07, height * 0.66, waveB, 0.12);
-      drawWave(s, 10, 260, 0.13, height * 0.78, waveA, 0.10);
+      drawWave(s, 14, 340, 0.10, height * 0.52, waveC, 0.10, 0.0, -top * 0.05);
+      drawWave(s, 18, 520, 0.07, height * 0.66, waveB, 0.12, 2.1, -top * 0.08);
+      drawWave(s, 10, 260, 0.13, height * 0.78, waveA, 0.10, 4.2, -top * 0.11);
     };
 
     const loop = (t: number) => {

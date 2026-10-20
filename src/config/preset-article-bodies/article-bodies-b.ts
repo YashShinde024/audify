@@ -323,4 +323,122 @@ export const articleBodiesB: PresetArticleBody[] = [
     useCases: ["Client-dub masters", "One-click polish", "Radio-style tuning"],
     related: ["equalizer", "de-harsh", "volume-changer"],
   },
+
+  // ============ Additions: new presets ============
+  {
+    presetId: "vaporwave",
+    slug: "vaporwave",
+    what:
+      "Vaporwave is slowed-and-reverb with its intent stated out loud. Three decisions compute together: the material is dragged down to roughly 0.72x, wrapped in a soft damped room tail, and capped by a low-pass haze so the high frequencies step out of the way. Dragging is resampling, not pitch-preserved stretching - slower means lower and longer at the same time, and the haze is part of the look, not a bug to filter around.",
+    sound:
+      "Warm and plush after the low-pass; vocal formants blur the way a distant speaker read; and the damped tail sits under the drag so beats stay readable inside the wash.",
+    dsp: [
+      "Compute the varispeed rate as 0.72x when the speed slider is at its default 72. Rate is base * (speed / 100), then clamped to the 0.25x-2.5x ceiling.",
+      "Rate is base × (speed / 100), clamped to the 0.25x-2.5x engine ceiling; the render window grows proportionally (duration / rate) so tails never get clipped.",
+      "Read the haze slider as a low-pass slope: frequency = 18000 - (haze / 100) * 10000, clamped to 8-18 kHz. The default haze of 50 lands at 13 kHz.",
+      "Wrap the result in a reverb() branch: 3.6-second decay, damping 0.45, 20 ms pre-delay. The tail seconds feed the computeOutputDuration plan.",
+      "Peak protection is the look-ahead sliding-minimum limiter at −0.3 dBFS sample peak, and it is on by default - slowed tails frequently cross that ceiling once the room wash is folded in.",
+    ],
+    tips: [
+      "Haze is the personality dial: 0 keeps cymbals near-intact while 100 pulls the ceiling down to 8 kHz, where haze becomes the whole vocabulary.",
+      "Push reverb past 50% and the tail starts fighting the drag tempo - pull them apart again so the beat stays readable in the wash.",
+      "2-minute sources land at roughly 2:47-3:00 at 0.72x - plan your loop lengths backwards before committing to a render.",
+      "Unprocessed cassette or vinyl rips already carry their own graininess; stacking haze on top of that gets mushy fast - lower the haze dial for rough sources.",
+    ],
+    useCases: ["Chill vaporwave edits", "Nostalgic loop reels", "Downtempo background loops"],
+    related: ["slowed", "super-slowed", "slowed-reverb"],
+  },
+  {
+    presetId: "slapback-echo",
+    slug: "slapback-echo",
+    what:
+      "Slapback is delay without the echo culture: one tight repeat, roughly 115 milliseconds after the source, at a low 15% feedback so it never claws beyond a single bounce. Rockabilly guitarists and 1950s vocal producers built entire styles around this signature - one ghost echoing the source, no obvious trail, nothing ping-ponging around the stereo field.",
+    sound:
+      "The source reads close-mic'd and doubled at once - like two takes of the same phrase landing a fraction apart. Plosives sharpen, vocals gain a light halo of depth, and everything reads bigger without a reverb tail to hide behind.",
+    dsp: [
+      "Read the echo slider as wet level: clamp(echo / 100, 0, 1). Default is 35%, dry source stays untouched at 100%.",
+      "Instantiate a plain (non-ping-pong) delay line at a fixed 115 ms tap - there is no reverb branch in this preset at all.",
+      "Run a 15% feedback loop; the configurable tail ceiling caps feedback at 0.85 across all presets so a runaway loop is impossible.",
+      "Compute the audible tail with computeEchoTailSeconds(0.115, 0.15); the result feeds computeOutputDuration so the render window grows to fit the last surviving repeat.",
+      "Peak protection (on by default) catches level build-up where the source and its repeat overlap: look-ahead sliding-minimum, −0.3 dBFS sample peak.",
+    ],
+    tips: [
+      "Above roughly 60% wet the repeat stops reading as a doubling and starts reading as an echo; that is the point where a dedicated delay preset is the better tool.",
+      "115 ms is carefully tuned for vocal intelligibility: the source and repeat overlap comfortably without audible comb filtering in consonants.",
+      "Slapback pairs brilliantly with dark loud sources - kick, tom, or solo voice - and poorly with dense mixes, where the repeat reads as a timing error.",
+      "For stereo slapback drama, run this before a widening step rather than after, or the ghost collapses back to a centered smear.",
+    ],
+    useCases: ["Rockabilly guitar", "Spoken word presence", "Vintage lead vocal doubling"],
+    related: ["ping-pong", "echo-chamber", "vocal-reverb"],
+  },
+  {
+    presetId: "echo-chamber",
+    slug: "echo-chamber",
+    what:
+      "Echo Chamber runs two spatial processors at once instead of chaining them by hand: a bouncing ping-pong delay and a convolution room tail, so the repeats melt straight into a diffuse wash rather than dying between two separate effects. It is the dub-room sound in one click, and every slider feeds exactly one of the two stages.",
+    sound:
+      "Endless sideways bouncing that dissolves into air mid-flight. Early repeats keep their musical rhythm because a fixed 280 ms tap stays musical across most tempos, and the layered room keeps the bounce from ever feeling like a broken tape loop.",
+    dsp: [
+      "Read the echo slider as wet: clamp(echo / 100, 0, 1). Default is 25% - audible without dominating.",
+      "Wire the ping-pong branch crosswise; one full L-R cycle is 2 x 0.28 seconds, or 560 ms between same-side repeats.",
+      "Read the size slider as feedback density: clamp(0.2 + (size / 100) * 0.55, 0.05, 0.8). Default lands at 47.5% feedback. More repeats survive before decaying into the room.",
+      "Run the reverb branch in parallel: 2.2-second decay, 0.3 damping, 20 ms pre-delay, and wet from the reverb slider directly. This is a parallel branch, not a serial chain - the room hears the dry signal, not the repeats.",
+      "Compute the final tail as max(echo tail, reverb decay) via computeEchoTailSeconds(0.56, feedback) and the 2.2 s decay, then grow the render window to fit whichever is longer.",
+      "Peak protection (on by default) holds overlapping wet energy under its ceiling: look-ahead sliding-minimum, −0.3 dBFS sample peak.",
+    ],
+    tips: [
+      "At very dense feedback, delays collapse acoustically into one long sustain; drop the echo wet instead of the feedback to keep them distinct.",
+      "Because the room hears dry signal only, you can invert the order in your head: push reverb higher and the repeats read tighter, push echo higher and the room disappears.",
+      "The 560 ms same-side cycle means the bounce pattern realigns with the groove around 107 BPM - slow tempos in that family keep the echo musical instead of metrically random.",
+      "Solo mono playback kills the ping-pong pattern entirely; check mixes online with headphones before trusting how wide the chamber actually is.",
+    ],
+    useCases: ["Dub-style vocal throws", "Ambient pad texturing", "Instrumental outro fades"],
+    related: ["ping-pong", "slapback-echo", "large-room-reverb"],
+  },
+  {
+    presetId: "podcast-voice",
+    slug: "podcast-voice",
+    what:
+      "Podcast Voice Polish is three static EQ moves tuned for spoken audio, and it refuses the two things podcasts most often ask for here: compression and spectral noise reduction. One high-pass removes desk rumble under 95 Hz, one bell adds presence at 3.2 kHz, and an optional high shelf above 8 kHz softens what cheap rooms and cheaper mics put back. That is the whole chain - nothing dynamic, by design.",
+    sound:
+      "Voice reads fuller and forward without pumping. The presence lift makes consonants cut through laptop speakers, and the smoothing shelf keeps budget mics from reading harsh at high playback volume.",
+    dsp: [
+      "Run a Biquad high-pass at 95 Hz (Q 0.707) when the mud-cut toggle is on. This is the same rumble-filter structure the Noise Reducer preset uses, wired slightly lower for desk-style thump.",
+      "Add a peaking bell centred at 3200 Hz, Q 1.0, gain from the presence slider (0 to +6 dB, default +3). This is a static branch - there is no dynamic de-essing or compression anywhere in the branch.",
+      "Apply an optional static high shelf at 8000 Hz, -2 dB, when the smooth toggle is on. This is a real physical shelf, not a dynamic sibilance suppressor - it cannot react to only the sibilant moments.",
+      "The global volume-db control (set in the export panel) applies on top of this preset as the output gain stage.",
+      "Peak protection (on by default) remains the look-ahead sliding-minimum limiter at -0.3 dBFS sample peak.",
+    ],
+    tips: [
+      "This preset cannot remove background noise while leaving the voice intact - spectral tools do that; the mud cut only clears low-frequency thump.",
+      "Presence above about +4.5 dB on already-bright mics pushes into sibilance territory; flip the smooth toggle back on, or pull the lift down if you hear s-sounds turning glassy.",
+      "Run noise reduction (if you use it) before this preset, not after: the presence lift amplifies whatever noise floor is already present, so stripping it first is the cheaper order.",
+      "For music beds mixed underneath the voice, the 95 Hz high-pass stops the bed from being dragged right down with the voice track.",
+    ],
+    useCases: ["Podcast and interview polish", "YouTube voiceover", "Conference talk recordings"],
+    related: ["vocal-clarity", "noise-reducer", "de-harsh"],
+  },
+  {
+    presetId: "mid-scoop",
+    slug: "mid-scoop",
+    what:
+      "Mid Scoop is the inverse of a bass-boost-and-nothing-else approach: a static bell dip at 350 Hz clears what EQ engineers call boxy energy, and an optional high shelf above 8 kHz adds gloss on top. The two dials are decoupled on purpose - you can remove the mud without brightening the source, or add gloss without touching the low-mid at all.",
+    sound:
+      "Instrument separation reads bigger on devices of any size once the 300-500 Hz congestion lifts. Mixes that felt wall-like become vertical. The gloss shelf reads as sheen only when the band is cut; on its own it just goes bright.",
+    dsp: [
+      "Read the cut slider as a static peaking bell: frequency 350 Hz, Q 1.0, gain clamped to -6..0 dB. Default is -3 dB.",
+      "Zero cut is a real value - the bell is skipped entirely when it is at 0, not angling toward a flat boost.",
+      "Read the brightness slider as a high shelf at 8000 Hz, 0 to +6 dB, default +3 dB. Zero is skipped the same way.",
+      "No saturation, no compression, no limiter placement tricks: both stages are single-sample static filters.",
+      "Peak protection is the look-ahead sliding-minimum limiter at −0.3 dBFS sample peak, and it only engages when you push combined gain high enough to need it.",
+    ],
+    tips: [
+      "350 Hz with Q 1.0 lands squarely on the boxy band for electric guitars, synth pads, and dense mixes; move the dip in the main EQ first if your source boxy zone sits higher.",
+      "For heavy rock mixes, a full -6 dB scoop reads hollow; -2 to -3 is the range electric bands get professional sounding the least of.",
+      "The brightness dial and Brightness Air's 9 kHz shelf overlap by design - use one, not both, or the top end accumulates.",
+      "This preset is not for vocals that already sound thin at 350 Hz; test with a dry loop before committing to the full cut.",
+    ],
+    useCases: ["Mix-bus de-muddying", "Guitar layer separation", "Laptop-speaker readability"],
+    related: ["equalizer", "vocal-clarity", "treble-air"],
+  },
 ];

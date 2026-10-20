@@ -333,7 +333,7 @@ html.dark .nx-corner-brackets::after,
 }
 
 /*
- * Living Sonic Canvas — decorative hero mesh.
+ * Living Sonic Canvas ï¿½ decorative hero mesh.
  * Token-driven so both themes stay coherent; transform-only drift means
  * no GPU cost beyond one composited layer, and hidden tabs pause it
  * automatically (rAF-free).
@@ -438,10 +438,38 @@ html.dark .sonic-canvas__glow {
   100% { transform: translateX(410%); }
 }
 
+/* Hover "comet": a JS-measured glow that slides between dock links. */
+.dock-comet {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  border-radius: 10px;
+  background: radial-gradient(120% 140% at 50% 100%, var(--color-violet) 0%, transparent 70%);
+  opacity: 0;
+  transition: left 0.28s cubic-bezier(0.3, 0.7, 0.3, 1), width 0.28s cubic-bezier(0.3, 0.7, 0.3, 1), opacity 0.2s ease;
+  will-change: left, width;
+  pointer-events: none;
+}
+.dock-comet[data-visible="true"] {
+  opacity: 0.1;
+}
+
+/* Mount stagger: dock keys rise into place, one after another. */
+.dock-rise {
+  animation: dock-rise 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@keyframes dock-rise {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dock-eq span,
-  .site-hairline-sweep {
+  .site-hairline-sweep,
+  .dock-rise {
     animation: none;
   }
   .dock-eq span { transform: scaleY(0.8); }
+  .dock-rise { opacity: 1; transform: none; }
+  .dock-comet { transition: none; }
 }
