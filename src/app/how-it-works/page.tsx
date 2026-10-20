@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -13,27 +13,27 @@ import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "How It Works — Local Web Audio DSP Architecture · Svaraya",
+  title: "How It Works — Local Web Audio DSP Architecture · AudioMorph",
   description:
-    "Learn how Svaraya processes studio audio 100% inside your browser: memory buffer decoding, OfflineAudioContext DSP graphs, non-realtime rendering, and client-side WAV/MP3 packaging.",
+    "Learn how AudioMorph processes studio audio 100% inside your browser: memory buffer decoding, OfflineAudioContext DSP graphs, non-realtime rendering, and client-side WAV/MP3 packaging. Developed by Nyxen.",
   keywords: [
-    "how Svaraya works",
+    "how AudioMorph works",
     "browser audio processing architecture",
     "Web Audio API offline audio context",
     "client-side audio DSP",
     "zero server upload audio editor",
   ],
   openGraph: {
-    title: "How Svaraya Works: Local Web Audio DSP Architecture",
+    title: "How AudioMorph Works: Local Web Audio DSP Architecture",
     description: "Six steps between your raw audio file and a polished master — powered entirely by your browser's native Web Audio API.",
-    url: "https://svaraya.vercel.app/how-it-works",
-    siteName: "Svaraya",
+    url: "https://audiomorph.vercel.app/how-it-works",
+    siteName: "AudioMorph",
     type: "article",
   },
   other: {
     "geo.region": "GLOBAL",
     "geo.placename": "Worldwide",
-    "DC.title": "How Svaraya In-Browser Audio Engine Works",
+    "DC.title": "How AudioMorph In-Browser Audio Engine Works",
   },
 };
 
@@ -42,13 +42,13 @@ const JSON_LD = {
   "@graph": [
     {
       "@type": "HowTo",
-      "name": "How to Process Audio with Svaraya Local DSP",
-      "description": "Step-by-step guide on how Svaraya decodes, processes, and exports audio directly within your web browser.",
+      "name": "How to Process Audio with AudioMorph Local DSP",
+      "description": "Step-by-step guide on how AudioMorph decodes, processes, and exports audio directly within your web browser.",
       "step": [
         {
           "@type": "HowToStep",
           "name": "Upload Audio",
-          "text": "Drag and drop any MP3, WAV, FLAC, or AAC audio file up to 10 MB into Svaraya Studio.",
+          "text": "Drag and drop any MP3, WAV, FLAC, or AAC audio file up to 10 MB into AudioMorph Studio.",
         },
         {
           "@type": "HowToStep",
@@ -87,7 +87,7 @@ export default function HowItWorksPage() {
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-12">
           <PageHeader
             eyebrow="Architecture & Pipeline"
-            title="How Svaraya Works"
+            title="How AudioMorph Works"
             lead="Six straightforward steps between your raw audio file and a polished master — powered entirely by your browser's native Web Audio API."
           />
 
@@ -96,16 +96,16 @@ export default function HowItWorksPage() {
           {/* AEO Quick Summary */}
           <section
             aria-label="AEO Quick Summary"
-            className="rounded-2xl border border-violet/30 bg-violet/5 p-6 space-y-3"
+            className="surface-card glass-panel rounded-2xl p-6 space-y-3 border-primary/20 bg-primary/5"
           >
-            <div className="flex items-center gap-2 text-violet font-semibold text-xs uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-wider">
               <Sparkle size={16} weight="duotone" />
               <span>AEO Executive Summary · Architectural Overview</span>
             </div>
             <p className="text-xs sm:text-sm leading-relaxed text-fg/90">
-              Unlike traditional web tools that transfer files across the internet to a server farm, <strong>Svaraya operates 100% client-side</strong>.
+              Unlike traditional web tools that transfer files across the internet to a server farm, <strong>AudioMorph operates 100% client-side</strong>.
               When an audio file is loaded, the browser allocates memory to decode the raw PCM audio data. When you click process, an{" "}
-              <code className="text-violet font-mono">OfflineAudioContext</code> runs the DSP graph as fast as your CPU allows, rendering a 4-minute track in approximately 2 to 3 seconds.
+              <code className="text-primary font-mono bg-primary/10 px-1 py-0.5 rounded">OfflineAudioContext</code> runs the DSP graph as fast as your CPU allows, rendering a 4-minute track in approximately 2 to 3 seconds.
               The resulting audio buffer is then converted into WAV, MP3, or AIFF in-memory and downloaded directly.
             </p>
           </section>
@@ -125,29 +125,29 @@ export default function HowItWorksPage() {
             </h2>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-xl border border-line bg-surface p-5 space-y-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-raised text-violet mb-3">
+              <div className="surface-card glass-panel rounded-2xl p-5 space-y-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-raised/80 text-primary mb-3">
                   <Cpu className="h-5 w-5" weight="duotone" />
                 </div>
                 <h3 className="text-sm font-semibold text-fg">1. In-Memory Linear PCM Decoding</h3>
                 <p className="text-xs text-muted leading-relaxed">
                   When you select a file (up to 10 MB), your browser&apos;s native{" "}
-                  <code className="text-violet font-mono">AudioContext.decodeAudioData()</code> decompresses the MP3, FLAC, or AAC container into raw 32-bit floating point audio sample buffers.
+                  <code className="text-primary font-mono bg-primary/10 px-1 py-0.5 rounded text-[11px]">AudioContext.decodeAudioData()</code> decompresses the MP3, FLAC, or AAC container into raw 32-bit floating point audio sample buffers.
                 </p>
               </div>
 
-              <div className="rounded-xl border border-line bg-surface p-5 space-y-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-raised text-violet mb-3">
+              <div className="surface-card glass-panel rounded-2xl p-5 space-y-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-raised/80 text-primary mb-3">
                   <Faders className="h-5 w-5" weight="duotone" />
                 </div>
                 <h3 className="text-sm font-semibold text-fg">2. OfflineAudioContext Node Graph</h3>
                 <p className="text-xs text-muted leading-relaxed">
-                  When you trigger processing, an <code className="text-violet font-mono">OfflineAudioContext</code> builds an optimized DSP graph: BiquadFilterNodes, ConvolverNodes with synthetic impulse responses, and automated stereo panners.
+                  When you trigger processing, an <code className="text-primary font-mono bg-primary/10 px-1 py-0.5 rounded text-[11px]">OfflineAudioContext</code> builds an optimized DSP graph: BiquadFilterNodes, ConvolverNodes with synthetic impulse responses, and automated stereo panners.
                 </p>
               </div>
 
-              <div className="rounded-xl border border-line bg-surface p-5 space-y-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-raised text-violet mb-3">
+              <div className="surface-card glass-panel rounded-2xl p-5 space-y-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-raised/80 text-primary mb-3">
                   <DownloadSimple className="h-5 w-5" weight="duotone" />
                 </div>
                 <h3 className="text-sm font-semibold text-fg">3. Multi-Format Encoding</h3>
@@ -156,8 +156,8 @@ export default function HowItWorksPage() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-line bg-surface p-5 space-y-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-raised text-violet mb-3">
+              <div className="surface-card glass-panel rounded-2xl p-5 space-y-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-raised/80 text-primary mb-3">
                   <ShieldCheck className="h-5 w-5" weight="duotone" />
                 </div>
                 <h3 className="text-sm font-semibold text-fg">4. Zero Server Uploads</h3>
@@ -169,7 +169,7 @@ export default function HowItWorksPage() {
           </section>
 
           {/* Ready to start CTA */}
-          <section className="rounded-2xl border border-line bg-surface p-6 sm:p-8 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6">
+          <section className="surface-card glass-panel rounded-2xl p-6 sm:p-8 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6">
             <div>
               <h3 className="text-base font-semibold text-fg">
                 Ready to transform your audio?
@@ -181,7 +181,7 @@ export default function HowItWorksPage() {
 
             <Button asChild size="md" className="rounded-full">
               <Link href="/studio">
-                <span>Open Svaraya Studio</span>
+                <span>Open AudioMorph Studio</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>

@@ -1,33 +1,37 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import {
   CloudSlash,
   EyeSlash,
   Sparkle,
+  Cookie,
+  ShieldCheck,
+  EnvelopeSimple,
 } from "@phosphor-icons/react/dist/ssr";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Zero-Server Audio Security · Svaraya",
+  title: "Privacy Policy — Zero-Server Audio Security · AudioMorph",
   description:
-    "Svaraya's local-first privacy policy: 100% in-browser audio DSP processing, zero server uploads, no session recording, and zero audio telemetry.",
+    "AudioMorph's local-first privacy policy: 100% in-browser audio DSP processing, zero server uploads, no session recording, and zero audio telemetry. Developed by Nyxen.",
   keywords: [
-    "Svaraya privacy policy",
+    "AudioMorph privacy policy",
     "private audio editor",
     "client-side audio privacy",
     "local audio processing security",
     "no server upload audio tool",
   ],
   openGraph: {
-    title: "Privacy Policy — 100% In-Browser Audio Security",
-    description: "Your audio files never leave your device. Zero cloud uploads, zero telemetry.",
-    url: "https://svaraya.vercel.app/privacy",
-    siteName: "Svaraya",
+    title: "Privacy Policy — 100% In-Browser Audio Security · AudioMorph",
+    description: "Your audio files never leave your device. Zero cloud uploads, zero audio telemetry.",
+    url: `${siteConfig.url}/privacy`,
+    siteName: siteConfig.name,
   },
   other: {
     "geo.region": "GLOBAL",
     "geo.placename": "Worldwide",
-    "DC.title": "Svaraya Privacy Policy & Local-First Commitment",
+    "DC.title": "AudioMorph Privacy Policy & Local-First Commitment",
   },
 };
 
@@ -36,10 +40,10 @@ const JSON_LD = {
   "@graph": [
     {
       "@type": "WebPage",
-      "name": "Svaraya Privacy Policy",
+      "name": "AudioMorph Privacy Policy",
       "description":
         "Commitment to client-side local audio processing with zero remote file transfers or telemetry.",
-      "url": "https://svaraya.vercel.app/privacy",
+      "url": `${siteConfig.url}/privacy`,
     },
   ],
 };
@@ -57,103 +61,97 @@ export default function PrivacyPage() {
           <PageHeader
             eyebrow="Trust & Security"
             title="Privacy Policy"
-            lead="How Svaraya handles your audio files, browser data, and session security. Simple, transparent, and built with local-first privacy."
+            lead="How AudioMorph handles your audio files, browser storage, and session privacy. Built with an uncompromising local-first architectural guarantee."
           />
 
           <SectionSeam />
 
-          {/* AEO Quick Summary */}
+          {/* Quick Summary Block */}
           <section
-            aria-label="AEO Quick Summary"
-            className="rounded-2xl border border-violet/30 bg-violet/5 p-6 space-y-3"
+            aria-label="Privacy Summary"
+            className="surface-card glass-panel rounded-2xl border-primary/25 bg-primary/5 p-6 space-y-3"
           >
-            <div className="flex items-center gap-2 text-violet font-semibold text-xs uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-wider">
               <Sparkle size={16} weight="duotone" />
-              <span>AEO Executive Summary · Privacy Commitments</span>
+              <span>Core Privacy Guarantee</span>
             </div>
-            <p className="text-xs sm:text-sm leading-relaxed text-fg/90">
-              <strong>Svaraya never transmits, stores, or analyzes your audio files on external servers</strong>.
-              All digital signal processing, reverb convolutions, filter sweeps, and audio file encodings run exclusively
-              inside your web browser&apos;s isolated memory space via the native W3C Web Audio API.
-              When you close or refresh your browser tab, all in-memory audio buffers are instantly and irreversibly cleared.
+            <p className="text-sm leading-relaxed text-fg/90">
+              <strong>AudioMorph never uploads, inspects, or transmits your creative audio to any remote server or cloud bucket.</strong>
+              All waveform decoding, DSP node graphs, filtering, convolution reverb, and audio file packaging execute
+              100% inside your local web browser memory.
             </p>
           </section>
 
-          {/* Core Principles */}
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border border-line bg-surface p-4">
-              <CloudSlash className="h-5 w-5 text-violet mb-2" weight="duotone" />
-              <h3 className="text-xs font-semibold text-fg">Zero Server Uploads</h3>
-              <p className="mt-1 text-[11px] text-muted leading-relaxed">
-                Audio files are processed strictly inside your device&apos;s RAM. Files are never transmitted over HTTP or WebSocket connections.
+          {/* Key Principles */}
+          <section className="grid gap-4 sm:grid-cols-2">
+            <div className="surface-card glass-panel rounded-2xl p-5 space-y-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary mb-2">
+                <CloudSlash size={20} weight="duotone" />
+              </div>
+              <h2 className="text-sm font-semibold text-fg">Zero Cloud Storage</h2>
+              <p className="text-xs text-muted leading-relaxed">
+                When you drag and drop an MP3, WAV, FLAC, or AAC track into AudioMorph, the binary buffer remains strictly
+                within your browser&apos;s allocated memory sandbox. When you close the tab, the buffer is purged.
               </p>
             </div>
-            <div className="rounded-xl border border-line bg-surface p-4">
-              <EyeSlash className="h-5 w-5 text-violet mb-2" weight="duotone" />
-              <h3 className="text-xs font-semibold text-fg">No Audio Telemetry</h3>
-              <p className="mt-1 text-[11px] text-muted leading-relaxed">
-                We do not track file names, metadata tags, waveform shapes, or musical contents. Your creative work remains your confidential property.
+
+            <div className="surface-card glass-panel rounded-2xl p-5 space-y-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary mb-2">
+                <EyeSlash size={20} weight="duotone" />
+              </div>
+              <h2 className="text-sm font-semibold text-fg">Zero Audio Telemetry</h2>
+              <p className="text-xs text-muted leading-relaxed">
+                We collect zero metadata, acoustic fingerprints, or biometric information about your music. No advertising
+                networks are given access to your sound files or creative workflow.
               </p>
             </div>
-          </div>
+          </section>
 
-          {/* Detailed Longform Content */}
-          <article className="space-y-8 text-xs sm:text-sm leading-relaxed text-muted">
-            <section className="space-y-2">
-              <h2 className="text-base font-semibold text-fg">1. In-Browser Local Audio Processing</h2>
-              <p>
-                When you load an audio file into Svaraya, your browser decodes the binary data using the native
-                Web Audio API (<code className="text-xs font-mono text-violet">AudioContext.decodeAudioData</code>).
-                All transformations, filters, convolution reverbs, and WAV/MP3 file encodings execute in local client memory.
-                At no point is your audio data sent to any remote server or third-party cloud infrastructure.
-              </p>
-            </section>
+          {/* Cookies & Local Storage Policy */}
+          <section className="surface-card glass-panel rounded-2xl p-6 sm:p-7 space-y-4">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Cookie size={18} weight="duotone" />
+              </span>
+              <h2 className="text-base font-semibold text-fg">Cookies & Local Storage</h2>
+            </div>
+            <p className="text-xs sm:text-sm text-muted leading-relaxed">
+              AudioMorph uses minimal client-side <code className="font-mono text-primary bg-primary/10 px-1 py-0.5 rounded">localStorage</code> keys solely to preserve your user preferences:
+            </p>
+            <ul className="list-disc list-inside space-y-1.5 text-xs text-muted pl-2">
+              <li><strong className="text-fg font-mono">svaraya-theme / audiomorph-theme:</strong> Remembers your chosen theme (Light, Dark, or System).</li>
+              <li><strong className="text-fg font-mono">audiomorph-sidebar-docked:</strong> Preserves your Studio Rack sidebar docked/collapsed state.</li>
+              <li><strong className="text-fg font-mono">audiomorph-sidebar-width:</strong> Remembers your custom resized sidebar width preference.</li>
+              <li><strong className="text-fg font-mono">audiomorph-cookie-consent:</strong> Stores your cookie consent selection.</li>
+            </ul>
+            <p className="text-xs text-muted leading-relaxed">
+              None of these stored keys contain personally identifiable information (PII) or track your web activity across external domains.
+            </p>
+          </section>
 
-            <section className="space-y-2">
-              <h2 className="text-base font-semibold text-fg">2. Session Data & Volatility</h2>
-              <p>
-                Svaraya does not require user registration, logins, or account creation. We do not store audio history,
-                project files, or personal identifiers in remote persistent databases. When you refresh or close your browser tab,
-                all in-memory audio buffers and rendered output objects are immediately and irreversibly purged by your browser&apos;s
-                garbage collection engine.
-              </p>
-            </section>
-
-            <section className="space-y-2">
-              <h2 className="text-base font-semibold text-fg">3. Client File Limits & Safety</h2>
-              <p>
-                The 10 MB per-file limitation is enforced directly within your client browser before decoding to safeguard
-                your system against memory exhaustion and ensure high-speed real-time processing performance.
-              </p>
-            </section>
-
-            <section className="space-y-2">
-              <h2 className="text-base font-semibold text-fg">4. Advertising and Analytics</h2>
-              <p>
-                To keep Svaraya free for all creators worldwide, non-intrusive advertising placeholders are positioned below editor controls.
-                No advertising provider in Svaraya is ever granted access to your audio files, editor parameters, or audio buffers.
-              </p>
-            </section>
-
-            <section className="space-y-2">
-              <h2 className="text-base font-semibold text-fg">5. Questions & Architecture Details</h2>
-              <p>
-                If you have inquiries regarding our data handling or architecture, please reference our{" "}
-                <Link href="/how-it-works" className="text-violet hover:underline font-medium">
-                  How It Works
-                </Link>{" "}
-                documentation, explore our{" "}
-                <Link href="/about" className="text-violet hover:underline font-medium">
-                  About
-                </Link>{" "}
-                page, or check the{" "}
-                <Link href="/faq" className="text-violet hover:underline font-medium">
-                  FAQ
-                </Link>
-                .
-              </p>
-            </section>
-          </article>
+          {/* Contact & DPO */}
+          <section className="surface-card glass-panel rounded-2xl p-6 sm:p-7 space-y-3">
+            <div className="flex items-center gap-2">
+              <ShieldCheck size={18} className="text-primary" weight="duotone" />
+              <h2 className="text-base font-semibold text-fg">Privacy Inquiries & Data Rights</h2>
+            </div>
+            <p className="text-xs sm:text-sm text-muted leading-relaxed">
+              If you have any questions regarding client-side data security or our open DSP architecture, reach out directly to our engineering team:
+            </p>
+            <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-mono">
+              <a href="mailto:support@nyxen.in" className="inline-flex items-center gap-1.5 text-primary hover:underline">
+                <EnvelopeSimple size={14} />
+                <span>support@nyxen.in</span>
+              </a>
+              <a href="mailto:contact@nyxen.in" className="inline-flex items-center gap-1.5 text-primary hover:underline">
+                <EnvelopeSimple size={14} />
+                <span>contact@nyxen.in</span>
+              </a>
+              <Link href="/contact" className="text-muted hover:text-fg underline ml-auto font-sans">
+                Visit Contact Dispatch →
+              </Link>
+            </div>
+          </section>
         </div>
       </div>
     </>

@@ -35,7 +35,7 @@ export function AccordionTrigger({ className, children, ...props }: AccordionTri
       <AccordionPrimitive.Trigger
         className={cn(
           "group flex flex-1 items-center justify-between gap-4 px-5 py-4 text-left text-sm font-medium text-fg",
-          "hover:bg-white/[0.03] transition-colors",
+          "hover:bg-black/5 dark:hover:bg-white/5 transition-colors",
           className,
         )}
         {...props}

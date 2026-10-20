@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 /*
- * Svaraya — Refined Creative Audio Studio Design Tokens
+ * AudioMorph — Refined Creative Audio Studio Design Tokens
  * Light: Porcelain (#F7F5F0) canvas / white surfaces / graphite type.
  * Dark:  Pitch black (#09090C) canvas / #121216 raised surfaces.
- * Accent: Restrained crimson ("ember") — the red thread of the wordmark.
+ * Accent: Metallic wire crimson (#e60026 / #ff2a4b) matching 3D ribbon emblem.
+ * Hardware Panels: .studio-hardware-dark preserves deep graphite contrast in light mode.
  *
  * Theming scope: a single `dark` class on <html> drives every dark rule.
  * `.studio-theme` is kept only as a deprecated alias so legacy selectors
@@ -27,34 +28,33 @@
   --color-muted: #5e5a6a;
   --color-faint: #8d8999;
 
-  /* Restrained crimson accent */
-  --color-accent: #9e1b32;
-  --color-accent-hover: #7f1526;
-  --color-accent-soft: rgb(158 27 50 / 0.09);
+  /* Wire Crimson Accent — Matching the 3D AudioMorph Ruby Ribbon */
+  --color-accent: #e60026;
+  --color-accent-hover: #c4001f;
+  --color-accent-soft: rgb(230 0 38 / 0.09);
+  --color-wire-light: #ff334f;
+  --color-wire-deep: #940016;
 
-  /* Deprecated aliases — repointed to the crimson family so no legacy
-     component can reintroduce violet. Do not use these in new code. */
+  /* Deprecated aliases — repointed to the wire crimson family */
   --color-violet: var(--color-accent);
   --color-purple: var(--color-accent);
   --color-lavender: var(--color-accent-soft);
   --color-blue: #4e7de0;
-  --color-coral: #c25454;
+  --color-coral: #e60026;
   --color-peach: #f0b68e;
 
-  /* Ember — the signature crimson used by console utilities */
-  --color-ember: #9e1b32;
+  /* Ember / Wire — signature chrome wire used by audio console */
+  --color-ember: #e60026;
 
   /* Functional status */
   --color-success: #1a9e6e;
   --color-warning: #c07f10;
-  --color-error: #d64545;
+  --color-error: #e60026;
 }
 
-/* ── Dark theme: Pitch Black · Crimson Ambient ─────────────────────────────── */
-/* html.dark = site-wide theme. .studio-theme = local dark region (Studio page,
-   homepage preview section). Same tokens, two scopes. */
-html.dark,
-.studio-theme {
+/* ── Dark theme: Pitch Black · Wire Crimson Ambient ─────────────────────── */
+/* Scoped exclusively to html.dark so the user's light/dark mode preference is honored everywhere */
+html.dark {
   color-scheme: dark;
 
   --color-canvas: #09090c;
@@ -69,18 +69,20 @@ html.dark,
   --color-muted: #a09caa;
   --color-faint: #6e6a7a;
 
-  --color-accent: #e5484d;
-  --color-accent-hover: #f26d72;
-  --color-accent-soft: rgb(229 72 77 / 0.12);
+  --color-accent: #ff2a4b;
+  --color-accent-hover: #ff526d;
+  --color-accent-soft: rgb(255 42 75 / 0.14);
+  --color-wire-light: #ff5e76;
+  --color-wire-deep: #b3001b;
 
   --color-violet: var(--color-accent);
   --color-purple: var(--color-accent);
   --color-lavender: var(--color-accent-soft);
   --color-blue: #6366f1;
-  --color-coral: #e86a60;
+  --color-coral: #ff2a4b;
   --color-peach: #f0b68e;
 
-  --color-ember: #e5484d;
+  --color-ember: #ff2a4b;
 
   --color-success: #34d399;
   --color-warning: #fbbf24;
@@ -132,29 +134,94 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle, clean surface foundations */
+/* ── Frosted Glass & Transparency Foundation (Optimized Performance) ── */
 .surface-card {
-  background-color: var(--color-surface);
+  background-color: color-mix(in srgb, var(--color-surface) 75%, transparent);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-xl);
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px -2px rgb(0 0 0 / 0.04), inset 0 1px 1px 0 rgb(255 255 255 / 0.3);
 }
 
-html.dark .surface-card,
-.studio-theme .surface-card {
-  box-shadow: 0 1px 4px 0 rgb(0 0 0 / 0.4);
+html.dark .surface-card {
+  background-color: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  border-color: var(--color-line-strong);
+  box-shadow: 0 6px 24px -4px rgb(0 0 0 / 0.4), inset 0 1px 1px 0 rgb(255 255 255 / 0.06);
 }
 
 .surface-raised {
-  background-color: var(--color-raised);
+  background-color: color-mix(in srgb, var(--color-raised) 75%, transparent);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-lg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+html.dark .surface-raised {
+  background-color: color-mix(in srgb, var(--color-raised) 70%, transparent);
 }
 
 .surface-deep {
-  background-color: var(--color-deep);
+  background-color: color-mix(in srgb, var(--color-deep) 80%, transparent);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+html.dark .surface-deep {
+  background-color: color-mix(in srgb, var(--color-deep) 70%, transparent);
+}
+
+/* Translucent Glass Rack / Panel Utility */
+.glass-panel {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+html.dark .glass-panel {
+  border-color: var(--color-line-strong);
+}
+
+/* Studio Hardware: In light mode, pure crisp porcelain with subtle wire-red gradients. In dark mode, deep smoked chassis. */
+.studio-hardware-dark {
+  background-color: var(--color-surface);
+  color: var(--color-fg);
+  border-color: var(--color-line);
+}
+
+html.dark .studio-hardware-dark {
+  background-color: #0d0c13 !important;
+  color: #f6f4f9 !important;
+  border-color: rgb(255 255 255 / 0.1) !important;
+}
+
+html.dark .studio-hardware-dark .text-muted {
+  color: #a09caa !important;
+}
+
+html.dark .studio-hardware-dark .text-faint {
+  color: #6e6a7a !important;
+}
+
+/* Ruby Wire Glow and Gradients */
+.glass-glow-wire {
+  box-shadow: 0 0 24px -4px rgb(230 0 38 / 0.3), inset 0 1px 1px 0 rgb(255 255 255 / 0.25);
+}
+
+html.dark .glass-glow-wire {
+  box-shadow: 0 0 32px -4px rgb(255 42 75 / 0.4), inset 0 1px 1px 0 rgb(255 255 255 / 0.1);
+}
+
+.text-wire-gradient {
+  background: linear-gradient(135deg, #ff3856 0%, #e60026 50%, #990018 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-wire-gradient {
+  background: linear-gradient(135deg, #ff2a4b 0%, #e60026 55%, #940016 100%);
 }
 
 /* Fine hairline dividers */
@@ -212,20 +279,27 @@ html.dark .surface-card,
   color: var(--color-fg);
 }
 
-/* Scrollbars */
+/* Global Scrollbar Hiding ("hide slidebar") while retaining scroll functionality */
+html,
+body,
 * {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-line-strong) transparent;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
 *::-webkit-scrollbar {
-  height: 6px;
-  width: 6px;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
 
-*::-webkit-scrollbar-thumb {
-  background: var(--color-line-strong);
-  border-radius: 9999px;
+.no-scrollbar {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
 }
 
 /* Reduced motion preference */
@@ -343,18 +417,19 @@ html.dark .nx-corner-brackets::after,
 }
 .sonic-canvas__glow {
   position: absolute;
-  right: -12%;
-  top: -28%;
-  width: 70rem;
-  height: 70rem;
+  right: -5%;
+  top: -15%;
+  width: 32rem;
+  height: 32rem;
   border-radius: 9999px;
   background: radial-gradient(
     closest-side,
-    color-mix(in srgb, var(--color-accent) 10%, transparent),
+    color-mix(in srgb, var(--color-accent) 12%, transparent),
     transparent 78%
   );
-  filter: blur(2rem);
+  filter: blur(1.25rem);
   transform: translateZ(0);
+  opacity: 0.85;
 }
 .sonic-canvas__mesh {
   position: absolute;
@@ -363,30 +438,17 @@ html.dark .nx-corner-brackets::after,
   height: 104%;
   color: var(--color-faint);
   transform: translateZ(0);
+  opacity: 0.5;
 }
 html.dark .sonic-canvas__glow {
   background: radial-gradient(
     closest-side,
-    color-mix(in srgb, var(--color-accent) 16%, transparent),
+    color-mix(in srgb, var(--color-accent) 18%, transparent),
     transparent 74%
   );
+  opacity: 0.9;
 }
 
-@keyframes sonic-drift {
-  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
-  50%  { transform: translate3d(-14px, 8px, 0) rotate(-0.4deg); }
-  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-}
-@keyframes sonic-breathe {
-  0%, 100% { opacity: 0.8; }
-  50%      { opacity: 1; }
-}
-.sonic-canvas__mesh {
-  animation: sonic-drift 52s ease-in-out infinite;
-}
-.sonic-canvas__glow {
-  animation: sonic-breathe 18s ease-in-out infinite;
-}
 @media (prefers-reduced-motion: reduce) {
   .sonic-canvas__mesh,
   .sonic-canvas__glow {
@@ -409,9 +471,35 @@ html.dark .sonic-canvas__glow {
   }
 }
 
-/* -- Prism Dock ----------------------------------------------- */
+/* ═══ Sonic Ribbon Navigation ══════════════════════════════════════════════ */
+.sonic-ribbon {
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, backdrop-filter 0.25s ease;
+}
 
-/* Active-route pulse equalizer: three tiny bars, CSS only. */
+.sonic-ribbon[data-scrolled="true"] {
+  background-color: color-mix(in srgb, var(--color-canvas) 85%, transparent);
+  border-bottom: 1px solid var(--color-line-strong);
+  box-shadow: 0 4px 20px -2px rgb(0 0 0 / 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+html.dark .sonic-ribbon[data-scrolled="true"] {
+  background-color: color-mix(in srgb, var(--color-canvas) 82%, transparent);
+  box-shadow: 0 8px 32px -4px rgb(0 0 0 / 0.4);
+}
+
+.sonic-ribbon__indicator {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background: var(--color-accent);
+  border-radius: 9999px;
+  box-shadow: 0 0 10px var(--color-accent);
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), width 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease;
+}
+
+/* Equalizer kinetic bar for active states */
 .dock-eq span {
   width: 2px;
   border-radius: 1px;
@@ -438,38 +526,12 @@ html.dark .sonic-canvas__glow {
   100% { transform: translateX(410%); }
 }
 
-/* Hover "comet": a JS-measured glow that slides between dock links. */
-.dock-comet {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  border-radius: 10px;
-  background: radial-gradient(120% 140% at 50% 100%, var(--color-violet) 0%, transparent 70%);
-  opacity: 0;
-  transition: left 0.28s cubic-bezier(0.3, 0.7, 0.3, 1), width 0.28s cubic-bezier(0.3, 0.7, 0.3, 1), opacity 0.2s ease;
-  will-change: left, width;
-  pointer-events: none;
-}
-.dock-comet[data-visible="true"] {
-  opacity: 0.1;
-}
-
-/* Mount stagger: dock keys rise into place, one after another. */
-.dock-rise {
-  animation: dock-rise 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both;
-}
-@keyframes dock-rise {
-  from { opacity: 0; transform: translateY(7px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .dock-eq span,
   .site-hairline-sweep,
-  .dock-rise {
+  .sonic-ribbon__indicator {
     animation: none;
+    transition: none;
   }
   .dock-eq span { transform: scaleY(0.8); }
-  .dock-rise { opacity: 1; transform: none; }
-  .dock-comet { transition: none; }
 }

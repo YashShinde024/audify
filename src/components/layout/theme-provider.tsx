@@ -4,7 +4,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 export type Theme = "light" | "dark";
 
-export const THEME_STORAGE_KEY = "svaraya-theme";
+export const THEME_STORAGE_KEY = "audiomorph-theme";
+export const LEGACY_THEME_STORAGE_KEY = "svaraya-theme";
 
 /**
  * Resolves the effective theme: explicit user choice wins, otherwise the
@@ -15,7 +16,9 @@ export const THEME_STORAGE_KEY = "svaraya-theme";
 export function resolveInitialTheme(): Theme {
   if (typeof window === "undefined") return "light";
   try {
-    const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
+    const saved =
+      window.localStorage.getItem(THEME_STORAGE_KEY) ||
+      window.localStorage.getItem(LEGACY_THEME_STORAGE_KEY);
     if (saved === "dark" || saved === "light") return saved;
   } catch {
     /* storage unavailable (private mode) — fall through */

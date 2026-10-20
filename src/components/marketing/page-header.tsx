@@ -12,8 +12,8 @@ export function PageHeader({ eyebrow, title, lead, wide = false }: PageHeaderPro
   return (
     <header className="border-b border-line pb-8 sm:pb-12">
       <div className={wide ? "max-w-3xl" : "max-w-2xl"}>
-        <p className="eyebrow flex items-center gap-2 text-violet">
-          <span className="h-1.5 w-1.5 rounded-full bg-violet" />
+        <p className="eyebrow flex items-center gap-2 text-accent">
+          <span className="h-1.5 w-1.5 rounded-full bg-accent" />
           {eyebrow}
         </p>
         <h1 className="display-title mt-3 text-3xl sm:text-4xl lg:text-5xl text-fg">

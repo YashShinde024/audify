@@ -1,12 +1,14 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Clock, Waveform } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { presetArticleRegistry } from "@/config/blog-registry";
 import { PresetIcon } from "@/components/icons/preset-icons";
 
+import { siteConfig } from "@/config/site";
+
 export const metadata: Metadata = {
-  title: "Audio Engineering & Preset Guides — Svaraya Knowledge Base",
+  title: "Audio Engineering & Preset Guides — AudioMorph Knowledge Base",
   description:
     "Authoritative deep dives into audio transformation techniques: Slowed + Reverb, 8D Audio binaural panning, Nightcore pitch shifting, 432 Hz tuning, bass boost DSP math, reverb acoustics, and more — one complete guide for every preset.",
   keywords: [
@@ -22,11 +24,11 @@ export const metadata: Metadata = {
     "stereo widening mid side",
   ],
   openGraph: {
-    title: "Audio Engineering & Preset Guides — Svaraya",
+    title: "Audio Engineering & Preset Guides — AudioMorph",
     description:
       "Explore the science, DSP formulas, and acoustic secrets behind every audio preset — 38 in-depth guides backed by the actual render pipeline.",
-    url: `${"https://svaraya.vercel.app"}/blog`,
-    siteName: "Svaraya",
+    url: `${siteConfig.url}/blog`,
+    siteName: siteConfig.name,
     type: "website",
   },
 };
@@ -98,7 +100,7 @@ export default function BlogIndexPage() {
           <div>
             <h3 className="text-base font-semibold text-fg">Want to test these effects live?</h3>
             <p className="mt-1 text-xs text-muted max-w-md">
-              Load your track into Svaraya Studio and hear every preset in this library instantly —
+              Load your track into AudioMorph Studio and hear every preset in this library instantly —
               all processing happens locally in your browser.
             </p>
           </div>
@@ -107,7 +109,7 @@ export default function BlogIndexPage() {
             className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-xs font-semibold text-white hover:bg-accent-hover transition-colors shrink-0"
           >
             <Waveform size={15} weight="bold" />
-            <span>Open Svaraya Studio</span>
+            <span>Open AudioMorph Studio</span>
           </Link>
         </section>
       </div>

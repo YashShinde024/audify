@@ -1,5 +1,5 @@
 /**
- * Svaraya Web Audio Processing Engine
+ * AudioMorph Web Audio Processing Engine
  *
  * Professional client-side DSP pipeline & multi-format export suite:
  * - Real audio file decoding via Web Audio API
@@ -790,9 +790,9 @@ export async function renderProcessedAudio(
       .replace(/^-|-$/g, "") || "audio";
 
   const requestedName = config.outputFilename.trim().replace(/[\\/:*?"<>|]+/g, "-");
-  const filename = requestedName
-    ? `${requestedName.replace(/\.(wav|mp3|aiff|aif|opus)$/i, "")}.${extension}`
-    : `svaraya-${presetId ?? "custom"}-${baseName}.${extension}`;
+    const filename = requestedName
+      ? `${requestedName.replace(/\.(wav|mp3|aiff|aif|opus)$/i, "")}.${extension}`
+      : `audiomorph-${presetId ?? "custom"}-${baseName}.${extension}`;
 
   const url = URL.createObjectURL(blob);
   report(1, "Complete");

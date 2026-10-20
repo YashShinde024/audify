@@ -7,9 +7,10 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Lo-Fi Tape Audio Guide: Saturation, Flutter & Bandwidth — Svaraya",
+  title: "Lo-Fi Tape Audio Guide: Saturation, Flutter & Bandwidth — AudioMorph",
   description:
     "How to recreate the warm nostalgia of vintage magnetic cassette and reel-to-reel tape: bandpass filtering (350 Hz–4.5 kHz), harmonic saturation, and wow-and-flutter modulation.",
   keywords: [
@@ -23,8 +24,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Lo-Fi Tape Audio Guide: Saturation, Flutter & Bandwidth",
     description: "The physics and digital signal processing behind vintage magnetic cassette warmth.",
-    url: "https://svaraya.vercel.app/blog/lofi-tape",
-    siteName: "Svaraya",
+    url: `${siteConfig.url}/blog/lofi-tape`,
+    siteName: siteConfig.name,
     type: "article",
   },
   other: {
@@ -46,8 +47,8 @@ const JSON_LD = {
         { "@type": "Person", "name": "Nyxen" },
         { "@type": "Person", "name": "Xpert Melody", "url": "https://www.youtube.com/@xpertmelody" },
       ],
-      "publisher": { "@type": "Organization", "name": "Svaraya" },
-      "mainEntityOfPage": "https://svaraya.vercel.app/blog/lofi-tape",
+      "publisher": { "@type": "Organization", "name": siteConfig.name, "url": siteConfig.url },
+      "mainEntityOfPage": `${siteConfig.url}/blog/lofi-tape`,
     },
     {
       "@type": "FAQPage",
@@ -86,7 +87,7 @@ export default function LoFiTapeGuidePage() {
           <header className="space-y-3">
             <div className="flex items-center gap-2 text-xs font-semibold text-amber-500">
               <CassetteTape size={18} weight="duotone" />
-              <span>Vintage Acoustics & Tape DSP · By Nyxen × Xpert Melody</span>
+              <span>Vintage Acoustics & Tape DSP · By Nyxen</span>
             </div>
             <h1 className="display-title text-3xl sm:text-4xl font-semibold text-fg tracking-tight">
               Crafting The Lo-Fi Tape Aesthetic: Saturation, Flutter & Bandwidth
@@ -127,12 +128,12 @@ export default function LoFiTapeGuidePage() {
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-lg font-semibold text-fg">2. Svaraya&apos;s Web Audio Tape Pipeline</h2>
+              <h2 className="text-lg font-semibold text-fg">2. AudioMorph&apos;s Web Audio Tape Pipeline</h2>
               <p>
-                In Svaraya Studio, the Lo-Fi Tape preset routes your track through a dual biquad filter and waveshaping transfer curve:
+                In AudioMorph Studio, the Lo-Fi Tape preset routes your track through a dual biquad filter and waveshaping transfer curve:
               </p>
               <div className="rounded-xl border border-line bg-surface p-4 font-mono text-xs text-neutral-300 space-y-1">
-                <p className="text-amber-400 font-semibold">{"// Svaraya Lo-Fi Tape DSP Graph"}</p>
+                <p className="text-amber-400 font-semibold">{"// AudioMorph Lo-Fi Tape DSP Graph"}</p>
                 <p>source</p>
                 <p className="pl-4">↳ BiquadFilterNode (type: &quot;highpass&quot;, frequency: 320 Hz)</p>
                 <p className="pl-8">↳ BiquadFilterNode (type: &quot;lowpass&quot;, frequency: 4500 Hz)</p>
@@ -146,7 +147,7 @@ export default function LoFiTapeGuidePage() {
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-fg">Turn your song into vintage Lo-Fi tape</h3>
                 <p className="text-xs text-muted">
-                  Open Svaraya Studio, select the Lo-Fi Tape preset, and enjoy instant nostalgic cassette character.
+                  Open AudioMorph Studio, select the Lo-Fi Tape preset, and enjoy instant nostalgic cassette character.
                 </p>
               </div>
               <Button asChild size="md" className="rounded-full shrink-0">

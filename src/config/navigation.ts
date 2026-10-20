@@ -3,12 +3,20 @@ export interface NavItem {
   label: string;
 }
 
-/** Center navigation — the product's primary surfaces only. */
+/** Center navigation — the product's primary, high-impact surfaces only. */
 export const primaryNav: NavItem[] = [
   { href: "/studio", label: "Studio" },
   { href: "/presets", label: "Presets" },
-  { href: "/effects", label: "Effects" },
-  { href: "/blog", label: "Guides" },
+  { href: "/how-it-works", label: "How It Works" },
+  { href: "/about", label: "About" },
+];
+
+/** Secondary routes for dropdowns and deeper exploration */
+export const secondaryNav: NavItem[] = [
+  { href: "/effects", label: "DSP Effects" },
+  { href: "/blog", label: "Audio Guides" },
+  { href: "/contact", label: "Contact Dispatch" },
+  { href: "/faq", label: "FAQ" },
 ];
 
 /**
@@ -25,6 +33,7 @@ export const footerProductNav: NavItem[] = [
 export const footerCompanyNav: NavItem[] = [
   { href: "/how-it-works", label: "How It Works" },
   { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
   { href: "/faq", label: "FAQ" },
 ];
 

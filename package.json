@@ -1,6 +1,6 @@
 {
-  "name": "svaraya",
-  "version": "0.1.0",
+  "name": "audiomorph",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

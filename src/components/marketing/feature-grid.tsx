@@ -37,7 +37,7 @@ export function FeatureGrid({ className }: { className?: string }) {
     <div className={cn("grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2", className)}>
       {useCases.map((useCase) => (
         <div key={useCase.title} className="bg-surface p-6 sm:p-8">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-raised text-violet">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-raised text-accent">
             <useCase.icon aria-hidden="true" size={20} weight="duotone" />
           </span>
           <h3 className="mt-4 text-base font-semibold tracking-tight text-fg">{useCase.title}</h3>

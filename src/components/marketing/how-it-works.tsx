@@ -55,11 +55,11 @@ export function HowItSteps({ className }: { className?: string }) {
       {steps.map((step, index) => (
         <li
           key={step.title}
-          className="relative rounded-xl border border-line bg-canvas p-5 flex flex-col justify-between hover:border-violet/40 transition-colors"
+          className="relative surface-card glass-panel rounded-2xl p-5 flex flex-col justify-between hover:border-primary/40 hover:shadow-glow-crimson transition-all duration-300"
         >
           <div>
             <div className="flex items-center justify-between">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-surface text-violet">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-line/60 bg-raised/70 text-primary">
                 <step.icon aria-hidden="true" size={20} weight="duotone" />
               </span>
               <span aria-hidden="true" className="tnum font-mono text-xs font-semibold text-faint">

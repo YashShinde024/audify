@@ -4,31 +4,31 @@ export function ProcessingNote() {
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-start lg:gap-12">
       <div>
-        <p className="eyebrow text-violet">Architecture</p>
+        <p className="eyebrow text-accent">Architecture</p>
         <h3 className="display-title mt-2 text-2xl sm:text-3xl text-fg">
           Client-side audio DSP.
           <br />
           No uploads. Ever.
         </h3>
         <p className="mt-3 text-xs sm:text-sm leading-relaxed text-muted max-w-md">
-          Svaraya executes audio transformations entirely within your browser&apos;s memory using the
+          AudioMorph executes audio transformations entirely within your browser&apos;s memory using the
           Web Audio API. Your tracks never leave your computer, preserving absolute privacy and eliminating server queue wait times.
         </p>
       </div>
 
       <dl className="grid gap-3 sm:grid-cols-3">
         <ProcessingCard
-          icon={<ShieldCheck aria-hidden="true" size={18} weight="duotone" className="text-violet" />}
+          icon={<ShieldCheck aria-hidden="true" size={18} weight="duotone" className="text-accent" />}
           term="100% Private"
           detail="Decoded and rendered in your browser tab. No server logs, no cloud storage, no audio telemetry."
         />
         <ProcessingCard
-          icon={<Cpu aria-hidden="true" size={18} weight="duotone" className="text-violet" />}
+          icon={<Cpu aria-hidden="true" size={18} weight="duotone" className="text-accent" />}
           term="Hardware DSP"
           detail="Uses multi-threaded native browser audio buffers (OfflineAudioContext) for rapid rendering."
         />
         <ProcessingCard
-          icon={<Lightning aria-hidden="true" size={18} weight="duotone" className="text-violet" />}
+          icon={<Lightning aria-hidden="true" size={18} weight="duotone" className="text-accent" />}
           term="Instant Auditioning"
           detail="Instant A/B before-and-after comparison with zero streaming latency."
         />

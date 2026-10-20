@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   SpeakerHifi,
@@ -7,9 +7,10 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Bass Boost Engineering: Sub-Bass Sculpting Without Distortion — Svaraya",
+  title: "Bass Boost Engineering: Sub-Bass Sculpting Without Distortion — AudioMorph",
   description:
     "How to amplify sub-bass (30–80 Hz) without 0 dBFS clipping. Learn low-shelf biquad filters, Q-factor resonance, pre-gain headroom, and soft-limiting.",
   keywords: [
@@ -23,8 +24,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Bass Boost Engineering: Sub-Bass Sculpting Without Distortion",
     description: "The digital signal processing techniques that allow deep sub-bass amplification without harsh digital clipping.",
-    url: "https://svaraya.vercel.app/blog/bass-boost",
-    siteName: "Svaraya",
+    url: `${siteConfig.url}/blog/bass-boost`,
+    siteName: siteConfig.name,
     type: "article",
   },
   other: {
@@ -46,8 +47,8 @@ const JSON_LD = {
         { "@type": "Person", "name": "Nyxen" },
         { "@type": "Person", "name": "Xpert Melody", "url": "https://www.youtube.com/@xpertmelody" },
       ],
-      "publisher": { "@type": "Organization", "name": "Svaraya" },
-      "mainEntityOfPage": "https://svaraya.vercel.app/blog/bass-boost",
+      "publisher": { "@type": "Organization", "name": siteConfig.name, "url": siteConfig.url },
+      "mainEntityOfPage": `${siteConfig.url}/blog/bass-boost`,
     },
     {
       "@type": "FAQPage",
@@ -62,10 +63,10 @@ const JSON_LD = {
         },
         {
           "@type": "Question",
-          "name": "How does Svaraya boost bass cleanly?",
+          "name": "How does AudioMorph boost bass cleanly?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Svaraya applies dynamic headroom compensation: before boosting the sub-bass shelf (+4 dB to +16 dB at 60 Hz), the master input gain is proportionally attenuated by -3 to -8 dB. The rendered signal is then polished through a hyperbolic soft-clipping shaper to ensure zero digital overs.",
+            "text": "AudioMorph applies dynamic headroom compensation: before boosting the sub-bass shelf (+4 dB to +16 dB at 60 Hz), the master input gain is proportionally attenuated by -3 to -8 dB. The rendered signal is then polished through a hyperbolic soft-clipping shaper to ensure zero digital overs.",
           },
         },
       ],
@@ -92,9 +93,9 @@ export default function BassBoostGuidePage() {
           </nav>
 
           <header className="space-y-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400">
+            <div className="flex items-center gap-2 text-xs font-semibold text-primary">
               <SpeakerHifi size={18} weight="duotone" />
-              <span>Equalizer & Dynamics DSP · By Nyxen × Xpert Melody</span>
+              <span>Equalizer & Dynamics DSP · By Nyxen</span>
             </div>
             <h1 className="display-title text-3xl sm:text-4xl font-semibold text-fg tracking-tight">
               Bass Boost Engineering: Sub-Bass Sculpting Without Distortion
@@ -135,9 +136,9 @@ export default function BassBoostGuidePage() {
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-lg font-semibold text-fg">2. Svaraya&apos;s 4-Tier Bass Architecture</h2>
+              <h2 className="text-lg font-semibold text-fg">2. AudioMorph&apos;s 4-Tier Bass Architecture</h2>
               <p>
-                In Svaraya Studio, we engineered four distinct presets suited for different acoustic needs:
+                In AudioMorph Studio, we engineered four distinct presets suited for different acoustic needs:
               </p>
               <div className="grid gap-3 sm:grid-cols-2 pt-2">
                 <div className="rounded-xl border border-line bg-surface p-4">
@@ -164,7 +165,7 @@ export default function BassBoostGuidePage() {
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-fg">Boost your audio&apos;s bass</h3>
                 <p className="text-xs text-muted">
-                  Experience clean, resonant bass boosting with full floating-point headroom in Svaraya Studio.
+                  Experience clean, resonant bass boosting with full floating-point headroom in AudioMorph Studio.
                 </p>
               </div>
               <Button asChild size="md" className="rounded-full shrink-0">

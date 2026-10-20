@@ -23,7 +23,7 @@ export function Slider({ className, ...props }: SliderProps) {
         <SliderPrimitive.Range
           data-slot="slider-range"
           className={cn(
-            "absolute h-full rounded-full bg-violet",
+            "absolute h-full rounded-full bg-accent",
             props.disabled && "bg-muted",
           )}
         />
@@ -31,8 +31,8 @@ export function Slider({ className, ...props }: SliderProps) {
       <SliderPrimitive.Thumb
         data-slot="slider-thumb"
         className={cn(
-          "block h-3.5 w-3.5 rounded-full border border-violet bg-white shadow-sm",
-          "transition-transform hover:scale-115 focus-visible:scale-115 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/40",
+          "block h-3.5 w-3.5 rounded-full border-2 border-accent bg-surface shadow-xs",
+          "transition-transform hover:scale-115 focus-visible:scale-115 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
           props.disabled && "pointer-events-none",
         )}
         aria-label={props["aria-label"]}

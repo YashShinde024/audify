@@ -3,295 +3,477 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { X, ArrowRight } from "@phosphor-icons/react";
-import { primaryNav } from "@/config/navigation";
+import {
+  X,
+  List,
+  Waveform,
+  Play,
+  Pause,
+  ArrowRight,
+  Sparkle,
+  Compass,
+  Sliders,
+  Article,
+  Question,
+  EnvelopeSimple,
+  Info,
+  CaretDown,
+} from "@phosphor-icons/react";
+import { motion, AnimatePresence } from "motion/react";
+import { primaryNav, secondaryNav } from "@/config/navigation";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
+import { useEditorStore } from "@/stores/editor-store";
 import { cn } from "@/lib/utils";
 
-/**
- * The Prism Dock.
- *
- * Third-generation navigation, distinct from the pill bar and the rack:
- * a centered floating glass island that hovers over the page with a
- * breathing hairline sweep running along the very top edge of the
- * viewport. Links are set in tight uppercase mono; the active route is a
- * lifted "key" carrying a three-bar pulse equalizer — the only kinetic
- * element, and only while active. Mobile folds into a right-hand drawer
- * with the full keyboard/ARIA contract preserved.
- */
+const NAV_ICONS: Record<string, typeof Waveform> = {
+  "/studio": Waveform,
+  "/presets": Sparkle,
+  "/effects": Sliders,
+  "/how-it-works": Compass,
+  "/about": Info,
+  "/blog": Article,
+  "/contact": EnvelopeSimple,
+};
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
-  const [cometRect, setCometRect] = useState({ left: 0, width: 0 });
-  const navListRef = useRef<HTMLUListElement>(null);
-  const linkRefs = useRef<Array<HTMLLIElement | null>>([]);
 
-  // Measure the hovered link (relative to the list) and place the comet under it.
-  useEffect(() => {
-    if (hoverIdx === null) return;
-    const li = linkRefs.current[hoverIdx];
-    const ul = navListRef.current;
-    if (!li || !ul) return;
-    setCometRect({ left: li.offsetLeft, width: li.offsetWidth });
-  }, [hoverIdx]);
+  // Read active audio state from Studio Editor Store
+  const file = useEditorStore((s) => s.file);
+  const isPlaying = useEditorStore((s) => s.isPlaying);
+  const isProcessing = useEditorStore((s) => s.isProcessing);
+  const togglePlay = useEditorStore((s) => s.togglePlay);
 
-  // Keep the comet aligned if the viewport reflows while hovering.
-  useEffect(() => {
-    const onResize = () => {
-      if (hoverIdx === null) return;
-      const li = linkRefs.current[hoverIdx];
-      const ul = navListRef.current;
-      if (!li || !ul) return;
-      setCometRect({ left: li.offsetLeft, width: li.offsetWidth });
-    };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [hoverIdx]);
-
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
   const lastPathRef = useRef(pathname);
 
   const isActive = useCallback(
-    (href: string) => pathname === href || pathname.startsWith(`${href}/`),
+    (href: string) => pathname === href || (href !== "/" && pathname.startsWith(`${href}/`)),
     [pathname],
   );
 
-  // Route changes close the drawer.
-  useEffect(() => {
-    if (lastPathRef.current === pathname) return;
-    lastPathRef.current = pathname;
-    setDrawerOpen(false);
-  }, [pathname]);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
 
-  // Escape closes the drawer and returns focus to the trigger.
+  // Close more dropdown on outside click
   useEffect(() => {
-    if (!drawerOpen) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setDrawerOpen(false);
-        menuButtonRef.current?.focus();
+    const handleClickOutside = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
       }
     };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [drawerOpen]);
+    if (moreOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [moreOpen]);
 
-  // Lock page scroll behind the drawer.
+  // Track scroll position for subtle blur and shadow elevation
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 15;
+      setScrolled((prev) => (prev !== isScrolled ? isScrolled : prev));
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Close drawer on route change
+  useEffect(() => {
+    if (lastPathRef.current !== pathname) {
+      lastPathRef.current = pathname;
+      setDrawerOpen(false);
+    }
+  }, [pathname]);
+
+  // Lock scroll when mobile drawer is open
   useEffect(() => {
     if (!drawerOpen) return;
-    const previous = document.body.style.overflow;
+    const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = previous;
+      document.body.style.overflow = originalOverflow;
     };
   }, [drawerOpen]);
 
   return (
     <>
-      {/* Breathing hairline: a 1px rail with a slow light sweep, viewport-wide */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed top-0 z-[60] h-px w-full overflow-hidden bg-line/60"
+      <header
+        role="banner"
+        className={cn(
+          "sticky top-0 z-50 w-full transition-all duration-300",
+          scrolled
+            ? "border-b border-line/80 bg-canvas/90 backdrop-blur-md shadow-xs"
+            : "border-b border-transparent bg-canvas/60 backdrop-blur-xs"
+        )}
       >
-        <span className="site-hairline-sweep absolute inset-y-0 w-1/4 bg-gradient-to-r from-transparent via-accent/80 to-transparent" />
-      </div>
-
-      <header className="sticky top-3 z-50 px-3 sm:px-6">
-        {/* The dock itself */}
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 rounded-2xl border border-line-strong/50 bg-canvas/70 px-2.5 py-2 pl-3 shadow-[0_8px_30px_rgb(0_0_0/0.07)] backdrop-blur-xl supports-[backdrop-filter]:bg-canvas/55 sm:px-3">
-          {/* Wordmark */}
-          <Link
-            href="/"
-            aria-label="Svaraya — home"
-            className="rounded-lg px-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet"
-          >
-            <Logo />
-          </Link>
-
-          {/* Desktop routes */}
-          <nav aria-label="Primary" className="hidden min-w-0 md:block">
-            <ul
-              ref={navListRef}
-              className="relative flex items-center gap-0.5"
-              onMouseLeave={() => setHoverIdx(null)}
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
+          {/* Left: Brand Emblem + Wordmark */}
+          <div className="flex items-center gap-3 shrink-0">
+            <Link
+              href="/"
+              aria-label="AudioMorph homepage"
+              className="group relative inline-flex items-center gap-2.5 rounded-full p-1 pl-1.5 pr-2.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200"
             >
-              {/* Hover comet: sliding glow measured against the hovered link */}
-              <span
-                aria-hidden="true"
-                className="dock-comet"
-                data-visible={hoverIdx !== null}
-                style={{ left: cometRect.left, width: cometRect.width }}
-              />
-              {primaryNav.map((item, idx) => {
-                const active = isActive(item.href);
-                return (
-                  <li
-                    key={item.href}
-                    ref={(node) => {
-                      linkRefs.current[idx] = node;
-                    }}
-                    className="dock-rise"
-                    style={{ animationDelay: `${idx * 55}ms` }}
-                    onMouseEnter={() => setHoverIdx(idx)}
+              <div className="relative shrink-0 transition-transform duration-300 group-hover:scale-110">
+                <Logo height={26} variant="icon-only" />
+                <span className="absolute -inset-1 rounded-full bg-primary/20 blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <div className="flex flex-col text-left leading-none">
+                <span className="font-bold tracking-tight text-sm text-fg group-hover:text-primary transition-colors">
+                  AudioMorph
+                </span>
+                <span className="text-[9px] font-mono tracking-wider text-muted uppercase">
+                  Studio DSP
+                </span>
+              </div>
+            </Link>
+
+            {/* Dynamic Island Audio Activity Pill (shown when file is loaded) */}
+            <AnimatePresence>
+              {file && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, x: -10 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, x: -10 }}
+                  transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                  className="hidden xl:flex items-center gap-2 pl-2 pr-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-xs text-fg overflow-hidden shadow-xs"
+                >
+                  <button
+                    type="button"
+                    onClick={() => togglePlay()}
+                    aria-label={isPlaying ? "Pause audio" : "Play audio"}
+                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-xs hover:scale-110 active:scale-95 transition-transform cursor-pointer"
                   >
-                    <Link
-                      href={item.href}
-                      aria-current={active ? "page" : undefined}
+                    {isPlaying ? (
+                      <Pause size={10} weight="fill" />
+                    ) : (
+                      <Play size={10} weight="fill" className="translate-x-[0.5px]" />
+                    )}
+                  </button>
+
+                  {/* Equalizer Kinetic Bars */}
+                  <div className="flex items-center gap-0.5 h-3">
+                    <span
                       className={cn(
-                        "group relative inline-flex h-9 items-center gap-2 rounded-xl px-3.5 text-[13px] font-medium transition-all duration-200",
-                        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
-                        active
-                          ? "bg-deep/70 text-fg shadow-[inset_0_0_0_1px_var(--color-line)]"
-                          : "text-muted hover:text-fg",
+                        "w-[2px] rounded-full bg-primary transition-all",
+                        isPlaying ? "h-3 animate-pulse" : "h-1.5"
                       )}
-                    >
-                      {item.label}
-                      {/* Active-route pulse equalizer (three bars, CSS only) */}
-                      {active && (
-                        <span
-                          aria-hidden="true"
-                          className="dock-eq flex h-3 items-end gap-[2px]"
+                    />
+                    <span
+                      className={cn(
+                        "w-[2px] rounded-full bg-primary transition-all",
+                        isPlaying ? "h-2 animate-bounce" : "h-2.5"
+                      )}
+                    />
+                    <span
+                      className={cn(
+                        "w-[2px] rounded-full bg-primary transition-all",
+                        isPlaying ? "h-3.5 animate-pulse" : "h-1.5"
+                      )}
+                    />
+                  </div>
+
+                  <Link
+                    href="/studio"
+                    className="max-w-[120px] truncate text-[11px] font-mono text-fg hover:text-primary transition-colors"
+                    title={file.name}
+                  >
+                    {file.name}
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Center: Dynamic Island Navigation Capsule (Desktop & Tablets 768px+) */}
+          <nav
+            aria-label="Main navigation"
+            className="hidden md:flex items-center gap-1 rounded-full border border-line bg-surface/85 dark:bg-surface/90 px-1.5 py-1 backdrop-blur-md shadow-xs"
+          >
+            {primaryNav.map((item) => {
+              const active = isActive(item.href);
+              const Icon = NAV_ICONS[item.href] || Sparkle;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "relative px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200",
+                    active
+                      ? "text-white font-semibold shadow-xs"
+                      : "text-muted hover:text-fg hover:bg-black/5 dark:hover:bg-white/5"
+                  )}
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="island-active-pill"
+                      className="absolute inset-0 rounded-full bg-wire-gradient shadow-glow-wire z-0"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    {item.label === "Studio" && (
+                      <Icon size={13} className={active ? "text-white" : "text-primary"} weight="bold" />
+                    )}
+                    {item.label}
+                  </span>
+                </Link>
+              );
+            })}
+
+            {/* "More" Dropdown Menu */}
+            <div className="relative" ref={moreRef}>
+              <button
+                type="button"
+                onClick={() => setMoreOpen((prev) => !prev)}
+                aria-expanded={moreOpen}
+                aria-haspopup="true"
+                className={cn(
+                  "relative px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-1 cursor-pointer",
+                  secondaryNav.some((s) => isActive(s.href))
+                    ? "text-primary font-semibold"
+                    : "text-muted hover:text-fg hover:bg-black/5 dark:hover:bg-white/5"
+                )}
+              >
+                <span>More</span>
+                <CaretDown
+                  size={11}
+                  weight="bold"
+                  className={cn("transition-transform duration-200", moreOpen && "rotate-180")}
+                />
+              </button>
+
+              <AnimatePresence>
+                {moreOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-48 rounded-2xl border border-line-strong bg-surface/95 dark:bg-surface/95 p-1.5 shadow-2xl backdrop-blur-xl z-50 space-y-0.5"
+                  >
+                    {secondaryNav.map((sub) => {
+                      const active = isActive(sub.href);
+                      const SubIcon = NAV_ICONS[sub.href] || Sparkle;
+                      return (
+                        <Link
+                          key={sub.href}
+                          href={sub.href}
+                          onClick={() => setMoreOpen(false)}
+                          className={cn(
+                            "flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-colors",
+                            active
+                              ? "bg-primary text-white font-semibold"
+                              : "text-muted hover:text-fg hover:bg-black/5 dark:hover:bg-white/10"
+                          )}
                         >
-                          <span />
-                          <span />
-                          <span />
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+                          <SubIcon size={14} className={active ? "text-white" : "text-primary"} weight="duotone" />
+                          <span>{sub.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </nav>
 
-          {/* Right controls */}
-          <div className="flex items-center gap-1.5">
+          {/* Right: Controls & Fast Launch Studio CTA */}
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle (Adapts Light & Dark Mode according to user choice) */}
             <ThemeToggle />
 
+            {/* Bespoke Tactile Studio Action CTA */}
             <Link
               href="/studio"
               className={cn(
-                "hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white",
-                "transition-colors duration-150 hover:bg-accent-hover",
-                "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
+                "group relative inline-flex items-center gap-1.5 rounded-full px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold text-white",
+                "bg-wire-gradient shadow-glow-wire hover:shadow-glow-wire-strong",
+                "hover:scale-[1.03] active:scale-[0.97] transition-all duration-200"
               )}
             >
-              Studio
-              <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
+              {/* Micro pulse indicator */}
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+              </span>
+
+              <span className="hidden xs:inline">Open Studio</span>
+              <span className="xs:hidden">Studio</span>
+              <ArrowRight
+                size={13}
+                weight="bold"
+                className="transition-transform group-hover:translate-x-0.5"
+              />
             </Link>
 
+            {/* Mobile Menu Toggle Button */}
             <button
-              ref={menuButtonRef}
               type="button"
-              onClick={() => setDrawerOpen((open) => !open)}
+              onClick={() => setDrawerOpen((prev) => !prev)}
               aria-expanded={drawerOpen}
-              aria-controls="prism-dock-drawer"
-              className={cn(
-                "inline-flex h-9 w-9 items-center justify-center rounded-xl border border-line md:hidden",
-                "text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
-              )}
+              aria-label={drawerOpen ? "Close menu" : "Open navigation menu"}
+              className="flex md:hidden h-9 w-9 items-center justify-center rounded-full border border-line bg-surface text-muted hover:text-fg hover:border-primary/40 transition-colors cursor-pointer"
             >
-              {drawerOpen ? (
-                <X aria-hidden="true" className="h-4 w-4" />
-              ) : (
-                <span
-                  aria-hidden="true"
-                  className="flex h-3.5 w-4 flex-col justify-between"
-                >
-                  <span className="h-px w-full bg-current" />
-                  <span className="h-px w-full bg-current" />
-                  <span className="h-px w-full bg-current" />
-                </span>
-              )}
-              <span className="sr-only">
-                {drawerOpen ? "Close menu" : "Open menu"}
-              </span>
+              {drawerOpen ? <X size={18} weight="bold" /> : <List size={18} weight="bold" />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile drawer */}
-      <div
-        id="prism-dock-drawer"
-        className={drawerOpen ? "" : "hidden"}
-      >
-        <button
-          aria-hidden="true"
-          tabIndex={-1}
-          className="fixed inset-0 z-40 cursor-default bg-deep/40 backdrop-blur-[2px]"
-          onClick={() => setDrawerOpen(false)}
-        />
-        <div className="fixed right-0 top-0 z-50 flex h-[100dvh] w-72 flex-col border-l border-line bg-canvas shadow-2xl">
-          <div className="flex h-14 items-center justify-between border-b border-line px-4">
-            <Logo />
-            <button
-              type="button"
+      {/* Full-Screen Mobile Drawer with Backdrop Blur Overlay */}
+      <AnimatePresence>
+        {drawerOpen && (
+          <div className="fixed inset-0 top-16 z-40 md:hidden">
+            {/* Backdrop Dimmer */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={() => setDrawerOpen(false)}
-              className={cn(
-                "inline-flex h-9 w-9 items-center justify-center rounded-xl border border-line",
-                "text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
-              )}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+
+            {/* Drawer Content Card */}
+            <motion.div
+              ref={drawerRef}
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative border-b border-line bg-surface/95 dark:bg-surface/95 px-5 py-6 shadow-xl backdrop-blur-md"
             >
-              <X aria-hidden="true" className="h-4 w-4" />
-              <span className="sr-only">Close menu</span>
-            </button>
-          </div>
-          <nav aria-label="Mobile primary" className="flex-1 overflow-y-auto">
-            <ul className="px-2 pt-2">
-              {primaryNav.map((item) => {
-                const active = isActive(item.href);
-                return (
-                  <li key={item.href}>
+              {/* Audio Status on Mobile if active */}
+              {file && (
+                <div className="mb-4 flex items-center justify-between rounded-xl bg-primary/10 p-3.5 border border-primary/25">
+                  <div className="flex items-center gap-2.5 overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => togglePlay()}
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-xs cursor-pointer"
+                    >
+                      {isPlaying ? <Pause size={13} weight="fill" /> : <Play size={13} weight="fill" />}
+                    </button>
+                    <div className="truncate">
+                      <p className="text-xs font-semibold text-fg truncate">{file.name}</p>
+                      <p className="text-[10px] text-muted">
+                        {isProcessing
+                          ? "Rendering in browser..."
+                          : isPlaying
+                          ? "Playing active preview"
+                          : "Ready in Studio"}
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/studio"
+                    onClick={() => setDrawerOpen(false)}
+                    className="shrink-0 rounded-full bg-primary px-3 py-1 text-[11px] font-semibold text-white shadow-xs"
+                  >
+                    Studio
+                  </Link>
+                </div>
+              )}
+
+              {/* Primary Nav List */}
+              <div className="grid grid-cols-2 gap-2">
+                {primaryNav.map((item) => {
+                  const active = isActive(item.href);
+                  const Icon = NAV_ICONS[item.href] || Sparkle;
+
+                  return (
                     <Link
+                      key={item.href}
                       href={item.href}
-                      aria-current={active ? "page" : undefined}
+                      onClick={() => setDrawerOpen(false)}
                       className={cn(
-                        "flex items-center justify-between rounded-xl px-3 py-2.5 text-sm",
-                        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
-                        active ? "bg-deep/70 text-fg" : "text-muted hover:text-fg",
+                        "flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-xs font-semibold transition-all",
+                        active
+                          ? "bg-primary text-white shadow-glow-wire/40"
+                          : "bg-surface hover:bg-raised text-fg border border-line hover:border-primary/40"
                       )}
                     >
-                      <span className={active ? "font-medium" : undefined}>
-                        {item.label}
-                      </span>
-                      {active && (
-                        <span
-                          aria-hidden="true"
-                          className="dock-eq flex h-3 items-end gap-[2px]"
-                        >
-                          <span />
-                          <span />
-                          <span />
-                        </span>
-                      )}
+                      <Icon size={15} weight={active ? "bold" : "regular"} className={active ? "text-white" : "text-primary"} />
+                      <span>{item.label}</span>
                     </Link>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="border-t border-line p-4">
-              <Link
-                href="/studio"
-                className={cn(
-                  "flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-medium text-white",
-                  "transition-colors duration-150 hover:bg-accent-hover",
-                  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet",
-                )}
-              >
-                Open Studio
-                <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-          </nav>
-          <p className="border-t border-line px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-faint">
-            100% in-browser · no uploads
-          </p>
-        </div>
-      </div>
+                  );
+                })}
+              </div>
+
+              {/* Secondary Navigation Hubs */}
+              <div className="mt-4 pt-3 border-t border-line">
+                <p className="text-[10px] font-mono uppercase tracking-wider text-muted mb-2">
+                  Explore More
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {secondaryNav.map((item) => {
+                    const active = isActive(item.href);
+                    const Icon = NAV_ICONS[item.href] || Sparkle;
+
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setDrawerOpen(false)}
+                        className={cn(
+                          "flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-all",
+                          active
+                            ? "bg-accent/15 text-accent font-semibold"
+                            : "bg-surface/70 hover:bg-raised text-muted hover:text-fg border border-line"
+                        )}
+                      >
+                        <Icon size={13} className="text-primary shrink-0" weight="duotone" />
+                        <span className="truncate">{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Quick Presets shortcut row on mobile */}
+              <div className="mt-5 pt-4 border-t border-line">
+                <p className="text-[10px] font-mono uppercase tracking-wider text-muted mb-2.5">
+                  Popular Standard Presets
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { slug: "slowed-reverb", label: "Slowed + Reverb" },
+                    { slug: "nightcore", label: "Nightcore" },
+                    { slug: "daycore", label: "Daycore" },
+                    { slug: "8d-audio", label: "8D Audio" },
+                    { slug: "bass-boost-heavy", label: "Bass Boost" },
+                    { slug: "pitch-432hz", label: "432 Hz" },
+                    { slug: "lofi-tape", label: "Lo-Fi Tape" },
+                  ].map((preset) => (
+                    <Link
+                      key={preset.slug}
+                      href={`/studio?preset=${preset.slug}`}
+                      onClick={() => setDrawerOpen(false)}
+                      className="rounded-full border border-line bg-canvas px-3 py-1 text-[11px] font-medium text-muted hover:text-fg hover:border-primary/40 transition-colors"
+                    >
+                      {preset.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Mobile Drawer Footer */}
+              <div className="mt-5 pt-3.5 border-t border-line flex items-center justify-between text-[11px] text-muted">
+                <span>AudioMorph · Developed by Nyxen</span>
+                <span className="font-mono text-primary font-medium">100% Client-Side DSP</span>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

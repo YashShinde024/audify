@@ -17,9 +17,10 @@ import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { selectIsResultStale, useEditorStore } from "@/stores/editor-store";
 import { getPresetById } from "@/config/presets";
-import { formatBytes, formatTime } from "@/lib/utils";
+import { cn, formatBytes, formatTime } from "@/lib/utils";
 import { AudioPlayer } from "./audio-player";
 import { ExportPanel } from "./export-panel";
+import { MusicEditFacts } from "./music-facts";
 
 const easeOut = [0.2, 0.8, 0.2, 1] as const;
 
@@ -224,19 +225,21 @@ export function ProcessAndOutput() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2, ease: easeOut }}
+            transition={{ duration: 0.25, ease: easeOut }}
             className="overflow-hidden"
           >
-            <div className="rounded-lg border border-line bg-canvas/60 p-3.5">
+            <div className="rounded-xl border border-primary/25 bg-surface/80 dark:bg-canvas/80 p-4 space-y-3.5 shadow-sm">
               <div className="flex items-center justify-between gap-3 text-xs">
                 <span className="flex min-w-0 items-center gap-2 font-medium text-fg">
-                  <CircleNotch size={14} className="shrink-0 animate-spin text-accent" />
-                  <span className="truncate">{processingStatus}</span>
+                  <CircleNotch size={15} className="shrink-0 animate-spin text-primary" />
+                  <span className="truncate font-semibold">{processingStatus}</span>
                 </span>
-                <span className="shrink-0 font-mono text-[11px] text-muted tnum">{percent}%</span>
+                <span className="shrink-0 font-mono text-xs font-bold text-primary tnum">{percent}%</span>
               </div>
+
+              {/* Glowing Wire-Red Progress Bar */}
               <div
-                className="mt-2.5 h-1 w-full overflow-hidden rounded-full bg-line"
+                className="h-2 w-full overflow-hidden rounded-full bg-line/80 relative"
                 role="progressbar"
                 aria-valuemin={0}
                 aria-valuemax={100}
@@ -244,14 +247,45 @@ export function ProcessAndOutput() {
                 aria-label="Render progress"
               >
                 <div
-                  className="h-full rounded-full bg-accent transition-[width] duration-300 ease-out"
+                  className="h-full rounded-full bg-wire-gradient transition-[width] duration-300 ease-out shadow-[0_0_12px_rgba(230,0,38,0.5)]"
                   style={{ width: `${percent}%` }}
                 />
               </div>
-              <p className="mt-2 text-[11px] text-faint">
-                Progress reflects real pipeline stages. Long renders cannot be interrupted mid-graph;
-                cancelling discards the result.
+
+              {/* Visual DSP Node Pipeline Stages */}
+              <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] font-mono">
+                <div className={cn(
+                  "p-2 rounded-lg border text-center transition-all",
+                  percent >= 15 ? "border-primary/40 bg-primary/10 text-primary font-semibold" : "border-line/60 text-faint"
+                )}>
+                  1. Graph Setup
+                </div>
+                <div className={cn(
+                  "p-2 rounded-lg border text-center transition-all",
+                  percent >= 45 ? "border-primary/40 bg-primary/10 text-primary font-semibold" : "border-line/60 text-faint"
+                )}>
+                  2. DSP Offline Compute
+                </div>
+                <div className={cn(
+                  "p-2 rounded-lg border text-center transition-all",
+                  percent >= 75 ? "border-primary/40 bg-primary/10 text-primary font-semibold" : "border-line/60 text-faint"
+                )}>
+                  3. Headroom Limiting
+                </div>
+                <div className={cn(
+                  "p-2 rounded-lg border text-center transition-all",
+                  percent >= 95 ? "border-primary/40 bg-primary/10 text-primary font-semibold" : "border-line/60 text-faint"
+                )}>
+                  4. Multi-format Packaging
+                </div>
+              </div>
+
+              <p className="text-[11px] text-faint">
+                OfflineAudioContext executing at maximum CPU throughput. 100% in-browser rendering with zero cloud latency.
               </p>
+
+              {/* Music Editing Facts during DSP render */}
+              <MusicEditFacts className="mt-3 border-line/80 bg-raised/70" />
             </div>
           </motion.div>
         )}

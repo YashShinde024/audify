@@ -364,7 +364,7 @@ export function ExportPanel() {
             <input
               id="export-filename"
               type="text"
-              placeholder={`svaraya-${presetSlug}-${baseName}.${exportConfig.format}`}
+              placeholder={`audiomorph-${presetSlug}-${baseName}.${exportConfig.format}`}
               value={exportConfig.outputFilename}
               onChange={(event) => setExportConfig({ outputFilename: event.target.value })}
               className="w-full rounded-md border border-line bg-raised px-3 py-1.5 font-mono text-xs text-fg placeholder:text-faint focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"

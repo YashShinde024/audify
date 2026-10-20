@@ -8,9 +8,9 @@ import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Effects Directory — Svaraya Audio DSP",
+  title: "Effects Directory — AudioMorph Audio DSP",
   description:
-    "Comprehensive directory of supported audio DSP processing operations in Svaraya: Pitch & Speed, Reverb & Echo, Tone & EQ, Bass, Stereo, Creative, and Utility & Finishing.",
+    "Comprehensive directory of supported audio DSP processing operations in AudioMorph: Pitch & Speed, Reverb & Echo, Tone & EQ, Bass, Stereo, Creative, and Utility & Finishing.",
 };
 
 export default function EffectsPage() {
@@ -20,7 +20,7 @@ export default function EffectsPage() {
         <PageHeader
           eyebrow="DSP Directory"
           title="Audio Effects Catalog"
-          lead="Every audio transformation in Svaraya runs locally via browser Web Audio DSP nodes. Browse by sonic family, inspect parameters, and launch directly into the Studio."
+          lead="Every audio transformation in AudioMorph runs locally via browser Web Audio DSP nodes. Browse by sonic family, inspect parameters, and launch directly into the Studio."
         />
 
         <SectionSeam />

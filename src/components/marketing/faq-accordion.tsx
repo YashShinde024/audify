@@ -10,10 +10,10 @@ export interface FaqEntry {
 
 const defaultFaqs: FaqEntry[] = [
   {
-    question: "Is Svaraya free to use?",
+    question: "Is AudioMorph free to use?",
     answer: (
       <p>
-        Yes. Svaraya is a completely free, browser-based audio tool with no subscriptions,
+        Yes. AudioMorph is a completely free, browser-based audio tool with no subscriptions,
         no required accounts, and no paywalls.
       </p>
     ),
@@ -22,7 +22,7 @@ const defaultFaqs: FaqEntry[] = [
     question: "What file formats and sizes are supported?",
     answer: (
       <p>
-        Svaraya accepts MP3, WAV, OGG, FLAC, and AAC files up to 10 MB in size. Files are
+        AudioMorph accepts MP3, WAV, OGG, FLAC, and AAC files up to 10 MB in size. Files are
         validated immediately in your browser.
       </p>
     ),
@@ -50,10 +50,10 @@ const defaultFaqs: FaqEntry[] = [
     question: "What are Peak Protection and Peak Normalization?",
     answer: (
       <p>
-        <strong>Peak Protection</strong> engages a soft-knee transparent ceiling limiter at -0.1 dBFS to ensure
+        <strong>Peak Protection</strong> engages a look-ahead peak limiter at −0.3 dBFS with a sliding minimum deque to ensure
         heavy bass or boosted effects do not digitally clip. <strong>Peak Normalization</strong> calculates
-        the peak amplitude and applies clean linear make-up gain so the loudest sample touches -0.5 dBFS
-        (a peak process — it does not match perceived loudness like a LUFS/iLUFS meter would).
+        the peak amplitude and applies clean linear make-up gain so the loudest sample sits at −0.5 dBFS (0.944 linear peak;
+        this is a sample-peak process, not perceived LUFS loudness matching).
       </p>
     ),
   },
@@ -70,7 +70,7 @@ const defaultFaqs: FaqEntry[] = [
     question: "What happens when I close the tab?",
     answer: (
       <p>
-        Because Svaraya maintains zero server logs and zero remote session tracking, closing the tab
+        Because AudioMorph maintains zero server logs and zero remote session tracking, closing the tab
         safely clears all in-memory buffers. Make sure to download your processed audio before navigating away.
       </p>
     ),

@@ -12,6 +12,7 @@ import {
 import type { EffectValue, EffectValues, Preset, PresetCategoryId } from "@/types/preset";
 import { DEFAULT_EXPORT_CONFIG, type ExportConfig, type ExportProfile } from "@/types/export";
 import { computeRenderSignature } from "@/lib/audio/dsp-plan";
+import { studioDspLimiter } from "@/lib/rate-limiter";
 
 /**
  * Monotonic run id. Every new render (or explicit cancel / file change) bumps it,
@@ -382,6 +383,18 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   processAudio: async () => {
     const { decodedAudio, selectedPresetId, effectValues, file, isProcessing, exportConfig } = get();
     if (!decodedAudio || !file || isProcessing) return;
+
+    // Rate-limiting safeguard to prevent browser thread freeze and high memory spikes
+    const rateCheck = studioDspLimiter.check();
+    if (!rateCheck.allowed) {
+      set({
+        processingError:
+          rateCheck.reason ||
+          "Rate limit reached. Please wait a moment before rendering again to protect system CPU.",
+        processingStatus: "Rate limited",
+      });
+      return;
+    }
 
     const runId = (activeRunId += 1);
     const previousResult = get().processedResult;

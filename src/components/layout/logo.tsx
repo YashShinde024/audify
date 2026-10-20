@@ -3,51 +3,69 @@ import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
-  variant?: "standard" | "by-nyxen";
+  variant?: "standard" | "by-nyxen" | "compact" | "icon-only";
   height?: number;
   priority?: boolean;
+  showSubtitle?: boolean;
 }
 
 /**
- * Official Svaraya Brand Wordmark:
- * Elegant high-contrast serif typography with sweeping flourish ligature
- * and signature crimson red terminal 'a'.
- * Supports automatic light/dark mode switching via CSS classes.
+ * Official AudioMorph Brand Identity:
+ * Features the signature 3D metallic crimson ribbon emblem ("AM" acoustic flow
+ * with ruby star core), paired with crisp contemporary studio typography and
+ * authentic creator attribution: "Developed by Nyxen · Music Expertise by Xpert Melody".
  */
 export function Logo({
   className,
   variant = "by-nyxen",
-  height = 28,
+  height = 32,
   priority = true,
+  showSubtitle = true,
 }: LogoProps) {
-  // Correct aspect ratios:
-  // standard: 943x303 (~3.11:1)
-  // by-nyxen: 967x286 (~3.38:1)
-  const width = variant === "by-nyxen" ? Math.round(height * 3.38) : Math.round(height * 3.11);
-  const lightSrc = variant === "by-nyxen" ? "/images/logo-by-nyxen-light.png" : "/images/logo-light.png";
-  const darkSrc = variant === "by-nyxen" ? "/images/logo-by-nyxen-dark.png" : "/images/logo-dark.png";
+  if (variant === "icon-only") {
+    return (
+      <span className={cn("relative inline-flex items-center select-none shrink-0", className)}>
+        <Image
+          src="/images/audiomorph-logo.png"
+          alt="AudioMorph"
+          width={height * 1.5}
+          height={height}
+          priority={priority}
+          className="h-auto w-auto max-h-8 object-contain filter drop-shadow-[0_2px_8px_rgba(230,0,38,0.35)]"
+        />
+      </span>
+    );
+  }
 
   return (
-    <span className={cn("relative inline-flex items-center select-none shrink-0", className)}>
-      {/* Light theme logo: Shown on light surfaces, hidden when inside .dark or .studio-theme */}
-      <Image
-        src={lightSrc}
-        alt="Svaraya"
-        width={width}
-        height={height}
-        priority={priority}
-        className="h-auto max-w-full object-contain block [.dark_&]:hidden [.studio-theme_&]:hidden"
-      />
+    <span className={cn("relative inline-flex items-center gap-2.5 select-none shrink-0 group", className)}>
+      {/* 3D Ruby Ribbon Emblem */}
+      <span className="relative flex items-center shrink-0">
+        <Image
+          src="/images/audiomorph-logo.png"
+          alt="AudioMorph Emblem"
+          width={Math.round(height * 1.6)}
+          height={height}
+          priority={priority}
+          className="h-auto max-h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-[0_2px_10px_rgba(230,0,38,0.4)]"
+        />
+      </span>
 
-      {/* Dark theme logo: Shown only when inside .dark or .studio-theme */}
-      <Image
-        src={darkSrc}
-        alt="Svaraya"
-        width={width}
-        height={height}
-        priority={priority}
-        className="h-auto max-w-full object-contain hidden [.dark_&]:block [.studio-theme_&]:block"
-      />
+      {/* Brand Typography & Subtitle */}
+      <span className="flex flex-col">
+        <span className="flex items-center tracking-tight text-base sm:text-lg font-bold leading-none">
+          <span className="text-fg transition-colors">Audio</span>
+          <span className="bg-gradient-to-r from-primary via-accent-hover to-primary bg-clip-text text-transparent font-extrabold ml-[1px]">
+            Morph
+          </span>
+        </span>
+
+        {variant === "by-nyxen" && showSubtitle && (
+          <span className="hidden sm:inline-block text-[9px] font-mono tracking-tight text-faint group-hover:text-muted transition-colors mt-0.5 whitespace-nowrap">
+            Developed by Nyxen
+          </span>
+        )}
+      </span>
     </span>
   );
 }

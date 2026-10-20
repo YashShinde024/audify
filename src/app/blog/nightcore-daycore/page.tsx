@@ -7,9 +7,10 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Nightcore vs Daycore: The Math of Pitch & Tempo Transposition — Svaraya",
+  title: "Nightcore vs Daycore: The Math of Pitch & Tempo Transposition — AudioMorph",
   description:
     "The definitive guide to Nightcore and Daycore audio processing. Learn the logarithmic pitch equation, speed ratios (1.25x vs 0.85x), and vocal formant shifts.",
   keywords: [
@@ -23,8 +24,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Nightcore vs Daycore: The Math of Pitch & Tempo Transposition",
     description: "Understanding the speed ratios, semitones, and vocal acoustics of Nightcore & Daycore.",
-    url: "https://svaraya.vercel.app/blog/nightcore-daycore",
-    siteName: "Svaraya",
+    url: `${siteConfig.url}/blog/nightcore-daycore`,
+    siteName: siteConfig.name,
     type: "article",
   },
   other: {
@@ -46,8 +47,8 @@ const JSON_LD = {
         { "@type": "Person", "name": "Nyxen" },
         { "@type": "Person", "name": "Xpert Melody", "url": "https://www.youtube.com/@xpertmelody" },
       ],
-      "publisher": { "@type": "Organization", "name": "Svaraya" },
-      "mainEntityOfPage": "https://svaraya.vercel.app/blog/nightcore-daycore",
+      "publisher": { "@type": "Organization", "name": siteConfig.name, "url": siteConfig.url },
+      "mainEntityOfPage": `${siteConfig.url}/blog/nightcore-daycore`,
     },
     {
       "@type": "FAQPage",
@@ -96,7 +97,7 @@ export default function NightcoreDaycoreGuidePage() {
           <header className="space-y-3">
             <div className="flex items-center gap-2 text-xs font-semibold text-amber-400">
               <TrendUp size={18} weight="duotone" />
-              <span>Pitch & Tempo Mathematics · By Nyxen × Xpert Melody</span>
+              <span>Pitch & Tempo Mathematics · By Nyxen</span>
             </div>
             <h1 className="display-title text-3xl sm:text-4xl font-semibold text-fg tracking-tight">
               Nightcore vs Daycore: The Math of Pitch & Tempo Transposition
@@ -156,7 +157,7 @@ export default function NightcoreDaycoreGuidePage() {
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-fg">Create Nightcore or Daycore</h3>
                 <p className="text-xs text-muted">
-                  Use Svaraya&apos;s 1-click Nightcore and Daycore presets with studio-grade 32-bit floating-point resampling.
+                  Use AudioMorph&apos;s 1-click Nightcore and Daycore presets with studio-grade 32-bit floating-point resampling.
                 </p>
               </div>
               <Button asChild size="md" className="rounded-full shrink-0">

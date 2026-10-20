@@ -1,181 +1,427 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { AudioUploader } from "./audio-uploader";
 import { AudioPlayer } from "./audio-player";
 import { SoundSelector } from "./sound-selector";
 import { ProcessAndOutput } from "./process-and-output";
+import { MusicEditFacts } from "./music-facts";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { AdPlaceholder } from "@/components/advertising/ad-placeholder";
 import { useEditorStore } from "@/stores/editor-store";
+import { getPresetById } from "@/config/presets";
 import {
   UploadSimple,
   Faders,
   Play,
   Cpu,
-  FileAudio,
   DownloadSimple,
   Check,
+  Lock,
+  ArrowRight,
+  ArrowsClockwise,
+  Waveform,
 } from "@phosphor-icons/react";
+import { cn, formatTime } from "@/lib/utils";
 
 export function EditorShell() {
   const file = useEditorStore((s) => s.file);
+  const isDecoding = useEditorStore((s) => s.isDecoding);
   const isProcessing = useEditorStore((s) => s.isProcessing);
   const processedResult = useEditorStore((s) => s.processedResult);
+  const selectedPresetId = useEditorStore((s) => s.selectedPresetId);
+  const selectedPreset = getPresetById(selectedPresetId ?? "slowed-reverb");
 
-  // Determine current active step (1 to 6)
-  let currentStep = 1;
-  if (file) currentStep = 2;
-  if (file && isProcessing) currentStep = 4;
-  if (processedResult) currentStep = 6;
+  // Track user-selected active step
+  const [activeStep, setActiveStep] = useState<number>(1);
+
+  // Maximum step unlocked based on data completeness
+  let maxUnlockedStep = 1;
+  if (file && !isDecoding) maxUnlockedStep = 2;
+  if (file && !isDecoding && selectedPresetId) maxUnlockedStep = 3;
+  if (file && !isDecoding && processedResult) maxUnlockedStep = 4;
+
+  // Auto-advance when file is uploaded or processing finishes
+  useEffect(() => {
+    if (!file) {
+      setActiveStep(1);
+    } else if (file && !isDecoding && activeStep === 1) {
+      setActiveStep(2);
+    } else if (processedResult && activeStep < 4) {
+      setActiveStep(4);
+    }
+  }, [file, isDecoding, processedResult]);
 
   const steps = [
-    { num: 1, label: "Upload File", icon: UploadSimple },
-    { num: 2, label: "Choose Sound", icon: Faders },
-    { num: 3, label: "Preview Track", icon: Play },
-    { num: 4, label: "Process Audio", icon: Cpu },
-    { num: 5, label: "Export Settings", icon: FileAudio },
-    { num: 6, label: "Download", icon: DownloadSimple },
+    {
+      num: 1,
+      title: "Audio Ingest",
+      shortLabel: "Upload",
+      desc: "Import local source audio file",
+      icon: UploadSimple,
+      summary: file ? `${file.name} (${formatTime(file.duration || 0)})` : "No file loaded",
+    },
+    {
+      num: 2,
+      title: "Acoustic Preset & DSP",
+      shortLabel: "Sound",
+      desc: "Choose preset or fine-tune knobs",
+      icon: Faders,
+      summary: selectedPreset ? selectedPreset.name : "Choose preset",
+    },
+    {
+      num: 3,
+      title: "Audition & Waveform",
+      shortLabel: "Preview",
+      desc: "A/B dry/wet audition & scrubber",
+      icon: Play,
+      summary: "Waveform scrub & tone check",
+    },
+    {
+      num: 4,
+      title: "Process & Export Master",
+      shortLabel: "Export",
+      desc: "Offline DSP render & lossless download",
+      icon: Cpu,
+      summary: processedResult ? "Master rendered" : "Format options & render",
+    },
   ];
 
   return (
     <div id="editor" className="py-8 sm:py-12">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Studio Editorial Intro */}
-        <header className="mb-6 text-center sm:text-left">
-          <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-violet">
-            <span className="h-1.5 w-1.5 rounded-full bg-violet" />
-            Browser-based DSP Workspace
+        <header className="mb-8 text-center sm:text-left">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3.5 py-1 text-xs font-medium text-primary">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            <span>Interactive DSP Workspace · Developed by Nyxen</span>
           </div>
-          <h1 className="mt-3 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">
-            Svaraya Studio
+          <h1 className="mt-3 text-2xl font-bold tracking-tight text-fg sm:text-3xl">
+            AudioMorph Studio
           </h1>
           <p className="mt-1.5 max-w-2xl text-xs sm:text-sm leading-relaxed text-muted">
-            Upload an audio track, choose or fine-tune sound effects, process with our client-side audio engine,
-            and download the finished master.
+            Guided 4-step workflow: Ingest your track, dial in signature acoustic DSP, audition in real-time,
+            and export pristine 32-bit float WAV or 320kbps MP3 masters entirely in-browser.
           </p>
         </header>
 
-        {/* 6-Step Workflow: sticky rail on desktop, horizontal strip on mobile */}
-        <div className="grid gap-8 lg:grid-cols-[220px_1fr] lg:items-start">
-          {/* Mobile strip: compact horizontal indicator */}
-          <div className="overflow-x-auto pb-2 scrollbar-none lg:hidden">
-            <div className="flex items-center min-w-[620px] rounded-xl border border-line/80 bg-deep/60 p-2 backdrop-blur-sm">
-              {steps.map((step, idx) => {
-                const Icon = step.icon;
-                const isPast = currentStep > step.num;
-                const isCurrent = currentStep === step.num;
+        {/* 4-Step Progressive Workflow Bar */}
+        <div className="mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+            {steps.map((step) => {
+              const isPast = maxUnlockedStep > step.num;
+              const isCurrent = activeStep === step.num;
+              const isLocked = step.num > maxUnlockedStep;
+              const Icon = step.icon;
 
-                return (
-                  <div key={step.num} className="flex items-center gap-2">
-                    <div
-                      aria-current={isCurrent ? "step" : undefined}
-                      className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs transition-colors ${
+              return (
+                <button
+                  key={step.num}
+                  type="button"
+                  disabled={isLocked}
+                  onClick={() => setActiveStep(step.num)}
+                  className={cn(
+                    "relative flex flex-col items-start p-3 sm:p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer",
+                    isCurrent
+                      ? "border-accent bg-surface/90 shadow-sm ring-1 ring-accent/30"
+                      : isPast
+                      ? "border-line bg-surface/60 hover:bg-surface hover:border-line-strong"
+                      : "border-line/60 bg-raised/40 opacity-60 cursor-not-allowed"
+                  )}
+                >
+                  <div className="flex items-center justify-between w-full mb-1.5">
+                    <span
+                      className={cn(
+                        "flex h-6 w-6 items-center justify-center rounded-lg text-xs font-mono font-bold",
                         isCurrent
-                          ? "bg-violet text-white font-semibold shadow-xs"
+                          ? "bg-accent text-white"
                           : isPast
-                          ? "bg-violet/10 font-medium text-violet"
-                          : "text-faint hover:text-muted"
-                      }`}
+                          ? "bg-accent/15 text-accent"
+                          : "bg-line text-muted"
+                      )}
                     >
-                      <Icon size={14} weight={isCurrent ? "duotone" : "regular"} />
-                      <span>{step.label}</span>
-                    </div>
+                      {isPast ? <Check size={12} weight="bold" /> : `0${step.num}`}
+                    </span>
 
-                    {idx < steps.length - 1 && (
-                      <div className="h-px w-4 bg-line-strong" />
-                    )}
+                    {isLocked ? (
+                      <Lock size={12} className="text-muted" />
+                    ) : isCurrent ? (
+                      <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
+                    ) : null}
                   </div>
-                );
-              })}
-            </div>
+
+                  <p className="text-xs font-semibold text-fg truncate w-full">{step.title}</p>
+                  <p className="text-[11px] text-muted truncate w-full mt-0.5">{step.summary}</p>
+                </button>
+              );
+            })}
           </div>
+        </div>
 
-          {/* Desktop rail: numbered circles, progress line, sticky while working */}
-          <aside className="hidden lg:block">
-            <nav aria-label="Workflow progress" className="sticky top-24">
-              <div className="rounded-xl border border-line/80 bg-deep/60 p-4 backdrop-blur-sm">
-                <p className="px-2 pb-3 text-[11px] font-semibold uppercase tracking-wider text-faint">
-                  Step {Math.min(currentStep, 6)} of 6
-                </p>
-                <ol className="relative">
-                  {/* Progress line behind the circles */}
-                  <div
-                    aria-hidden="true"
-                    className="absolute left-[13px] top-4 bottom-4 w-px bg-line-strong"
-                  >
-                    <div
-                      className="w-full bg-violet transition-all duration-500"
-                      style={{ height: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
-                    />
-                  </div>
-
-                  {steps.map((step) => {
-                    const Icon = step.icon;
-                    const isPast = currentStep > step.num;
-                    const isCurrent = currentStep === step.num;
-
-                    return (
-                      <li
-                        key={step.num}
-                        aria-current={isCurrent ? "step" : undefined}
-                        className={`relative flex items-center gap-3 py-2.5 ${
-                          isCurrent ? "text-violet font-semibold text-sm" : isPast ? "text-muted" : "text-faint"
-                        }`}
-                      >
-                        <span
-                          className={`relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs transition-colors ${
-                            isPast
-                              ? "border-violet bg-violet text-white"
-                              : isCurrent
-                              ? "border-violet bg-surface text-violet shadow-[0_0_0_3px] shadow-violet/15"
-                              : "border-line bg-surface"
-                          }`}
-                        >
-                          {isPast ? (
-                            <Check size={13} weight="bold" />
-                          ) : (
-                            <Icon size={14} weight={isCurrent ? "duotone" : "regular"} />
-                          )}
-                        </span>
-                        <span className={`text-[13px] ${isCurrent ? "font-semibold" : "font-medium"}`}>
-                          {step.label}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ol>
+        {/* Dynamic Progressive Step Workspace */}
+        <div className="space-y-6">
+          {/* STEP 1: Audio File Ingest */}
+          <div
+            className={cn(
+              "rounded-2xl border transition-all duration-300 overflow-hidden",
+              activeStep === 1
+                ? "border-line-strong bg-surface/90 shadow-md p-6"
+                : "border-line bg-surface/40 p-4"
+            )}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-mono font-bold">
+                  01
+                </span>
+                <div>
+                  <h2 className="text-sm font-semibold text-fg">Step 1: Audio File Ingest</h2>
+                  <p className="text-xs text-muted">Upload any WAV, MP3, FLAC, OGG, or AAC track</p>
+                </div>
               </div>
-            </nav>
-          </aside>
 
-          {/* The Guided Processing Workflow Components */}
-          <div className="space-y-6 min-w-0">
-            {/* Step 1: Input Audio File */}
-            <AudioUploader />
+              {file && activeStep !== 1 && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setActiveStep(1)}
+                  className="text-xs"
+                >
+                  <ArrowsClockwise size={13} />
+                  <span>Change File</span>
+                </Button>
+              )}
+            </div>
 
-            {/* When file is uploaded, render subsequent steps */}
-            {file && (
-              <>
-                {/* Step 2 & 3: Original Track Preview & Sound Selection */}
-                {!processedResult && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between px-1">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-muted">
-                        Source Track Audition
-                      </p>
-                      <span className="text-[11px] text-faint">Decoded PCM buffer</span>
-                    </div>
-                    <AudioPlayer />
+            {/* Ingest Uploader Body */}
+            {activeStep === 1 ? (
+              <div className="space-y-4">
+                <AudioUploader />
+
+                {file && !isDecoding && (
+                  <div className="flex justify-end pt-2">
+                    <Button
+                      size="md"
+                      onClick={() => setActiveStep(2)}
+                      className="rounded-full shadow-glow-wire"
+                    >
+                      <span>Continue to Sound Sculpting</span>
+                      <ArrowRight size={14} weight="bold" />
+                    </Button>
                   </div>
                 )}
-
-                {/* Step 2: Choose Sound / Preset / DSP Customization */}
-                {!processedResult && <SoundSelector />}
-
-                {/* Step 4, 5 & 6: Export Configuration, Process Audio, & Download */}
-                <ProcessAndOutput />
-              </>
-            )}
+              </div>
+            ) : file ? (
+              <div className="flex items-center justify-between rounded-xl bg-surface/60 border border-line p-3 text-xs">
+                <span className="font-medium text-fg truncate max-w-md">{file.name}</span>
+                <span className="font-mono text-muted">{formatTime(file.duration || 0)}</span>
+              </div>
+            ) : null}
           </div>
+
+          {/* DECODING SPINNER / FACTS SKELETON */}
+          {isDecoding && (
+            <div className="space-y-4 rounded-2xl border border-line bg-surface p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-4 w-14 rounded" />
+                  </div>
+                  <Skeleton className="h-3 w-64" />
+                </div>
+                <Skeleton className="h-8 w-24 rounded-lg" />
+              </div>
+
+              <div className="rounded-xl border border-line/70 bg-deep/40 p-4">
+                <div className="flex items-end justify-between gap-1 h-20">
+                  {Array.from({ length: 42 }).map((_, i) => (
+                    <Skeleton
+                      key={i}
+                      className="w-1 rounded-full bg-primary/20"
+                      style={{
+                        height: `${Math.max(18, Math.sin(i * 0.28) * 65 + 30)}%`,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <MusicEditFacts />
+            </div>
+          )}
+
+          {/* STEP 2: Acoustic Preset & DSP Parameters */}
+          {!isDecoding && (
+            <div
+              className={cn(
+                "rounded-2xl border transition-all duration-300 overflow-hidden",
+                activeStep === 2
+                  ? "border-line-strong bg-surface/90 shadow-md p-6"
+                  : "border-line bg-surface/40 p-4",
+                maxUnlockedStep < 2 && "opacity-50 pointer-events-none"
+              )}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-mono font-bold">
+                    02
+                  </span>
+                  <div>
+                    <h2 className="text-sm font-semibold text-fg">Step 2: Choose Acoustic Preset &amp; Sculpt DSP</h2>
+                    <p className="text-xs text-muted">Pick from 36 standard presets or dial custom parameters</p>
+                  </div>
+                </div>
+
+                {maxUnlockedStep >= 2 && activeStep !== 2 && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setActiveStep(2)}
+                    className="text-xs"
+                  >
+                    <span>Edit Preset ({selectedPreset?.name})</span>
+                  </Button>
+                )}
+              </div>
+
+              {maxUnlockedStep < 2 ? (
+                <div className="rounded-xl border border-line/60 bg-raised/30 p-6 text-center text-xs text-muted flex items-center justify-center gap-2">
+                  <Lock size={15} />
+                  <span>Upload an audio file in Step 1 to unlock acoustic presets &amp; DSP knobs.</span>
+                </div>
+              ) : activeStep === 2 ? (
+                <div className="space-y-5">
+                  <SoundSelector />
+
+                  <div className="flex items-center justify-between border-t border-line pt-4">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setActiveStep(1)}
+                    >
+                      ← Back to Audio
+                    </Button>
+
+                    <Button
+                      size="md"
+                      onClick={() => setActiveStep(3)}
+                      className="rounded-full shadow-glow-wire"
+                    >
+                      <span>Next: Audition Waveform</span>
+                      <ArrowRight size={14} weight="bold" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between rounded-xl bg-surface/60 border border-line p-3 text-xs">
+                  <span className="font-semibold text-fg">Selected: {selectedPreset?.name}</span>
+                  <span className="text-muted font-mono text-[11px]">{selectedPreset?.category}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* STEP 3: Preview Source Track & Waveform Audition */}
+          {!isDecoding && (
+            <div
+              className={cn(
+                "rounded-2xl border transition-all duration-300 overflow-hidden",
+                activeStep === 3
+                  ? "border-line-strong bg-surface/90 shadow-md p-6"
+                  : "border-line bg-surface/40 p-4",
+                maxUnlockedStep < 3 && "opacity-50 pointer-events-none"
+              )}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-mono font-bold">
+                    03
+                  </span>
+                  <div>
+                    <h2 className="text-sm font-semibold text-fg">Step 3: Audition &amp; Waveform Inspection</h2>
+                    <p className="text-xs text-muted">Audition decoded PCM peaks and scrub dry/wet audio</p>
+                  </div>
+                </div>
+
+                {maxUnlockedStep >= 3 && activeStep !== 3 && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setActiveStep(3)}
+                    className="text-xs"
+                  >
+                    <span>Inspect Player</span>
+                  </Button>
+                )}
+              </div>
+
+              {maxUnlockedStep < 3 ? (
+                <div className="rounded-xl border border-line/60 bg-raised/30 p-6 text-center text-xs text-muted flex items-center justify-center gap-2">
+                  <Lock size={15} />
+                  <span>Select a sound preset in Step 2 to preview waveform playback.</span>
+                </div>
+              ) : activeStep === 3 ? (
+                <div className="space-y-5">
+                  <AudioPlayer />
+
+                  <div className="flex items-center justify-between border-t border-line pt-4">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setActiveStep(2)}
+                    >
+                      ← Back to Presets
+                    </Button>
+
+                    <Button
+                      size="md"
+                      onClick={() => setActiveStep(4)}
+                      className="rounded-full shadow-glow-wire"
+                    >
+                      <span>Next: Process &amp; Export</span>
+                      <ArrowRight size={14} weight="bold" />
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          )}
+
+          {/* STEP 4: Render DSP & Lossless Export */}
+          {!isDecoding && (
+            <div
+              className={cn(
+                "rounded-2xl border transition-all duration-300 overflow-hidden",
+                activeStep === 4
+                  ? "border-line-strong bg-surface/90 shadow-md p-6"
+                  : "border-line bg-surface/40 p-4",
+                maxUnlockedStep < 3 && "opacity-50 pointer-events-none"
+              )}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-mono font-bold">
+                    04
+                  </span>
+                  <div>
+                    <h2 className="text-sm font-semibold text-fg">Step 4: Process Audio &amp; Export Master</h2>
+                    <p className="text-xs text-muted">OfflineAudioContext DSP engine with rate-limited CPU protection</p>
+                  </div>
+                </div>
+              </div>
+
+              {maxUnlockedStep < 3 ? (
+                <div className="rounded-xl border border-line/60 bg-raised/30 p-6 text-center text-xs text-muted flex items-center justify-center gap-2">
+                  <Lock size={15} />
+                  <span>Complete previous steps to unlock processing and master export.</span>
+                </div>
+              ) : (
+                <ProcessAndOutput />
+              )}
+            </div>
+          )}
         </div>
 
         {/* Respectful Ad Slot placed cleanly below the entire editing experience */}

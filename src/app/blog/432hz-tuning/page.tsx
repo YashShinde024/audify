@@ -7,9 +7,10 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "432 Hz vs 440 Hz Tuning: Mathematical Truth & Acoustic Facts — Svaraya",
+  title: "432 Hz vs 440 Hz Tuning: Mathematical Truth & Acoustic Facts — AudioMorph",
   description:
     "An objective acoustic and mathematical analysis of 432 Hz pitch conversion. Learn the exact 432/440 ratio (0.981818), the -31.766 cents pitch shift, and Verdi's tuning history.",
   keywords: [
@@ -23,9 +24,9 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "432 Hz vs 440 Hz Tuning: The Acoustic Truth & Mathematics",
-    description: "Discover the mathematical formula and acoustic history behind converting music to 432 Hz.",
-    url: "https://svaraya.vercel.app/blog/432hz-tuning",
-    siteName: "Svaraya",
+    description: "Discover the mathematical formula and acoustic history behind converting music to 432 Hz. Developed by Nyxen.",
+    url: `${siteConfig.url}/blog/432hz-tuning`,
+    siteName: siteConfig.name,
     type: "article",
   },
   other: {
@@ -47,8 +48,8 @@ const JSON_LD = {
         { "@type": "Person", "name": "Nyxen" },
         { "@type": "Person", "name": "Xpert Melody", "url": "https://www.youtube.com/@xpertmelody" },
       ],
-      "publisher": { "@type": "Organization", "name": "Svaraya" },
-      "mainEntityOfPage": "https://svaraya.vercel.app/blog/432hz-tuning",
+      "publisher": { "@type": "Organization", "name": siteConfig.name, "url": siteConfig.url },
+      "mainEntityOfPage": `${siteConfig.url}/blog/432hz-tuning`,
     },
     {
       "@type": "FAQPage",
@@ -93,9 +94,9 @@ export default function FourThirtyTwoHzGuidePage() {
           </nav>
 
           <header className="space-y-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
+            <div className="flex items-center gap-2 text-xs font-semibold text-primary">
               <PianoKeys size={18} weight="duotone" />
-              <span>Acoustic Physics & Tuning · By Nyxen × Xpert Melody</span>
+              <span>Acoustic Physics & Tuning · By Nyxen</span>
             </div>
             <h1 className="display-title text-3xl sm:text-4xl font-semibold text-fg tracking-tight">
               432 Hz vs 440 Hz: The Acoustic Reality Behind Sacred Pitch
@@ -153,7 +154,7 @@ export default function FourThirtyTwoHzGuidePage() {
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-fg">Convert your track to 432 Hz</h3>
                 <p className="text-xs text-muted">
-                  Svaraya Studio applies the exact mathematical 0.981818 resampling curve with full 32-bit float accuracy.
+                  AudioMorph Studio applies the exact mathematical 0.981818 resampling curve with full 32-bit float accuracy.
                 </p>
               </div>
               <Button asChild size="md" className="rounded-full shrink-0">

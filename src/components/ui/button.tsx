@@ -4,22 +4,22 @@ import { cn } from "@/lib/utils";
 import type { ButtonHTMLAttributes } from "react";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-150 disabled:pointer-events-none disabled:opacity-45 select-none focus-visible:outline-2 focus-visible:outline-violet focus-visible:outline-offset-2",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-150 disabled:pointer-events-none disabled:opacity-45 select-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 cursor-pointer",
   {
     variants: {
       variant: {
         primary:
-          "bg-violet text-white shadow-sm hover:bg-accent-hover active:translate-y-[0.5px]",
+          "bg-accent text-white font-semibold shadow-xs hover:bg-accent-hover active:translate-y-[0.5px]",
         secondary:
-          "border border-line-strong bg-surface text-fg hover:bg-raised hover:border-fg/25 active:translate-y-[0.5px]",
+          "border border-line-strong bg-surface text-fg font-medium shadow-xs hover:bg-raised hover:border-fg/30 active:translate-y-[0.5px]",
         outline:
-          "border border-line bg-transparent text-fg hover:bg-raised hover:border-line-strong",
+          "border border-line-strong bg-surface/85 text-fg font-medium shadow-xs hover:bg-raised hover:border-fg/30 active:translate-y-[0.5px]",
         ghost:
-          "text-muted hover:bg-raised/80 hover:text-fg",
+          "text-fg hover:bg-black/5 dark:hover:bg-white/10 hover:text-accent font-medium rounded-lg",
         subtle:
-          "bg-raised text-fg hover:bg-deep",
+          "border border-line bg-raised text-fg hover:bg-deep font-medium",
         danger:
-          "bg-error/90 text-white hover:bg-error",
+          "bg-error/90 text-white font-semibold hover:bg-error shadow-xs",
       },
       size: {
         sm: "h-8 px-3 text-xs rounded-md",

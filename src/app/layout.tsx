@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
 import { ToastProvider } from "@/components/layout/toast-provider";
 import { siteConfig } from "@/config/site";
 
@@ -47,6 +45,7 @@ export const viewport: Viewport = {
 };
 
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { StudioShell } from "@/components/layout/studio-shell";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -61,17 +60,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             resolveInitialTheme() in theme-provider.tsx. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("svaraya-theme");if(t!=="dark"&&t!=="light"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}if(t==="dark"){document.documentElement.classList.add("dark")}}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem("audiomorph-theme")||localStorage.getItem("svaraya-theme");if(t!=="dark"&&t!=="light"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}if(t==="dark"){document.documentElement.classList.add("dark")}}catch(e){}})()`,
           }}
         />
       </head>
-      <body className="flex min-h-full flex-col bg-canvas text-fg antialiased transition-colors duration-200">
+      <body className="min-h-full bg-canvas text-fg antialiased transition-colors duration-200">
         <ThemeProvider>
-          <SiteHeader />
-          <main id="main" className="flex-1">
-            {children}
-          </main>
-          <SiteFooter />
+          <StudioShell>{children}</StudioShell>
           <ToastProvider />
         </ThemeProvider>
       </body>

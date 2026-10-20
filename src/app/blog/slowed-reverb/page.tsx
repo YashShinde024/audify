@@ -7,9 +7,10 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Slowed + Reverb Explained: The DSP Math, Acoustics & History — Svaraya",
+  title: "Slowed + Reverb Explained: The DSP Math, Acoustics & History — AudioMorph",
   description:
     "Authoritative guide to Slowed + Reverb audio processing. Learn the exact DSP chain: playback rate reduction (0.85x), biquad lowpass damping (4.2 kHz), and convolution reverb impulse response.",
   keywords: [
@@ -24,9 +25,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Slowed + Reverb Explained: DSP Math & Acoustics",
     description:
-      "The engineering and psychoacoustics behind the viral Slowed + Reverb aesthetic. By Nyxen × Xpert Melody.",
-    url: "https://svaraya.vercel.app/blog/slowed-reverb",
-    siteName: "Svaraya",
+      "The engineering and psychoacoustics behind the viral Slowed + Reverb aesthetic. Developed by Nyxen with 32-bit Web Audio DSP.",
+    url: `${siteConfig.url}/blog/slowed-reverb`,
+    siteName: siteConfig.name,
     type: "article",
   },
   other: {
@@ -50,10 +51,10 @@ const JSON_LD = {
       ],
       "publisher": {
         "@type": "Organization",
-        "name": "Svaraya",
-        "url": "https://svaraya.vercel.app",
+        "name": siteConfig.name,
+        "url": siteConfig.url,
       },
-      "mainEntityOfPage": "https://svaraya.vercel.app/blog/slowed-reverb",
+      "mainEntityOfPage": `${siteConfig.url}/blog/slowed-reverb`,
     },
     {
       "@type": "FAQPage",
@@ -108,9 +109,9 @@ export default function SlowedReverbGuidePage() {
 
           {/* Header */}
           <header className="space-y-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-violet">
+            <div className="flex items-center gap-2 text-xs font-semibold text-primary">
               <MoonStars size={18} weight="duotone" />
-              <span>Acoustics & Cultural DSP · By Nyxen × Xpert Melody</span>
+              <span>Acoustics & Cultural DSP · By Nyxen</span>
             </div>
             <h1 className="display-title text-3xl sm:text-4xl font-semibold text-fg tracking-tight">
               Slowed + Reverb Explained: The Science, DSP Math & Acoustics
@@ -154,10 +155,10 @@ export default function SlowedReverbGuidePage() {
             <section className="space-y-3">
               <h2 className="text-lg font-semibold text-fg">2. The Technical Signal Chain: Node by Node</h2>
               <p>
-                In Svaraya&apos;s Web Audio DSP engine, the Slowed + Reverb node graph is built with precision:
+                In AudioMorph&apos;s Web Audio DSP engine, the Slowed + Reverb node graph is built with precision:
               </p>
               <div className="rounded-xl border border-line bg-surface p-4 font-mono text-xs text-neutral-300 space-y-1">
-                <p className="text-accent font-semibold">{"// Svaraya Slowed + Reverb Audio Routing"}</p>
+                <p className="text-accent font-semibold">{"// AudioMorph Slowed + Reverb Audio Routing"}</p>
                 <p>AudioBufferSourceNode (playbackRate: 0.85)</p>
                 <p className="pl-4">↳ BiquadFilterNode (type: &quot;lowpass&quot;, frequency: 4200 Hz, Q: 0.707)</p>
                 <p className="pl-8">↳ GainNode (dryGain: 0.52) ──┐</p>
@@ -171,7 +172,7 @@ export default function SlowedReverbGuidePage() {
                 Amateur slowed edits often sound thin, harsh, or full of digital artifacts. When audio is decelerated without filtering, the sudden decay of high-frequency hi-hats and vocal consonants becomes elongated and grating to the human cochlea.
               </p>
               <p>
-                By inserting a 2nd-order Butterworth lowpass filter (<code className="text-violet font-mono">Q = 0.707</code>) with a cutoff frequency between 3,800 Hz and 4,500 Hz, Svaraya rolls off the artificial sizzle while retaining vocal intelligibility and sub-bass weight.
+                By inserting a 2nd-order Butterworth lowpass filter (<code className="text-violet font-mono">Q = 0.707</code>) with a cutoff frequency between 3,800 Hz and 4,500 Hz, AudioMorph rolls off the artificial sizzle while retaining vocal intelligibility and sub-bass weight.
               </p>
             </section>
 
@@ -180,7 +181,7 @@ export default function SlowedReverbGuidePage() {
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-fg">Apply Slowed + Reverb to your track</h3>
                 <p className="text-xs text-muted">
-                  Upload an audio file in Svaraya Studio to render studio-grade Slowed + Reverb with customizable reverb space and lowpass warmth.
+                  Upload an audio file in AudioMorph Studio to render studio-grade Slowed + Reverb with customizable reverb space and lowpass warmth.
                 </p>
               </div>
               <Button asChild size="md" className="rounded-full shrink-0">
@@ -195,7 +196,7 @@ export default function SlowedReverbGuidePage() {
               <h2 className="text-lg font-semibold text-fg">Frequently Asked Questions</h2>
               <div className="space-y-3">
                 <div className="rounded-xl border border-line bg-surface p-4">
-                  <h3 className="font-semibold text-fg text-xs sm:text-sm">Does Svaraya upload my file to a server?</h3>
+                  <h3 className="font-semibold text-fg text-xs sm:text-sm">Does AudioMorph upload my file to a server?</h3>
                   <p className="mt-1 text-xs text-muted">
                     No. All DSP computations, lowpass filtering, and convolution reverbs run 100% inside your local browser memory via Web Audio API. Zero bytes are uploaded.
                   </p>
@@ -203,7 +204,7 @@ export default function SlowedReverbGuidePage() {
                 <div className="rounded-xl border border-line bg-surface p-4">
                   <h3 className="font-semibold text-fg text-xs sm:text-sm">Can I adjust the speed or reverb depth?</h3>
                   <p className="mt-1 text-xs text-muted">
-                    Yes. Inside Svaraya Studio, select the Slowed + Reverb preset, switch to the Customize tab, and tweak the Deceleration Rate, Space Decay Time, and Wet/Dry mix with live real-time slider controls.
+                    Yes. Inside AudioMorph Studio, select the Slowed + Reverb preset, switch to the Customize tab, and tweak the Deceleration Rate, Space Decay Time, and Wet/Dry mix with live real-time slider controls.
                   </p>
                 </div>
               </div>

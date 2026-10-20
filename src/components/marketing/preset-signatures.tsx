@@ -24,7 +24,7 @@ export function PresetSignatures({ className }: { className?: string }) {
     <div className={cn("grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)] lg:gap-16", className)}>
       {/* Left rail — editorial heading */}
       <div className="lg:sticky lg:top-24 lg:self-start">
-        <p className="eyebrow text-violet">Selected Presets</p>
+        <p className="eyebrow text-accent">Selected Presets</p>
         <h2 className="display-title mt-3 text-3xl text-fg sm:text-4xl">
           Transformations creators come back for.
         </h2>
@@ -34,7 +34,7 @@ export function PresetSignatures({ className }: { className?: string }) {
         </p>
         <Link
           href="/presets"
-          className="mt-6 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-violet transition-colors hover:text-accent-hover"
+          className="mt-6 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-accent transition-colors hover:text-accent-hover"
         >
           View all {presets.length} presets across {presetCategories.length} categories
           <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
@@ -51,17 +51,17 @@ export function PresetSignatures({ className }: { className?: string }) {
                 href={`/studio?preset=${preset.id}`}
                 className="group flex items-center gap-4 sm:gap-5 py-4.5 transition-colors hover:bg-surface/50 px-2 rounded-lg"
               >
-                <span className="tnum w-5 shrink-0 text-xs font-mono text-faint group-hover:text-violet" aria-hidden="true">
+                <span className="tnum w-5 shrink-0 text-xs font-mono text-faint group-hover:text-accent" aria-hidden="true">
                   {String(index + 1).padStart(2, "0")}
                 </span>
 
-                <div className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-md border border-line bg-surface text-violet group-hover:border-violet/40 transition-colors">
+                <div className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-md border border-line bg-surface text-accent group-hover:border-accent/40 transition-colors">
                   <PresetIcon presetId={preset.id} size={18} weight="duotone" />
                 </div>
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                    <h3 className="text-sm font-semibold text-fg group-hover:text-violet transition-colors">
+                    <h3 className="text-sm font-semibold text-fg group-hover:text-accent transition-colors">
                       {preset.name}
                     </h3>
                     {categoryLabel && (
@@ -82,7 +82,7 @@ export function PresetSignatures({ className }: { className?: string }) {
                       {param.label}: {param.kind === "slider" ? `${preset.defaults[param.id as keyof typeof preset.defaults] ?? ""}${param.unit}` : "on"}
                     </span>
                   ))}
-                  <span className="text-muted group-hover:text-violet group-hover:translate-x-0.5 transition-transform">
+                  <span className="text-muted group-hover:text-accent group-hover:translate-x-0.5 transition-transform">
                     <ArrowRight className="h-4 w-4" />
                   </span>
                 </div>
