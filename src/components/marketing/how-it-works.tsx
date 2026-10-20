@@ -8,9 +8,10 @@ import {
   DownloadSimple,
 } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils";
+import type { IconWeight } from "@phosphor-icons/react";
 
 interface Step {
-  icon: React.ComponentType<{ size?: number | string; weight?: any; className?: string }>;
+  icon: React.ComponentType<{ size?: number | string; weight?: IconWeight; className?: string }>;
   title: string;
   body: string;
 }
@@ -73,3 +74,7 @@ export function HowItSteps({ className }: { className?: string }) {
     </ol>
   );
 }
+
+
+
+

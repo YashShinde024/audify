@@ -4,10 +4,8 @@ import {
   CassetteTape,
   Sparkle,
   ArrowRight,
-  Waveform,
-  SlidersHorizontal,
 } from "@phosphor-icons/react/dist/ssr";
-import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
+import { SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -25,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Lo-Fi Tape Audio Guide: Saturation, Flutter & Bandwidth",
     description: "The physics and digital signal processing behind vintage magnetic cassette warmth.",
-    url: "https://svaraya.example.com/blog/lofi-tape",
+    url: "https://svaraya.vercel.app/blog/lofi-tape",
     siteName: "Svaraya",
     type: "article",
   },
@@ -49,7 +47,7 @@ const JSON_LD = {
         { "@type": "Person", "name": "Xpert Melody", "url": "https://www.youtube.com/@xpertmelody" },
       ],
       "publisher": { "@type": "Organization", "name": "Svaraya" },
-      "mainEntityOfPage": "https://svaraya.example.com/blog/lofi-tape",
+      "mainEntityOfPage": "https://svaraya.vercel.app/blog/lofi-tape",
     },
     {
       "@type": "FAQPage",
@@ -134,7 +132,7 @@ export default function LoFiTapeGuidePage() {
                 In Svaraya Studio, the Lo-Fi Tape preset routes your track through a dual biquad filter and waveshaping transfer curve:
               </p>
               <div className="rounded-xl border border-line bg-surface p-4 font-mono text-xs text-neutral-300 space-y-1">
-                <p className="text-amber-400 font-semibold">// Svaraya Lo-Fi Tape DSP Graph</p>
+                <p className="text-amber-400 font-semibold">{"// Svaraya Lo-Fi Tape DSP Graph"}</p>
                 <p>source</p>
                 <p className="pl-4">↳ BiquadFilterNode (type: &quot;highpass&quot;, frequency: 320 Hz)</p>
                 <p className="pl-8">↳ BiquadFilterNode (type: &quot;lowpass&quot;, frequency: 4500 Hz)</p>
@@ -164,3 +162,4 @@ export default function LoFiTapeGuidePage() {
     </>
   );
 }
+

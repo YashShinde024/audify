@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { primaryNav, secondaryNav } from "@/config/navigation";
+import { footerCompanyNav, footerProductNav, legalNav } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { Logo } from "./logo";
 import { YouTubeIcon } from "@/components/icons/preset-icons";
@@ -16,7 +16,7 @@ export function SiteFooter() {
             <Link href="/" className="inline-flex items-center select-none" aria-label="Svaraya homepage">
               <Logo height={34} variant="by-nyxen" />
             </Link>
-            <p className="mt-2 text-xs font-medium text-violet tracking-wide">
+            <p className="mt-2 text-xs font-medium text-accent tracking-wide">
               {siteConfig.tagline}
             </p>
             <p className="mt-3 max-w-md text-xs leading-relaxed text-muted">
@@ -41,13 +41,13 @@ export function SiteFooter() {
             </div>
           </div>
 
-          {/* Navigation Column */}
-          <div>
+          {/* Product Column */}
+          <nav aria-label="Footer product navigation">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-fg">
               Studio & Directory
             </h3>
             <ul className="mt-3 space-y-2">
-              {primaryNav.map((item) => (
+              {footerProductNav.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -58,15 +58,25 @@ export function SiteFooter() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
-          {/* Documentation & Legal */}
-          <div>
+          {/* Company & Legal Column */}
+          <nav aria-label="Footer company and legal navigation">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-fg">
-              Legal & Privacy
+              Learn & Legal
             </h3>
             <ul className="mt-3 space-y-2">
-              {secondaryNav.map((item) => (
+              {footerCompanyNav.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="text-xs text-muted transition-colors hover:text-fg"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+              {legalNav.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -80,7 +90,7 @@ export function SiteFooter() {
             <p className="mt-4 text-[11px] leading-relaxed text-faint">
               100% in-browser processing. Zero server-side uploads or telemetry storage.
             </p>
-          </div>
+          </nav>
         </div>
 
         {/* Bottom bar */}

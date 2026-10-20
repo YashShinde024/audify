@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Sparkle,
@@ -6,11 +6,9 @@ import {
   ShieldCheck,
   Waveform,
   MicrophoneStage,
-  ArrowsLeftRight,
   ArrowRight,
   GlobeHemisphereWest,
   Code,
-  MusicNotes,
 } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
@@ -37,7 +35,7 @@ export const metadata: Metadata = {
     title: "About Svaraya — By Nyxen × Xpert Melody",
     description:
       "The story, philosophy, and engineering behind Svaraya. Built for creators who care about pristine sound and absolute privacy.",
-    url: "https://svaraya.example.com/about",
+    url: "https://svaraya.vercel.app/about",
     siteName: "Svaraya",
     type: "profile",
   },
@@ -54,8 +52,8 @@ const JSON_LD_ABOUT = {
   "@graph": [
     {
       "@type": "AboutPage",
-      "@id": "https://svaraya.example.com/about",
-      "url": "https://svaraya.example.com/about",
+      "@id": "https://svaraya.vercel.app/about",
+      "url": "https://svaraya.vercel.app/about",
       "name": "About Svaraya Audio Processing",
       "description":
         "Overview of Svaraya, its creators Nyxen and Xpert Melody, and its client-side Web Audio DSP architecture.",
@@ -73,7 +71,7 @@ const JSON_LD_ABOUT = {
     },
     {
       "@type": "Person",
-      "@id": "https://svaraya.example.com/#nyxen",
+      "@id": "https://svaraya.vercel.app/#nyxen",
       "name": "Nyxen",
       "jobTitle": "Lead Audio DSP Architect & Software Engineer",
       "description":
@@ -81,7 +79,7 @@ const JSON_LD_ABOUT = {
     },
     {
       "@type": "Person",
-      "@id": "https://svaraya.example.com/#xpertmelody",
+      "@id": "https://svaraya.vercel.app/#xpertmelody",
       "name": "Xpert Melody",
       "jobTitle": "Music Producer & Sound Designer",
       "url": "https://www.youtube.com/@xpertmelody",

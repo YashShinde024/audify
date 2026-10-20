@@ -14,7 +14,10 @@ export const siteConfig = {
   youtubeHandle: "@xpertmelody",
   description:
     "A free, browser-based audio-effects studio by Nyxen × Xpert Melody. Choose presets, sculpt DSP parameters, and preview before exporting — all without leaving your tab.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://svaraya.example.com",
+  // Production origin used for canonical URLs, OG tags, and the sitemap.
+  // Set NEXT_PUBLIC_SITE_URL when deploying; this default is the current
+  // Vercel deployment domain — swap it once a custom domain is purchased.
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://svaraya.vercel.app",
   maxFileSizeBytes: 10 * 1024 * 1024, // 10 MB
 } as const;
 

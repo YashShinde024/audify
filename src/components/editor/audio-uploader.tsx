@@ -12,7 +12,6 @@ import {
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { fileSizeError, supportedExtensions, validateAudioFile } from "@/lib/audio-file";
-import { siteConfig } from "@/config/site";
 import { useEditorStore } from "@/stores/editor-store";
 import { formatBytes, formatTime } from "@/lib/utils";
 

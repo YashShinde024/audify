@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useEditorStore } from "@/stores/editor-store";
 import { estimateExportFileSize } from "@/lib/audio-engine";
 import { Switch } from "@/components/ui/switch";
+import { getPresetById } from "@/config/presets";
 import {
   FileAudio,
   ShieldCheck,
@@ -13,348 +14,386 @@ import {
   DownloadSimple,
   Info,
 } from "@phosphor-icons/react";
-import type { ExportFormat, ExportProfile, WavBitDepth, Mp3Bitrate, ExportSampleRate } from "@/types/export";
+import type {
+  ExportFormat,
+  ExportProfile,
+  WavBitDepth,
+  Mp3Bitrate,
+  ExportSampleRate,
+} from "@/types/export";
+
+const FORMATS: Array<{ id: ExportFormat; label: string; hint: string }> = [
+  { id: "wav", label: "WAV", hint: "PCM / float" },
+  { id: "mp3", label: "MP3", hint: "Lossy CBR" },
+  { id: "aiff", label: "AIFF", hint: "Big-endian PCM" },
+];
+
+const PROFILES: Array<{ id: ExportProfile; label: string }> = [
+  { id: "sharing", label: "Sharing" },
+  { id: "standard", label: "Standard" },
+  { id: "production", label: "Production" },
+];
+
+function OptionButton({
+  active,
+  disabled,
+  onClick,
+  title,
+  children,
+}: {
+  active: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+  title?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      disabled={disabled}
+      title={title}
+      onClick={onClick}
+      className={`flex flex-col items-center justify-center gap-0.5 rounded-md border px-2 py-2 text-center text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40 ${
+        active
+          ? "border-accent bg-accent-soft text-fg"
+          : "border-line bg-canvas text-muted hover:border-line-strong hover:text-fg"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function Field({
+  label,
+  value,
+  children,
+  hint,
+}: {
+  label: string;
+  value: string;
+  children: React.ReactNode;
+  hint?: string;
+}) {
+  return (
+    <div className="space-y-2 rounded-lg border border-line bg-canvas p-3.5">
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="text-xs font-medium text-fg">{label}</span>
+        <span className="font-mono text-[11px] uppercase tracking-wide text-muted">{value}</span>
+      </div>
+      {children}
+      {hint && <p className="text-[11px] leading-snug text-faint">{hint}</p>}
+    </div>
+  );
+}
 
 export function ExportPanel() {
-  const {
-    exportConfig,
-    setExportConfig,
-    applyExportProfile,
-    decodedAudio,
-    file,
-  } = useEditorStore();
+  const exportConfig = useEditorStore((s) => s.exportConfig);
+  const setExportConfig = useEditorStore((s) => s.setExportConfig);
+  const applyExportProfile = useEditorStore((s) => s.applyExportProfile);
+  const decodedAudio = useEditorStore((s) => s.decodedAudio);
+  const file = useEditorStore((s) => s.file);
+  const selectedPresetId = useEditorStore((s) => s.selectedPresetId);
 
   const duration = decodedAudio?.duration || 0;
   const sourceSampleRate = decodedAudio?.sampleRate || 44100;
   const baseName = file?.name ? file.name.replace(/\.[^/.]+$/, "") : "audio";
+  const presetSlug = getPresetById(selectedPresetId ?? "")?.id ?? "studio";
+  const isMp3 = exportConfig.format === "mp3";
+  const mp3SampleRateBlocked = isMp3 && exportConfig.sampleRate === 96000;
 
-  const estimatedSize = useMemo(() => {
-    return estimateExportFileSize(
+  const estimatedSize = useMemo(
+    () =>
+      estimateExportFileSize(
+        duration,
+        exportConfig.format,
+        exportConfig.wavBitDepth,
+        exportConfig.mp3Bitrate,
+        exportConfig.sampleRate,
+        exportConfig.channels,
+      ),
+    [
       duration,
       exportConfig.format,
       exportConfig.wavBitDepth,
       exportConfig.mp3Bitrate,
       exportConfig.sampleRate,
-      exportConfig.channels
-    );
-  }, [
-    duration,
-    exportConfig.format,
-    exportConfig.wavBitDepth,
-    exportConfig.mp3Bitrate,
-    exportConfig.sampleRate,
-    exportConfig.channels,
-  ]);
+      exportConfig.channels,
+    ],
+  );
+
+  const changeFormat = (format: ExportFormat) => {
+    // MP3 cannot encode 96 kHz: fall back to 48 kHz instead of silently failing.
+    if (format === "mp3" && exportConfig.sampleRate === 96000) {
+      setExportConfig({ format, sampleRate: 48000 });
+      return;
+    }
+    setExportConfig({ format });
+  };
+
+  const qualityValue =
+    exportConfig.format === "wav"
+      ? exportConfig.wavBitDepth === 32
+        ? "32-bit float"
+        : `${exportConfig.wavBitDepth}-bit PCM`
+      : exportConfig.format === "aiff"
+        ? `${exportConfig.aiffBitDepth}-bit PCM`
+        : `${exportConfig.mp3Bitrate} kbps CBR`;
 
   return (
-    <div className="space-y-6">
-      {/* Header & Quick Profiles */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-800 pb-4">
+    <div className="space-y-5">
+      <div className="flex flex-col justify-between gap-3 border-b border-line pb-4 sm:flex-row sm:items-center">
         <div>
           <div className="flex items-center gap-2">
-            <SlidersHorizontal className="w-4 h-4 text-violet-400" />
-            <h3 className="text-sm font-semibold text-neutral-100 tracking-wide uppercase">
-              Export Configuration
-            </h3>
+            <SlidersHorizontal aria-hidden="true" size={16} className="text-accent" />
+            <h3 className="text-sm font-semibold text-fg">Export configuration</h3>
           </div>
-          <p className="text-xs text-neutral-400 mt-1">
-            Format-dependent encoding, channel downmixing, and sample rate mastering.
+          <p className="mt-1 text-xs text-muted">
+            The rendered file matches these settings exactly — container, rate, channels, and
+            quality.
           </p>
         </div>
 
-        {/* Profiles */}
-        <div className="flex items-center gap-1.5 self-start sm:self-auto bg-neutral-900/90 p-1 rounded-lg border border-neutral-800">
-          <button
-            type="button"
-            onClick={() => applyExportProfile("sharing")}
-            className={`px-2.5 py-1 text-xs rounded transition-colors ${
-              exportConfig.profile === "sharing"
-                ? "bg-violet-600 text-white font-medium"
-                : "text-neutral-400 hover:text-neutral-200"
-            }`}
-          >
-            Sharing
-          </button>
-          <button
-            type="button"
-            onClick={() => applyExportProfile("standard")}
-            className={`px-2.5 py-1 text-xs rounded transition-colors ${
-              exportConfig.profile === "standard"
-                ? "bg-violet-600 text-white font-medium"
-                : "text-neutral-400 hover:text-neutral-200"
-            }`}
-          >
-            Standard
-          </button>
-          <button
-            type="button"
-            onClick={() => applyExportProfile("production")}
-            className={`px-2.5 py-1 text-xs rounded transition-colors ${
-              exportConfig.profile === "production"
-                ? "bg-violet-600 text-white font-medium"
-                : "text-neutral-400 hover:text-neutral-200"
-            }`}
-          >
-            Production
-          </button>
+        <div
+          role="group"
+          aria-label="Export profile"
+          className="flex shrink-0 items-center gap-1 self-start rounded-lg border border-line bg-canvas p-1 sm:self-auto"
+        >
+          {PROFILES.map((profile) => (
+            <button
+              key={profile.id}
+              type="button"
+              aria-pressed={exportConfig.profile === profile.id}
+              onClick={() => applyExportProfile(profile.id)}
+              className={`rounded-md px-2.5 py-1 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                exportConfig.profile === profile.id
+                  ? "bg-accent font-medium text-white"
+                  : "text-muted hover:text-fg"
+              }`}
+            >
+              {profile.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Grid of Main Settings */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* 1. Format Selection */}
-        <div className="space-y-2 bg-neutral-900/50 p-3.5 rounded-lg border border-neutral-800/80">
-          <label className="text-xs font-medium text-neutral-300 flex items-center justify-between">
-            <span>Container Format</span>
-            <span className="text-[11px] font-mono text-violet-400 uppercase">
-              {exportConfig.format}
-            </span>
-          </label>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Field label="Container format" value={exportConfig.format}>
           <div className="grid grid-cols-3 gap-1.5">
-            {[
-              { id: "wav", label: "WAV", hint: "Uncompressed PCM" },
-              { id: "mp3", label: "MP3", hint: "MPEG-1 Layer 3" },
-              { id: "aiff", label: "AIFF", hint: "Apple Big-Endian" },
-            ].map((f) => (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => setExportConfig({ format: f.id as ExportFormat })}
-                className={`flex flex-col items-center justify-center p-2 rounded border text-center transition-all ${
-                  exportConfig.format === f.id
-                    ? "bg-violet-950/60 border-violet-500 text-white shadow-sm"
-                    : "bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-700"
-                }`}
+            {FORMATS.map((format) => (
+              <OptionButton
+                key={format.id}
+                active={exportConfig.format === format.id}
+                onClick={() => changeFormat(format.id)}
               >
-                <span className="text-xs font-semibold">{f.label}</span>
-                <span className="text-[10px] text-neutral-400 mt-0.5">{f.hint}</span>
-              </button>
+                <span className="font-semibold">{format.label}</span>
+                <span className="text-[10px] text-faint">{format.hint}</span>
+              </OptionButton>
             ))}
           </div>
-        </div>
+        </Field>
 
-        {/* 2. Format-Specific Quality Controls */}
-        <div className="space-y-2 bg-neutral-900/50 p-3.5 rounded-lg border border-neutral-800/80">
+        <Field label="Quality" value={qualityValue}>
           {exportConfig.format === "wav" && (
-            <>
-              <label className="text-xs font-medium text-neutral-300 flex items-center justify-between">
-                <span>PCM Bit Depth</span>
-                <span className="text-[11px] font-mono text-neutral-400">
-                  {exportConfig.wavBitDepth === 32 ? "IEEE Float" : `${exportConfig.wavBitDepth}-bit Integer`}
-                </span>
-              </label>
-              <div className="grid grid-cols-3 gap-1.5">
-                {[
-                  { depth: 16, label: "16-bit", tag: "CD Audio" },
-                  { depth: 24, label: "24-bit", tag: "Studio Res" },
-                  { depth: 32, label: "32-bit", tag: "32-bit Float" },
-                ].map((item) => (
-                  <button
-                    key={item.depth}
-                    type="button"
-                    onClick={() => setExportConfig({ wavBitDepth: item.depth as WavBitDepth })}
-                    className={`p-2 rounded border text-center transition-all ${
-                      exportConfig.wavBitDepth === item.depth
-                        ? "bg-violet-950/60 border-violet-500 text-white"
-                        : "bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-700"
-                    }`}
-                  >
-                    <div className="text-xs font-medium">{item.label}</div>
-                    <div className="text-[10px] text-neutral-400 mt-0.5">{item.tag}</div>
-                  </button>
-                ))}
-              </div>
-            </>
+            <div className="grid grid-cols-3 gap-1.5">
+              {[
+                { depth: 16 as WavBitDepth, label: "16-bit", hint: "CD" },
+                { depth: 24 as WavBitDepth, label: "24-bit", hint: "Studio" },
+                { depth: 32 as WavBitDepth, label: "32-bit", hint: "Float" },
+              ].map((item) => (
+                <OptionButton
+                  key={item.depth}
+                  active={exportConfig.wavBitDepth === item.depth}
+                  onClick={() => setExportConfig({ wavBitDepth: item.depth })}
+                >
+                  <span className="font-medium">{item.label}</span>
+                  <span className="text-[10px] text-faint">{item.hint}</span>
+                </OptionButton>
+              ))}
+            </div>
           )}
 
           {exportConfig.format === "mp3" && (
-            <>
-              <label className="text-xs font-medium text-neutral-300 flex items-center justify-between">
-                <span>CBR Encoding Bitrate</span>
-                <span className="text-[11px] font-mono text-neutral-400">{exportConfig.mp3Bitrate} kbps</span>
-              </label>
-              <div className="grid grid-cols-4 gap-1.5">
-                {[
-                  { rate: 128, label: "128k", hint: "Compact" },
-                  { rate: 192, label: "192k", hint: "Good" },
-                  { rate: 256, label: "256k", hint: "High" },
-                  { rate: 320, label: "320k", hint: "Max" },
-                ].map((item) => (
-                  <button
-                    key={item.rate}
-                    type="button"
-                    onClick={() => setExportConfig({ mp3Bitrate: item.rate as Mp3Bitrate })}
-                    className={`p-1.5 rounded border text-center transition-all ${
-                      exportConfig.mp3Bitrate === item.rate
-                        ? "bg-violet-950/60 border-violet-500 text-white"
-                        : "bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-700"
-                    }`}
-                  >
-                    <div className="text-xs font-medium">{item.label}</div>
-                    <div className="text-[9px] text-neutral-400">{item.hint}</div>
-                  </button>
-                ))}
-              </div>
-            </>
+            <div className="grid grid-cols-4 gap-1.5">
+              {[
+                { rate: 128 as Mp3Bitrate, label: "128k" },
+                { rate: 192 as Mp3Bitrate, label: "192k" },
+                { rate: 256 as Mp3Bitrate, label: "256k" },
+                { rate: 320 as Mp3Bitrate, label: "320k" },
+              ].map((item) => (
+                <OptionButton
+                  key={item.rate}
+                  active={exportConfig.mp3Bitrate === item.rate}
+                  onClick={() => setExportConfig({ mp3Bitrate: item.rate })}
+                >
+                  <span className="font-medium">{item.label}</span>
+                </OptionButton>
+              ))}
+            </div>
           )}
 
           {exportConfig.format === "aiff" && (
-            <>
-              <label className="text-xs font-medium text-neutral-300 flex items-center justify-between">
-                <span>AIFF Bit Depth (Big-Endian)</span>
-                <span className="text-[11px] font-mono text-neutral-400">{exportConfig.aiffBitDepth}-bit PCM</span>
-              </label>
-              <div className="grid grid-cols-2 gap-1.5">
-                {[
-                  { depth: 16, label: "16-bit Integer", hint: "Standard Audio" },
-                  { depth: 24, label: "24-bit Integer", hint: "High-Res Master" },
-                ].map((item) => (
-                  <button
-                    key={item.depth}
-                    type="button"
-                    onClick={() => setExportConfig({ aiffBitDepth: item.depth as 16 | 24 })}
-                    className={`p-2 rounded border text-center transition-all ${
-                      exportConfig.aiffBitDepth === item.depth
-                        ? "bg-violet-950/60 border-violet-500 text-white"
-                        : "bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-700"
-                    }`}
-                  >
-                    <div className="text-xs font-medium">{item.label}</div>
-                    <div className="text-[10px] text-neutral-400">{item.hint}</div>
-                  </button>
-                ))}
-              </div>
-            </>
+            <div className="grid grid-cols-2 gap-1.5">
+              {[
+                { depth: 16 as const, label: "16-bit", hint: "Standard" },
+                { depth: 24 as const, label: "24-bit", hint: "High-res" },
+              ].map((item) => (
+                <OptionButton
+                  key={item.depth}
+                  active={exportConfig.aiffBitDepth === item.depth}
+                  onClick={() => setExportConfig({ aiffBitDepth: item.depth })}
+                >
+                  <span className="font-medium">{item.label}</span>
+                  <span className="text-[10px] text-faint">{item.hint}</span>
+                </OptionButton>
+              ))}
+            </div>
           )}
-        </div>
+        </Field>
 
-        {/* 3. Sample Rate */}
-        <div className="space-y-2 bg-neutral-900/50 p-3.5 rounded-lg border border-neutral-800/80">
-          <label className="text-xs font-medium text-neutral-300 flex items-center justify-between">
-            <span>Sample Rate</span>
-            <span className="text-[11px] font-mono text-neutral-400">
-              {exportConfig.sampleRate === 0
-                ? `${sourceSampleRate} Hz (Source)`
-                : `${exportConfig.sampleRate / 1000} kHz`}
-            </span>
-          </label>
-          <div className="grid grid-cols-3 gap-1.5">
+        <Field
+          label="Sample rate"
+          value={
+            exportConfig.sampleRate === 0
+              ? `Source · ${(sourceSampleRate / 1000).toFixed(1)} kHz`
+              : `${exportConfig.sampleRate / 1000} kHz`
+          }
+          hint={
+            mp3SampleRateBlocked
+              ? "MP3 cannot encode 96 kHz. Pick 44.1 or 48 kHz, or switch to WAV/AIFF."
+              : exportConfig.sampleRate === 96000
+                ? "Resampled with a windowed-sinc kernel. Higher rates do not add detail that was not in the source."
+                : "Resampling runs only when the target rate differs from the source."
+          }
+        >
+          <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
             {[
-              { rate: 0, label: "Match Source" },
-              { rate: 44100, label: "44.1 kHz (CD)" },
-              { rate: 48000, label: "48.0 kHz (Video)" },
-            ].map((sr) => (
-              <button
-                key={sr.rate}
-                type="button"
-                onClick={() => setExportConfig({ sampleRate: sr.rate as ExportSampleRate })}
-                className={`p-2 rounded border text-center transition-all ${
-                  exportConfig.sampleRate === sr.rate
-                    ? "bg-violet-950/60 border-violet-500 text-white"
-                    : "bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-700"
-                }`}
+              { rate: 0 as ExportSampleRate, label: "Match" },
+              { rate: 44100 as ExportSampleRate, label: "44.1k" },
+              { rate: 48000 as ExportSampleRate, label: "48k" },
+              { rate: 96000 as ExportSampleRate, label: "96k" },
+            ].map((option) => (
+              <OptionButton
+                key={option.rate}
+                active={exportConfig.sampleRate === option.rate}
+                disabled={isMp3 && option.rate === 96000}
+                title={isMp3 && option.rate === 96000 ? "MP3 supports up to 48 kHz" : undefined}
+                onClick={() => setExportConfig({ sampleRate: option.rate })}
               >
-                <div className="text-xs font-medium">{sr.label}</div>
-              </button>
+                <span className="font-medium">{option.label}</span>
+              </OptionButton>
             ))}
           </div>
-        </div>
+        </Field>
 
-        {/* 4. Channels */}
-        <div className="space-y-2 bg-neutral-900/50 p-3.5 rounded-lg border border-neutral-800/80">
-          <label className="text-xs font-medium text-neutral-300 flex items-center justify-between">
-            <span>Audio Channels</span>
-            <span className="text-[11px] font-mono text-neutral-400 capitalize">
-              {exportConfig.channels}
-            </span>
-          </label>
+        <Field
+          label="Channels"
+          value={exportConfig.channels}
+          hint={
+            exportConfig.channels === "mono"
+              ? "Downmixed to 0.5 × (L + R). Stereo-only effects run before the downmix."
+              : "Stereo is preserved end to end. Mono sources are never faked into stereo."
+          }
+        >
           <div className="grid grid-cols-2 gap-1.5">
-            <button
-              type="button"
+            <OptionButton
+              active={exportConfig.channels === "stereo"}
               onClick={() => setExportConfig({ channels: "stereo" })}
-              className={`p-2 rounded border text-center transition-all ${
-                exportConfig.channels === "stereo"
-                  ? "bg-violet-950/60 border-violet-500 text-white"
-                  : "bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-700"
-              }`}
             >
-              <div className="text-xs font-medium">Stereo</div>
-              <div className="text-[10px] text-neutral-400">2 Channels (L + R)</div>
-            </button>
-            <button
-              type="button"
+              <span className="inline-flex items-center gap-1.5 font-medium">
+                <Stack size={12} aria-hidden="true" />
+                Stereo
+              </span>
+              <span className="text-[10px] text-faint">2 channels</span>
+            </OptionButton>
+            <OptionButton
+              active={exportConfig.channels === "mono"}
               onClick={() => setExportConfig({ channels: "mono" })}
-              className={`p-2 rounded border text-center transition-all ${
-                exportConfig.channels === "mono"
-                  ? "bg-violet-950/60 border-violet-500 text-white"
-                  : "bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-700"
-              }`}
             >
-              <div className="text-xs font-medium">Mono Downmix</div>
-              <div className="text-[10px] text-neutral-400">0.5 * (L + R) Summed</div>
-            </button>
+              <span className="font-medium">Mono</span>
+              <span className="text-[10px] text-faint">1 channel</span>
+            </OptionButton>
           </div>
-        </div>
+        </Field>
       </div>
 
-      {/* Mastering Toggles & Output Filename */}
-      <div className="space-y-3 bg-neutral-900/30 p-3.5 rounded-lg border border-neutral-800">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-neutral-800/60">
+      <div className="space-y-3 rounded-lg border border-line bg-canvas p-3.5">
+        <div className="flex flex-col justify-between gap-3 border-b border-line pb-3 sm:flex-row sm:items-center">
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span className="text-xs font-medium text-neutral-200">Peak Protection Ceiling</span>
+              <ShieldCheck aria-hidden="true" size={15} className="text-accent" />
+              <span className="text-xs font-medium text-fg">Peak protection</span>
             </div>
-            <p className="text-[11px] text-neutral-400">
-              Soft-knee saturation limits peaks above -0.1 dBFS, preventing harsh digital clipping.
+            <p className="text-[11px] leading-snug text-muted">
+              Look-ahead limiter (5 ms, 80 ms release) holding the final samples under −0.3 dBFS.
+              Sample-peak, not true-peak: inter-sample overshoots are not measured.
             </p>
           </div>
           <Switch
             checked={exportConfig.peakProtection}
             onCheckedChange={(checked) => setExportConfig({ peakProtection: checked })}
+            aria-label="Peak protection limiter"
           />
         </div>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-neutral-800/60">
+        <div className="flex flex-col justify-between gap-3 border-b border-line pb-3 sm:flex-row sm:items-center">
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
-              <Sparkle size={16} weight="duotone" className="text-violet-400" />
-              <span className="text-xs font-medium text-neutral-200">Loudness Normalization</span>
+              <Sparkle aria-hidden="true" size={15} className="text-accent" />
+              <span className="text-xs font-medium text-fg">Peak normalize</span>
             </div>
-            <p className="text-[11px] text-neutral-400">
-              Applies clean make-up gain so maximum peak amplitude touches -0.5 dBFS headroom.
+            <p className="text-[11px] leading-snug text-muted">
+              Applies make-up gain so the loudest sample sits at −0.5 dBFS. Peak-based only — it
+              does not match perceived loudness (no LUFS).
             </p>
           </div>
           <Switch
-            checked={exportConfig.loudnessNormalize}
-            onCheckedChange={(checked) => setExportConfig({ loudnessNormalize: checked })}
+            checked={exportConfig.peakNormalize}
+            onCheckedChange={(checked) => setExportConfig({ peakNormalize: checked })}
+            aria-label="Peak normalization"
           />
         </div>
 
-        {/* Output Filename & Estimated Size */}
-        <div className="pt-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="w-full sm:max-w-md space-y-1">
-            <label className="text-xs font-medium text-neutral-300">
-              Custom Export Filename (Optional)
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div className="w-full space-y-1 sm:max-w-md">
+            <label htmlFor="export-filename" className="text-xs font-medium text-fg">
+              Custom filename <span className="font-normal text-faint">(optional)</span>
             </label>
             <input
+              id="export-filename"
               type="text"
-              placeholder={`svaraya-master-${baseName}.${exportConfig.format}`}
+              placeholder={`svaraya-${presetSlug}-${baseName}.${exportConfig.format}`}
               value={exportConfig.outputFilename}
-              onChange={(e) => setExportConfig({ outputFilename: e.target.value })}
-              className="w-full bg-neutral-950 border border-neutral-800 text-xs text-neutral-200 px-3 py-1.5 rounded focus:outline-none focus:border-violet-500 font-mono"
+              onChange={(event) => setExportConfig({ outputFilename: event.target.value })}
+              className="w-full rounded-md border border-line bg-raised px-3 py-1.5 font-mono text-xs text-fg placeholder:text-faint focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             />
+            <p className="flex items-start gap-1.5 text-[11px] text-faint">
+              <Info aria-hidden="true" size={12} className="mt-0.5 shrink-0" />
+              Leave empty to use the preset name and source filename. The correct extension is
+              added automatically.
+            </p>
           </div>
 
-          <div className="flex items-center gap-3 self-end sm:self-auto bg-neutral-900/80 px-3 py-1.5 rounded border border-neutral-800">
-            <DownloadSimple size={16} className="text-neutral-400" />
+          <div className="flex shrink-0 items-center gap-3 self-start rounded-md border border-line bg-raised px-3 py-1.5 sm:self-auto">
+            <DownloadSimple aria-hidden="true" size={16} className="text-muted" />
             <div>
-              <span className="text-[10px] uppercase text-neutral-400 block font-medium">Est. File Size</span>
-              <span className="text-xs font-mono font-semibold text-neutral-200">{estimatedSize}</span>
+              <span className="block text-[10px] font-medium uppercase tracking-wide text-faint">
+                Estimated size
+              </span>
+              <span className="font-mono text-xs font-semibold text-fg">{estimatedSize}</span>
             </div>
           </div>
         </div>
       </div>
+
+      <p className="flex items-start gap-1.5 text-[11px] text-faint">
+        <FileAudio aria-hidden="true" size={13} className="mt-0.5 shrink-0" />
+        {exportConfig.format === "mp3"
+          ? "MP3 is encoded with lamejs at the selected CBR bitrate. 32, 44.1 and 48 kHz are supported."
+          : "WAV and AIFF are written as uncompressed PCM with verified headers."}{" "}
+        Opus is not offered yet.
+      </p>
     </div>
   );
 }

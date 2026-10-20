@@ -55,6 +55,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Pre-hydration theme: paints the correct `dark` class before first
+            paint to avoid FOUC and React hydration mismatches. Must mirror
+            resolveInitialTheme() in theme-provider.tsx. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("svaraya-theme");if(t!=="dark"&&t!=="light"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}if(t==="dark"){document.documentElement.classList.add("dark")}}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body className="flex min-h-full flex-col bg-canvas text-fg antialiased transition-colors duration-200">
         <ThemeProvider>
           <SiteHeader />

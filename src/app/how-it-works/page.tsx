@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -7,9 +7,6 @@ import {
   DownloadSimple,
   Faders,
   Sparkle,
-  Waveform,
-  GlobeHemisphereWest,
-  FileAudio,
 } from "@phosphor-icons/react/dist/ssr";
 import { HowItSteps } from "@/components/marketing/how-it-works";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
@@ -29,7 +26,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "How Svaraya Works: Local Web Audio DSP Architecture",
     description: "Six steps between your raw audio file and a polished master — powered entirely by your browser's native Web Audio API.",
-    url: "https://svaraya.example.com/how-it-works",
+    url: "https://svaraya.vercel.app/how-it-works",
     siteName: "Svaraya",
     type: "article",
   },

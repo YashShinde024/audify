@@ -11,10 +11,12 @@ import {
   MusicNotes,
 } from "@phosphor-icons/react";
 import { presets, presetCategories } from "@/config/presets";
+import { presetArticleRegistry } from "@/config/blog-registry";
 import { PresetIcon } from "@/components/icons/preset-icons";
 import { Button } from "@/components/ui/button";
 import type { Preset, PresetCategoryId, PresetKind } from "@/types/preset";
 import { cn } from "@/lib/utils";
+import { BookOpenText } from "@phosphor-icons/react";
 
 const FEATURED_IDS = [
   "8d-audio",
@@ -36,8 +38,7 @@ export function PresetExplorer() {
   );
 
   const filteredPresets = useMemo(() => {
-    return presets.filter((p) => {
-      const matchCat = selectedCategory === "all" || p.category === selectedCategory;
+    return presets.filter((p) => {      const matchCat = selectedCategory === "all" || p.category === selectedCategory;
       const matchKind = selectedKind === "all" || p.kind === selectedKind;
       const q = search.toLowerCase().trim();
       const matchSearch =
@@ -67,7 +68,7 @@ export function PresetExplorer() {
               Most requested transformations and audio utilities ready for instant execution.
             </p>
           </div>
-          <span className="text-xs font-semibold text-violet uppercase tracking-wide">
+          <span className="text-xs font-semibold text-accent uppercase tracking-wide">
             Curated Matrix
           </span>
         </div>
@@ -76,11 +77,11 @@ export function PresetExplorer() {
           {featuredPresets.map((preset) => (
             <div
               key={preset.id}
-              className="flex flex-col justify-between rounded-xl border border-line bg-surface p-5 shadow-xs hover:border-violet/50 transition-all group"
+              className="flex flex-col justify-between rounded-xl border border-line bg-surface p-5 shadow-xs hover:border-accent/50 transition-all group"
             >
               <div>
                 <div className="flex items-start gap-3.5">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line bg-surface text-violet group-hover:border-violet/40 group-hover:bg-violet/5 transition-colors">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line bg-surface text-accent group-hover:border-accent/40 group-hover:bg-accent/5 transition-colors">
                     <PresetIcon presetId={preset.id} size={22} weight="duotone" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -89,9 +90,9 @@ export function PresetExplorer() {
                         {preset.kind === "tool" ? <Wrench className="w-3 h-3" /> : <MusicNotes className="w-3 h-3" />}
                         {presetCategories.find((c) => c.id === preset.category)?.label}
                       </span>
-                      <span className="h-2 w-2 rounded-full bg-violet ring-4 ring-violet/10" />
+                      <span className="h-2 w-2 rounded-full bg-accent ring-4 ring-accent/10" />
                     </div>
-                    <h3 className="mt-1.5 text-sm font-semibold text-fg group-hover:text-violet transition-colors">
+                    <h3 className="mt-1.5 text-sm font-semibold text-fg group-hover:text-accent transition-colors">
                       {preset.name}
                     </h3>
                   </div>
@@ -102,7 +103,7 @@ export function PresetExplorer() {
                 </p>
 
                 {preset.compatibilityNote && (
-                  <p className="mt-2 text-[11px] text-violet flex items-center gap-1 font-medium">
+                  <p className="mt-2 text-[11px] text-accent flex items-center gap-1 font-medium">
                     <Headphones className="w-3.5 h-3.5" />
                     {preset.compatibilityNote}
                   </p>
@@ -110,14 +111,17 @@ export function PresetExplorer() {
               </div>
 
               <div className="mt-5 pt-3.5 border-t border-line flex items-center justify-between">
-                <div className="flex items-center gap-1 text-[11px] text-faint font-mono">
-                  <Cpu className="w-3.5 h-3.5 text-violet" />
-                  <span>{preset.supportedOps[0]}</span>
+                <div className="flex items-center gap-3 text-[11px]">
+                  <span className="flex items-center gap-1 text-faint font-mono">
+                    <Cpu className="w-3.5 h-3.5 text-accent" />
+                    <span>{preset.supportedOps[0]}</span>
+                  </span>
+                  <GuideLink presetId={preset.id} />
                 </div>
 
-                <Button asChild size="sm" variant="secondary" className="h-7 px-3 text-xs">
+                <Button asChild size="sm" variant="secondary" className="h-7 px-3 text-xs shrink-0">
                   <Link href={`/studio?preset=${preset.id}`}>
-                    Launch
+                    Open in Studio
                     <ArrowRight className="h-3 w-3" />
                   </Link>
                 </Button>
@@ -146,7 +150,7 @@ export function PresetExplorer() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name, DSP node, or tag…"
-              className="h-8.5 w-full rounded-md border border-line bg-surface pl-8 pr-3 text-xs text-fg placeholder:text-faint focus:border-violet focus:outline-none font-sans"
+              className="h-8.5 w-full rounded-md border border-line bg-surface pl-8 pr-3 text-xs text-fg placeholder:text-faint focus:border-accent focus:outline-none font-sans"
             />
           </div>
         </div>
@@ -159,7 +163,7 @@ export function PresetExplorer() {
             className={cn(
               "px-3 py-1 rounded text-xs font-medium transition-colors cursor-pointer",
               selectedKind === "all"
-                ? "bg-violet text-white font-semibold shadow-xs"
+                ? "bg-accent text-white font-semibold shadow-xs"
                 : "text-muted hover:text-fg bg-surface border border-line",
             )}
           >
@@ -171,7 +175,7 @@ export function PresetExplorer() {
             className={cn(
               "px-3 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer",
               selectedKind === "preset"
-                ? "bg-violet text-white font-semibold shadow-xs"
+                ? "bg-accent text-white font-semibold shadow-xs"
                 : "text-muted hover:text-fg bg-surface border border-line",
             )}
           >
@@ -184,7 +188,7 @@ export function PresetExplorer() {
             className={cn(
               "px-3 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer",
               selectedKind === "tool"
-                ? "bg-violet text-white font-semibold shadow-xs"
+                ? "bg-accent text-white font-semibold shadow-xs"
                 : "text-muted hover:text-fg bg-surface border border-line",
             )}
           >
@@ -201,7 +205,7 @@ export function PresetExplorer() {
             className={cn(
               "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors border cursor-pointer",
               selectedCategory === "all"
-                ? "bg-violet text-white border-violet font-semibold shadow-xs"
+                ? "bg-accent text-white border-accent font-semibold shadow-xs"
                 : "bg-surface text-muted border-line hover:text-fg hover:border-line-strong",
             )}
           >
@@ -215,7 +219,7 @@ export function PresetExplorer() {
               className={cn(
                 "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors border cursor-pointer",
                 selectedCategory === cat.id
-                  ? "bg-violet text-white border-violet font-semibold shadow-xs"
+                  ? "bg-accent text-white border-accent font-semibold shadow-xs"
                   : "bg-surface text-muted border-line hover:text-fg hover:border-line-strong",
               )}
             >
@@ -239,7 +243,7 @@ export function PresetExplorer() {
             >
               <div>
                 <div className="flex items-start gap-3">
-                  <div className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-md border border-line bg-deep text-violet">
+                  <div className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-md border border-line bg-deep text-accent">
                     <PresetIcon presetId={preset.id} size={17} />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -263,25 +267,28 @@ export function PresetExplorer() {
                 </p>
 
                 {preset.compatibilityNote && (
-                  <p className="mt-2 text-[10px] text-violet flex items-center gap-1">
+                  <p className="mt-2 text-[10px] text-accent flex items-center gap-1">
                     <Headphones className="w-2.5 h-2.5" />
                     {preset.compatibilityNote}
                   </p>
                 )}
               </div>
 
-              <div className="mt-4 pt-3 border-t border-line/70 flex items-center justify-between">
-                <div className="flex flex-wrap gap-1 font-mono text-[10px] text-faint">
-                  {preset.params.slice(0, 2).map((p) => (
-                    <span key={p.id}>
-                      {p.id}: {p.kind === "slider" ? `${preset.defaults[p.id]}${p.unit}` : "on"}
-                    </span>
-                  ))}
+              <div className="mt-4 pt-3 border-t border-line/70 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex flex-wrap gap-1 font-mono text-[10px] text-faint">
+                    {preset.params.slice(0, 2).map((p) => (
+                      <span key={p.id}>
+                        {p.id}: {p.kind === "slider" ? `${preset.defaults[p.id]}${p.unit}` : "on"}
+                      </span>
+                    ))}
+                  </div>
+                  <GuideLink presetId={preset.id} />
                 </div>
 
                 <Button asChild size="sm" variant="outline" className="h-7 px-2.5 text-xs shrink-0">
                   <Link href={`/studio?preset=${preset.id}`}>
-                    Launch
+                    Open
                     <ArrowRight className="h-3 w-3" />
                   </Link>
                 </Button>
@@ -299,3 +306,18 @@ export function PresetExplorer() {
     </div>
   );
 }
+
+function GuideLink({ presetId }: { presetId: string }) {
+  const slug = presetArticleRegistry.find((a) => a.presetId === presetId)?.slug;
+  if (!slug) return null;
+  return (
+    <Link
+      href={`/blog/${slug}`}
+      className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium text-accent hover:text-accent-hover transition-colors"
+    >
+      <BookOpenText className="h-3 w-3" />
+      Guide
+    </Link>
+  );
+}
+

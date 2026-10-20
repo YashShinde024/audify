@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { presetIds, type PresetId } from "@/config/presets";
 import {
   // Speed & Viral
   MoonStars,
@@ -20,7 +21,6 @@ import {
   SpeakerHifi,
   WaveSawtooth,
   Equalizer,
-  FadersHorizontal,
   Wind,
   // Reverb & Echo
   Drop,
@@ -42,7 +42,6 @@ import {
   Infinity as InfinityIcon,
   Radioactive,
   Lightning,
-  Flame,
   // Cleanup & Polish
   ShieldCheck,
   Sparkle,
@@ -68,11 +67,15 @@ export interface BaseAudioIconProps {
   color?: string;
 }
 
+/** Component type for any Phosphor icon entry. */
+type PresetIconComponent = React.ComponentType<PhosphorIconProps>;
+
 /**
- * High-quality Phosphor Icons Registry mapped semantically to Svaraya presets & DSP operations.
- * Clean, MIT-licensed, professional third-party iconography with duotone/regular weights.
+ * Canonical map: every preset id from `src/config/presets.ts` MUST have an
+ * entry here. The `Record<PresetId, …>` type makes a missing mapping a
+ * compile-time error, so the registry can never drift from the catalogue.
  */
-export const PRESET_ICON_REGISTRY: Record<string, React.ComponentType<PhosphorIconProps>> = {
+const presetIconMap: Record<PresetId, PresetIconComponent> = {
   // Speed & Viral Edits
   "slowed-reverb": MoonStars,
   "slowed": MoonStars,
@@ -86,7 +89,6 @@ export const PRESET_ICON_REGISTRY: Record<string, React.ComponentType<PhosphorIc
   "auto-panner": ArrowsLeftRight,
   "stereo-panner": ArrowsLeftRight,
   "stereo-widening": ArrowsOutCardinal,
-  "stereo-widener": ArrowsOutCardinal,
   "ping-pong": ArrowArcRight,
 
   // Bass & Equalizer
@@ -94,7 +96,6 @@ export const PRESET_ICON_REGISTRY: Record<string, React.ComponentType<PhosphorIc
   "bass-boost-mod": SpeakerHigh,
   "bass-boost-heavy": SpeakerHifi,
   "bass-boost-extreme": WaveSawtooth,
-  "bass-boost": SpeakerHifi,
   "equalizer": Equalizer,
   "treble-air": Wind,
 
@@ -106,46 +107,70 @@ export const PRESET_ICON_REGISTRY: Record<string, React.ComponentType<PhosphorIc
   "church-hall-reverb": Church,
   "cathedral-reverb": Church,
   "vocal-reverb": MicrophoneStage,
-  "reverb": Waves,
-  "echo": ArrowsCounterClockwise,
 
   // Pitch & Tempo
   "pitch-432hz": PianoKeys,
   "pitch-shifter": Pulse,
-  "pitch": Pulse,
   "tempo-changer": Speedometer,
-  "speed": Speedometer,
 
   // Creative Effects
   "reverse": ArrowCounterClockwise,
   "underwater": Waves,
   "telephone-voice": PhoneCall,
   "lofi-tape": CassetteTape,
-  "chorus": InfinityIcon,
-  "flanger": Radioactive,
-  "phaser": Radioactive,
-  "distortion": Lightning,
 
   // Cleanup
   "noise-reducer": ShieldCheck,
-  "noise-reduction": ShieldCheck,
   "vocal-clarity": Sparkle,
   "de-harsh": WaveSine,
 
   // Utilities & Export
   "volume-changer": SpeakerHigh,
-  "volume": SpeakerHigh,
-  "volume-normalize": SpeakerHigh,
   "trimmer-cutter": Scissors,
-  "trim": Scissors,
   "downmixer": ArrowsMerge,
-  "stereo-to-mono": ArrowsMerge,
   "bpm-detector": Metronome,
   "format-converter": FileAudio,
   "mastering-polish": MagicWand,
+};
+
+/** Legacy/friendly aliases kept for backwards compatibility with older routes. */
+const legacyIconAliases: Record<string, PresetIconComponent> = {
+  "stereo-widener": ArrowsOutCardinal,
+  "bass-boost": SpeakerHifi,
+  "reverb": Waves,
+  "echo": ArrowsCounterClockwise,
+  "pitch": Pulse,
+  "speed": Speedometer,
+  "chorus": InfinityIcon,
+  "flanger": Radioactive,
+  "phaser": Radioactive,
+  "distortion": Lightning,
+  "noise-reduction": ShieldCheck,
+  "volume": SpeakerHigh,
+  "volume-normalize": SpeakerHigh,
+  "trim": Scissors,
+  "stereo-to-mono": ArrowsMerge,
   "fade": SlidersHorizontal,
   "fade-in-out": SlidersHorizontal,
 };
+
+/** Flattened lookup (canonical + legacy aliases). */
+export const PRESET_ICON_REGISTRY: Record<string, PresetIconComponent> = {
+  ...presetIconMap,
+  ...legacyIconAliases,
+};
+
+/** Default fallback icon when no semantic mapping exists. */
+export const FALLBACK_PRESET_ICON: PresetIconComponent = Equalizer;
+
+/**
+ * Runtime audit helper (used by tests): returns preset ids that lack an icon
+ * mapping. Should always be empty — the type system already enforces this,
+ * but the check guards against accidental `as any` casts.
+ */
+export function getMissingPresetIconIds(): PresetId[] {
+  return presetIds.filter((id) => !(id in presetIconMap));
+}
 
 /**
  * Set of signature featured preset IDs that receive duotone styling by default
@@ -180,7 +205,7 @@ export function PresetIcon({
   className?: string;
   color?: string;
 }) {
-  const IconComponent = PRESET_ICON_REGISTRY[presetId] || Equalizer;
+  const IconComponent = PRESET_ICON_REGISTRY[presetId] || FALLBACK_PRESET_ICON;
   const resolvedWeight: PresetIconWeight =
     weight || (FEATURED_DUOTONE_PRESETS.has(presetId) ? "duotone" : "regular");
 

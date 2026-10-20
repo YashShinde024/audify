@@ -1,7 +1,9 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site";
+import { presetArticleRegistry } from "@/config/blog-registry";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const blogGuideRoutes = presetArticleRegistry.map((entry) => `/blog/${entry.slug}`);
   const routes = [
     "",
     "/studio",
@@ -13,12 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/privacy",
     "/terms",
     "/blog",
-    "/blog/slowed-reverb",
-    "/blog/8d-audio",
-    "/blog/nightcore-daycore",
-    "/blog/432hz-tuning",
-    "/blog/bass-boost",
-    "/blog/lofi-tape",
+    ...blogGuideRoutes,
   ];
 
   return routes.map((route) => ({

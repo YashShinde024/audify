@@ -4,14 +4,8 @@ import {
   MoonStars,
   Sparkle,
   ArrowRight,
-  Clock,
-  Waves,
-  Faders,
-  ShieldCheck,
-  CheckCircle,
-  FileAudio,
 } from "@phosphor-icons/react/dist/ssr";
-import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
+import { SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -31,7 +25,7 @@ export const metadata: Metadata = {
     title: "Slowed + Reverb Explained: DSP Math & Acoustics",
     description:
       "The engineering and psychoacoustics behind the viral Slowed + Reverb aesthetic. By Nyxen × Xpert Melody.",
-    url: "https://svaraya.example.com/blog/slowed-reverb",
+    url: "https://svaraya.vercel.app/blog/slowed-reverb",
     siteName: "Svaraya",
     type: "article",
   },
@@ -57,9 +51,9 @@ const JSON_LD = {
       "publisher": {
         "@type": "Organization",
         "name": "Svaraya",
-        "url": "https://svaraya.example.com",
+        "url": "https://svaraya.vercel.app",
       },
-      "mainEntityOfPage": "https://svaraya.example.com/blog/slowed-reverb",
+      "mainEntityOfPage": "https://svaraya.vercel.app/blog/slowed-reverb",
     },
     {
       "@type": "FAQPage",
@@ -163,7 +157,7 @@ export default function SlowedReverbGuidePage() {
                 In Svaraya&apos;s Web Audio DSP engine, the Slowed + Reverb node graph is built with precision:
               </p>
               <div className="rounded-xl border border-line bg-surface p-4 font-mono text-xs text-neutral-300 space-y-1">
-                <p className="text-violet font-semibold">// Svaraya Slowed + Reverb Audio Routing</p>
+                <p className="text-accent font-semibold">{"// Svaraya Slowed + Reverb Audio Routing"}</p>
                 <p>AudioBufferSourceNode (playbackRate: 0.85)</p>
                 <p className="pl-4">↳ BiquadFilterNode (type: &quot;lowpass&quot;, frequency: 4200 Hz, Q: 0.707)</p>
                 <p className="pl-8">↳ GainNode (dryGain: 0.52) ──┐</p>
@@ -220,3 +214,4 @@ export default function SlowedReverbGuidePage() {
     </>
   );
 }
+

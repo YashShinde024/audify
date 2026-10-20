@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Cpu, CheckCircle } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, CheckCircle } from "@phosphor-icons/react/dist/ssr";
 import { effects, effectCategories } from "@/config/effects";
+import { presetArticleRegistry } from "@/config/blog-registry";
 import { EffectIcon } from "@/components/icons/preset-icons";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
@@ -49,19 +50,19 @@ export default function EffectsPage() {
                   {items.map((effect) => (
                     <div
                       key={effect.id}
-                      className="rounded-xl border border-line bg-surface p-5 flex flex-col justify-between shadow-xs hover:border-violet/40 transition-colors"
+                      className="rounded-xl border border-line bg-surface p-5 flex flex-col justify-between shadow-xs hover:border-accent/40 transition-colors"
                     >
                       <div>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-center gap-2.5">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line bg-deep text-violet">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line bg-deep text-accent">
                               <EffectIcon effectId={effect.id} size={16} />
                             </div>
                             <h3 className="text-sm font-semibold text-fg">
                               {effect.name}
                             </h3>
                           </div>
-                          <span className="inline-flex shrink-0 items-center gap-1 rounded bg-raised border border-line px-2 py-0.5 text-[10px] font-medium text-violet font-mono">
+                          <span className="inline-flex shrink-0 items-center gap-1 rounded bg-raised border border-line px-2 py-0.5 text-[10px] font-medium text-accent font-mono">
                             <CheckCircle className="h-2.5 w-2.5" />
                             Hardware DSP
                           </span>
@@ -76,7 +77,7 @@ export default function EffectsPage() {
                           <span className="text-[10px] uppercase tracking-wider text-faint block font-mono">
                             Signal Chain
                           </span>
-                          <p className="text-[11px] font-mono text-violet-300 mt-0.5">
+                          <p className="text-[11px] font-mono text-accent/80 mt-0.5">
                             {effect.dspNodeChain.join(" → ")}
                           </p>
                         </div>
@@ -98,12 +99,15 @@ export default function EffectsPage() {
                         </span>
 
                         {effect.targetPresetId && (
-                          <Button asChild size="sm" variant="secondary" className="h-7 px-3 text-xs shrink-0">
-                            <Link href={`/studio?preset=${effect.targetPresetId}`}>
-                              Launch in Studio
-                              <ArrowRight className="h-3 w-3" />
-                            </Link>
-                          </Button>
+                          <div className="flex items-center gap-3">
+                            <GuideLinkForPreset presetId={effect.targetPresetId} />
+                            <Button asChild size="sm" variant="secondary" className="h-7 px-3 text-xs shrink-0">
+                              <Link href={`/studio?preset=${effect.targetPresetId}`}>
+                                Open in Studio
+                                <ArrowRight className="h-3 w-3" />
+                              </Link>
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -121,3 +125,17 @@ export default function EffectsPage() {
 function categoryToId(category: string): string {
   return `effects-${category.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`;
 }
+
+function GuideLinkForPreset({ presetId }: { presetId: string }) {
+  const slug = presetArticleRegistry.find((a) => a.presetId === presetId)?.slug;
+  if (!slug) return null;
+  return (
+    <Link
+      href={`/blog/${slug}`}
+      className="inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-accent hover:text-accent-hover transition-colors"
+    >
+      Read the guide
+    </Link>
+  );
+}
+

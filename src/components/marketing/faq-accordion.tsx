@@ -1,7 +1,6 @@
 "use client";
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import Link from "next/link";
 import type { ReactNode } from "react";
 
 export interface FaqEntry {
@@ -48,12 +47,13 @@ const defaultFaqs: FaqEntry[] = [
     ),
   },
   {
-    question: "What are Peak Protection and Loudness Normalization?",
+    question: "What are Peak Protection and Peak Normalization?",
     answer: (
       <p>
         <strong>Peak Protection</strong> engages a soft-knee transparent ceiling limiter at -0.1 dBFS to ensure
-        heavy bass or boosted effects do not digitally clip. <strong>Loudness Normalization</strong> calculates
-        the peak amplitude and applies clean linear make-up gain up to -0.5 dBFS.
+        heavy bass or boosted effects do not digitally clip. <strong>Peak Normalization</strong> calculates
+        the peak amplitude and applies clean linear make-up gain so the loudest sample touches -0.5 dBFS
+        (a peak process — it does not match perceived loudness like a LUFS/iLUFS meter would).
       </p>
     ),
   },
