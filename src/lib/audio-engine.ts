@@ -21,6 +21,24 @@
  */
 
 import lamejs from "lamejs";
+import MPEGMode from "lamejs/src/js/MPEGMode.js";
+import Lame from "lamejs/src/js/Lame.js";
+import BitStream from "lamejs/src/js/BitStream.js";
+
+/**
+ * lamejs 1.2.1 compiles its sources into files that reference `MPEGMode`,
+ * `Lame` and `BitStream` as bare identifiers (leftovers from the originally
+ * concatenated browser bundle). Under any modern module system those names are
+ * undefined, so `new lamejs.Mp3Encoder(...)` would throw
+ * "MPEGMode is not defined" — i.e. MP3 export was broken at runtime.
+ * Re-exposing them on the global object is the canonical fix.
+ */
+if (typeof globalThis !== "undefined") {
+  const g = globalThis as Record<string, unknown>;
+  g.MPEGMode = g.MPEGMode ?? MPEGMode;
+  g.Lame = g.Lame ?? Lame;
+  g.BitStream = g.BitStream ?? BitStream;
+}
 import type { EffectValues } from "@/types/preset";
 import { DEFAULT_EXPORT_CONFIG } from "@/types/export";
 import type { ExportConfig } from "@/types/export";
@@ -1020,7 +1038,7 @@ export function encodeMp3(buffer: AudioBuffer, kbps: 128 | 192 | 256 | 320 = 320
 export function estimateExportFileSize(
   durationSeconds: number,
   format: string,
-  wavBitDepth: number,
+  bitDepth: number,
   mp3Bitrate: number,
   sampleRate: number,
   channels: "stereo" | "mono"
@@ -1036,9 +1054,10 @@ export function estimateExportFileSize(
   } else if (format === "opus") {
     bytes = ((128 * 1000) / 8) * durationSeconds;
   } else if (format === "aiff") {
-    bytes = sr * numChannels * (wavBitDepth / 8) * durationSeconds + 54;
+    // Callers must pass the AIFF bit depth here (16 or 24), not the WAV depth.
+    bytes = sr * numChannels * (bitDepth / 8) * durationSeconds + 54;
   } else {
-    bytes = sr * numChannels * (wavBitDepth / 8) * durationSeconds + 44;
+    bytes = sr * numChannels * (bitDepth / 8) * durationSeconds + 44;
   }
 
   if (bytes < 1024 * 1024) {

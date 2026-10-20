@@ -108,7 +108,7 @@ export function ExportPanel() {
       estimateExportFileSize(
         duration,
         exportConfig.format,
-        exportConfig.wavBitDepth,
+        exportConfig.format === "aiff" ? exportConfig.aiffBitDepth : exportConfig.wavBitDepth,
         exportConfig.mp3Bitrate,
         exportConfig.sampleRate,
         exportConfig.channels,
@@ -116,6 +116,7 @@ export function ExportPanel() {
     [
       duration,
       exportConfig.format,
+      exportConfig.aiffBitDepth,
       exportConfig.wavBitDepth,
       exportConfig.mp3Bitrate,
       exportConfig.sampleRate,
