@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import {
   Play,
   Pause,
   SpeakerHigh,
   SpeakerNone,
-  ArrowsLeftRight,
   ArrowsClockwise,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
@@ -17,12 +16,10 @@ import { formatTime, cn } from "@/lib/utils";
 export function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const file = useEditorStore((s) => s.file);
   const decodedAudio = useEditorStore((s) => s.decodedAudio);
   const originalAudioUrl = useEditorStore((s) => s.originalAudioUrl);
   const processedResult = useEditorStore((s) => s.processedResult);
   const showAfter = useEditorStore((s) => s.showAfter);
-  const toggleAfter = useEditorStore((s) => s.toggleAfter);
   const setShowAfter = useEditorStore((s) => s.setShowAfter);
 
   const isPlaying = useEditorStore((s) => s.isPlaying);
@@ -60,12 +57,13 @@ export function AudioPlayer() {
     }
   }, [volume]);
 
-  // Handle source switch
+  // Handle source switch. Read the live playback state from the element so this
+  // effect does not re-run (and reset the playhead) when play/pause toggles.
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !activeUrl) return;
 
-    const wasPlaying = isPlaying;
+    const wasPlaying = !audio.paused;
     audio.src = activeUrl;
     audio.currentTime = 0;
     setCurrentTime(0);
@@ -73,7 +71,7 @@ export function AudioPlayer() {
     if (wasPlaying) {
       audio.play().catch(() => togglePlay(false));
     }
-  }, [activeUrl]);
+  }, [activeUrl, setCurrentTime, togglePlay]);
 
   const handleTimeUpdate = useCallback(() => {
     if (audioRef.current) {
@@ -126,7 +124,7 @@ export function AudioPlayer() {
             className={cn(
               "rounded-md px-2 py-0.5 text-xs font-medium",
               showAfter && processedResult
-                ? "bg-violet/15 text-purple border border-violet/30"
+                ? "bg-accent-soft text-accent border border-accent/30"
                 : "bg-raised text-fg border border-line",
             )}
           >
@@ -151,7 +149,7 @@ export function AudioPlayer() {
               onClick={() => setShowAfter(true)}
               className={cn(
                 "rounded px-2.5 py-1 text-xs font-medium transition-colors",
-                showAfter ? "bg-violet text-white shadow-xs font-semibold" : "text-muted hover:text-fg",
+                showAfter ? "bg-accent text-white shadow-xs font-semibold" : "text-muted hover:text-fg",
               )}
             >
               Processed
@@ -192,8 +190,8 @@ export function AudioPlayer() {
                   style={{
                     height: `${Math.max(12, Math.round(peak * 88))}%`,
                     backgroundColor: isPassed
-                      ? (showAfter && processedResult ? "#8b5cf6" : "#25232b")
-                      : "rgba(255, 255, 255, 0.15)",
+                      ? "var(--color-accent)"
+                      : "var(--color-line-strong)",
                   }}
                 />
               );
@@ -207,7 +205,7 @@ export function AudioPlayer() {
 
         {/* Playhead line */}
         <div
-          className="pointer-events-none absolute inset-y-0 w-0.5 bg-violet shadow-xs"
+          className="pointer-events-none absolute inset-y-0 w-0.5 bg-accent shadow-xs"
           style={{ left: `${progressRatio * 100}%` }}
         />
       </div>

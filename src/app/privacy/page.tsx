@@ -1,14 +1,10 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import {
   CloudSlash,
   EyeSlash,
-  ShieldCheck,
-  Lock,
   Sparkle,
-  HardDrives,
-  Cpu,
 } from "@phosphor-icons/react/dist/ssr";
 
 export const metadata: Metadata = {
@@ -25,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Privacy Policy — 100% In-Browser Audio Security",
     description: "Your audio files never leave your device. Zero cloud uploads, zero telemetry.",
-    url: "https://svaraya.example.com/privacy",
+    url: "https://svaraya.vercel.app/privacy",
     siteName: "Svaraya",
   },
   other: {
@@ -43,7 +39,7 @@ const JSON_LD = {
       "name": "Svaraya Privacy Policy",
       "description":
         "Commitment to client-side local audio processing with zero remote file transfers or telemetry.",
-      "url": "https://svaraya.example.com/privacy",
+      "url": "https://svaraya.vercel.app/privacy",
     },
   ],
 };

@@ -9,8 +9,16 @@ import {
   type DecodedAudio,
   type ProcessedAudioResult,
 } from "@/lib/audio-engine";
-import type { EffectValue, EffectValues, Preset, PresetCategoryId, PresetKind } from "@/types/preset";
+import type { EffectValue, EffectValues, Preset, PresetCategoryId } from "@/types/preset";
 import { DEFAULT_EXPORT_CONFIG, type ExportConfig, type ExportProfile } from "@/types/export";
+import { computeRenderSignature } from "@/lib/audio/dsp-plan";
+
+/**
+ * Monotonic run id. Every new render (or explicit cancel / file change) bumps it,
+ * which both stops stale progress updates and tells a late-resolving render to
+ * throw its result away instead of publishing it.
+ */
+let activeRunId = 0;
 
 export type FileStatus = "none" | "selected";
 
@@ -80,6 +88,7 @@ interface EditorState {
   applyExportProfile: (profile: ExportProfile) => void;
 
   processAudio: () => Promise<void>;
+  cancelProcessing: () => void;
   clearProcessedResult: () => void;
 
   togglePlay: (playing?: boolean) => void;
@@ -119,6 +128,23 @@ export function useSelectedPreset(): Preset | null {
   return getPresetById(selectedPresetId ?? "") ?? null;
 }
 
+/**
+ * True when the current result no longer matches the selected preset, its control
+ * values, or the export config — i.e. the shown audio is from an earlier setup.
+ */
+export function selectIsResultStale(state: {
+  processedResult: ProcessedAudioResult | null;
+  selectedPresetId: string | null;
+  effectValues: EffectValues;
+  exportConfig: ExportConfig;
+}): boolean {
+  if (!state.processedResult) return false;
+  return (
+    state.processedResult.signature !==
+    computeRenderSignature(state.selectedPresetId, state.effectValues, state.exportConfig)
+  );
+}
+
 export const useEditorStore = create<EditorState>((set, get) => ({
   status: "none",
   file: null,
@@ -151,6 +177,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   showAfter: false,
 
   selectFile: async (file: File) => {
+    activeRunId += 1;
     const prevOrig = get().originalAudioUrl;
     if (prevOrig) URL.revokeObjectURL(prevOrig);
     const prevResult = get().processedResult;
@@ -171,6 +198,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       isDecoding: true,
       decodeError: null,
       processedResult: null,
+      isProcessing: false,
+      processingProgress: 0,
+      processingStatus: "Idle",
       isPlaying: false,
       currentTime: 0,
       duration: 0,
@@ -213,6 +243,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   },
 
   clearFile: () => {
+    activeRunId += 1;
     const prevOrig = get().originalAudioUrl;
     if (prevOrig) URL.revokeObjectURL(prevOrig);
     const prevResult = get().processedResult;
@@ -232,6 +263,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       duration: 0,
       showAfter: false,
       processingError: null,
+      isProcessing: false,
+      processingProgress: 0,
+      processingStatus: "Idle",
     });
   },
 
@@ -312,7 +346,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
           mp3Bitrate: 192,
           sampleRate: 44100,
           channels: "stereo",
-          loudnessNormalize: true,
+          peakNormalize: true,
           peakProtection: true,
         },
       }));
@@ -325,7 +359,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
           wavBitDepth: 16,
           sampleRate: 0,
           channels: "stereo",
-          loudnessNormalize: false,
+          peakNormalize: false,
           peakProtection: true,
         },
       }));
@@ -338,7 +372,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
           wavBitDepth: 24,
           sampleRate: 48000,
           channels: "stereo",
-          loudnessNormalize: false,
+          peakNormalize: false,
           peakProtection: true,
         },
       }));
@@ -349,37 +383,50 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const { decodedAudio, selectedPresetId, effectValues, file, isProcessing, exportConfig } = get();
     if (!decodedAudio || !file || isProcessing) return;
 
+    const runId = (activeRunId += 1);
+    const previousResult = get().processedResult;
+    const buffer = decodedAudio.buffer;
+    const presetForRun = selectedPresetId;
+    const valuesForRun = { ...effectValues };
+    const configForRun = { ...exportConfig };
+
     set({
       isProcessing: true,
-      processingProgress: 0.15,
-      processingStatus: "Constructing Web Audio DSP graph…",
+      processingProgress: 0,
+      processingStatus: "Preparing render…",
       processingError: null,
       isPlaying: false,
     });
 
     try {
-      set({
-        processingProgress: 0.35,
-        processingStatus: "Configuring Biquad filters, impulses & spatial channels…",
-      });
-
-      await new Promise((r) => setTimeout(r, 60));
-
-      set({
-        processingProgress: 0.65,
-        processingStatus: `Rendering offline & encoding to ${exportConfig.format.toUpperCase()}…`,
-      });
-
       const result = await renderProcessedAudio(
-        decodedAudio.buffer,
-        selectedPresetId,
-        effectValues,
+        buffer,
+        presetForRun,
+        valuesForRun,
         file.name,
-        exportConfig
+        configForRun,
+        {
+          onProgress: (progress, status) => {
+            if (runId !== activeRunId) return;
+            set({
+              processingProgress: Math.min(1, Math.max(0, progress)),
+              processingStatus: status,
+            });
+          },
+          isCancelled: () => runId !== activeRunId,
+        }
       );
 
+      // Superseded by a newer render, a cancel, or a different file: drop it.
+      if (runId !== activeRunId) {
+        URL.revokeObjectURL(result.url);
+        return;
+      }
+
+      if (previousResult?.url) URL.revokeObjectURL(previousResult.url);
+
       set({
-        processingProgress: 1.0,
+        processingProgress: 1,
         processingStatus: "Complete",
         isProcessing: false,
         processedResult: result,
@@ -388,6 +435,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         showAfter: true,
       });
     } catch (err) {
+      if (runId !== activeRunId || (err instanceof Error && err.name === "ProcessingCancelledError")) {
+        if (runId === activeRunId) {
+          set({ isProcessing: false, processingProgress: 0, processingStatus: "Cancelled" });
+        }
+        return;
+      }
+
       console.error("Audio processing failure:", err);
       set({
         isProcessing: false,
@@ -399,6 +453,16 @@ export const useEditorStore = create<EditorState>((set, get) => ({
             : "An unexpected error occurred while processing the audio.",
       });
     }
+  },
+
+  cancelProcessing: () => {
+    if (!get().isProcessing) return;
+    activeRunId += 1;
+    set({
+      isProcessing: false,
+      processingProgress: 0,
+      processingStatus: "Cancelled",
+    });
   },
 
   clearProcessedResult: () => {

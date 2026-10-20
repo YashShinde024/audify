@@ -1,14 +1,11 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import {
   SpeakerHifi,
   Sparkle,
   ArrowRight,
-  WaveSawtooth,
-  Sliders,
-  ShieldCheck,
 } from "@phosphor-icons/react/dist/ssr";
-import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
+import { SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -26,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Bass Boost Engineering: Sub-Bass Sculpting Without Distortion",
     description: "The digital signal processing techniques that allow deep sub-bass amplification without harsh digital clipping.",
-    url: "https://svaraya.example.com/blog/bass-boost",
+    url: "https://svaraya.vercel.app/blog/bass-boost",
     siteName: "Svaraya",
     type: "article",
   },
@@ -50,7 +47,7 @@ const JSON_LD = {
         { "@type": "Person", "name": "Xpert Melody", "url": "https://www.youtube.com/@xpertmelody" },
       ],
       "publisher": { "@type": "Organization", "name": "Svaraya" },
-      "mainEntityOfPage": "https://svaraya.example.com/blog/bass-boost",
+      "mainEntityOfPage": "https://svaraya.vercel.app/blog/bass-boost",
     },
     {
       "@type": "FAQPage",

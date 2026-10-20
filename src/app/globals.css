@@ -2,9 +2,13 @@
 
 /*
  * Svaraya — Refined Creative Audio Studio Design Tokens
- * Quartz (porcelain / white / graphite) on public surfaces.
- * Studio Dark (#19181f / graphite surfaces) for the dedicated audio workspace.
- * Restrained Sonic Violet accent (#7657d6).
+ * Light: Porcelain (#F7F5F0) canvas / white surfaces / graphite type.
+ * Dark:  Pitch black (#09090C) canvas / #121216 raised surfaces.
+ * Accent: Restrained crimson ("ember") — the red thread of the wordmark.
+ *
+ * Theming scope: a single `dark` class on <html> drives every dark rule.
+ * `.studio-theme` is kept only as a deprecated alias so legacy selectors
+ * still resolve; the ThemeProvider never sets it.
  */
 
 :root {
@@ -23,15 +27,22 @@
   --color-muted: #5e5a6a;
   --color-faint: #8d8999;
 
-  /* Sonic accents — Used with restraint */
-  --color-violet: #7657d6;
-  --color-purple: #8365e2;
+  /* Restrained crimson accent */
+  --color-accent: #9e1b32;
+  --color-accent-hover: #7f1526;
+  --color-accent-soft: rgb(158 27 50 / 0.09);
+
+  /* Deprecated aliases — repointed to the crimson family so no legacy
+     component can reintroduce violet. Do not use these in new code. */
+  --color-violet: var(--color-accent);
+  --color-purple: var(--color-accent);
+  --color-lavender: var(--color-accent-soft);
   --color-blue: #4e7de0;
-  --color-coral: #d99091;
+  --color-coral: #c25454;
   --color-peach: #f0b68e;
-  --color-lavender: #e7ddfb;
-  --color-accent: #7657d6;
-  --color-accent-hover: #6546c4;
+
+  /* Ember — the signature crimson used by console utilities */
+  --color-ember: #9e1b32;
 
   /* Functional status */
   --color-success: #1a9e6e;
@@ -39,29 +50,17 @@
   --color-error: #d64545;
 }
 
-/* Signature crimson — the red thread through the Svaraya wordmark */
-:root {
-  --color-ember: #e2483f;
-}
-
-.dark,
-.studio-theme {
-  --color-ember: #ff4d3d;
-
-  /* Functional status */
-  --color-success: #34d399;
-  --color-warning: #fbbf24;
-  --color-error: #f87171;
-}
-
-/* ── Dark theme & Studio theme: Pitch Black · Red Ambient ──────────────────── */
-.dark,
+/* ── Dark theme: Pitch Black · Crimson Ambient ─────────────────────────────── */
+/* html.dark = site-wide theme. .studio-theme = local dark region (Studio page,
+   homepage preview section). Same tokens, two scopes. */
+html.dark,
 .studio-theme {
   color-scheme: dark;
-  --color-canvas: #0a090d;
-  --color-surface: #111013;
-  --color-raised: #161419;
-  --color-deep: #060509;
+
+  --color-canvas: #09090c;
+  --color-surface: #0f0f13;
+  --color-raised: #121216;
+  --color-deep: #060608;
 
   --color-line: rgb(255 255 255 / 0.09);
   --color-line-strong: rgb(255 255 255 / 0.16);
@@ -70,14 +69,22 @@
   --color-muted: #a09caa;
   --color-faint: #6e6a7a;
 
-  --color-violet: #8b5cf6;
-  --color-purple: #9d7df8;
+  --color-accent: #e5484d;
+  --color-accent-hover: #f26d72;
+  --color-accent-soft: rgb(229 72 77 / 0.12);
+
+  --color-violet: var(--color-accent);
+  --color-purple: var(--color-accent);
+  --color-lavender: var(--color-accent-soft);
   --color-blue: #6366f1;
   --color-coral: #e86a60;
   --color-peach: #f0b68e;
-  --color-lavender: #e7ddfb;
-  --color-accent: #8b5cf6;
-  --color-accent-hover: #9d7df8;
+
+  --color-ember: #e5484d;
+
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
 }
 
 @theme inline {
@@ -98,6 +105,7 @@
   --color-lavender: var(--color-lavender);
   --color-accent: var(--color-accent);
   --color-accent-hover: var(--color-accent-hover);
+  --color-accent-soft: var(--color-accent-soft);
   --color-ember: var(--color-ember);
   --color-success: var(--color-success);
   --color-warning: var(--color-warning);
@@ -132,6 +140,7 @@ body {
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.03);
 }
 
+html.dark .surface-card,
 .studio-theme .surface-card {
   box-shadow: 0 1px 4px 0 rgb(0 0 0 / 0.4);
 }
@@ -184,7 +193,7 @@ body {
 
 /* Restrained accent text (only for subtle key highlights) */
 .text-accent-highlight {
-  color: var(--color-violet);
+  color: var(--color-accent);
 }
 
 /* Numeric readouts */
@@ -194,12 +203,12 @@ body {
 
 /* Accessibility & Focus States */
 :focus-visible {
-  outline: 2px solid var(--color-violet);
+  outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 
 ::selection {
-  background-color: color-mix(in srgb, var(--color-violet) 22%, transparent);
+  background-color: color-mix(in srgb, var(--color-accent) 22%, transparent);
   color: var(--color-fg);
 }
 
@@ -231,14 +240,14 @@ body {
   }
 }
 
-/* ═══ Pitch-Dark Ambient Red Atmosphere ═══════════════════════════════════════ */
+/* ═══ Pitch-Dark Crimson Atmosphere ══════════════════════════════════════════ */
 /* Faint crimson "ember" radiance pinned to the viewport in dark mode. */
-.dark body,
+html.dark body,
 .studio-theme body {
   background-color: var(--color-canvas);
   background-image:
-    radial-gradient(42rem 20rem at 12% -8rem, rgb(255 77 61 / 0.075), transparent 68%),
-    radial-gradient(56rem 26rem at 92% -6rem, rgb(139 92 246 / 0.05), transparent 66%);
+    radial-gradient(42rem 20rem at 12% -8rem, rgb(229 72 77 / 0.06), transparent 68%),
+    radial-gradient(56rem 26rem at 92% -6rem, rgb(229 72 77 / 0.03), transparent 66%);
   background-repeat: no-repeat;
 }
 
@@ -246,7 +255,7 @@ body {
 
 /* Slim animated crimson hairline above the bar (dark mode) */
 .nx-ember-line {
-  background: linear-gradient(90deg, transparent 5%, rgb(255 77 61 / 0.55) 38%, rgb(255 214 200 / 0.85) 50%, rgb(255 77 61 / 0.55) 62%, transparent 95%);
+  background: linear-gradient(90deg, transparent 5%, rgb(229 72 77 / 0.55) 38%, rgb(255 214 200 / 0.85) 50%, rgb(229 72 77 / 0.55) 62%, transparent 95%);
   animation: nx-ember-breathe 7s ease-in-out infinite;
 }
 
@@ -276,8 +285,8 @@ body {
 .nx-corner-brackets::before {
   left: 22px;
 }
-.dark .nx-corner-brackets::before,
-.dark .nx-corner-brackets::after,
+html.dark .nx-corner-brackets::before,
+html.dark .nx-corner-brackets::after,
 .studio-theme .nx-corner-brackets::before,
 .studio-theme .nx-corner-brackets::after {
   opacity: 0.85;
@@ -305,18 +314,6 @@ body {
   opacity: 1;
 }
 
-/* Active-link spectrum meter (mini equalizer) */
-@keyframes nx-eq {
-  0%, 100% { transform: scaleY(0.35); }
-  25% { transform: scaleY(1); }
-  50% { transform: scaleY(0.55); }
-  75% { transform: scaleY(0.8); }
-}
-.nx-eq-bar {
-  transform-origin: bottom;
-  animation: nx-eq 0.9s ease-in-out infinite;
-}
-
 /* Shimmer sweep for the processing progress bar */
 @keyframes nx-shimmer {
   0% { transform: translateX(-130%); }
@@ -328,9 +325,123 @@ body {
 
 /* Ember glow pulse for the processing action */
 @keyframes nx-ember-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgb(255 77 61 / 0.35), 0 8px 30px rgb(255 77 61 / 0.18); }
-  50% { box-shadow: 0 0 0 7px rgb(255 77 61 / 0), 0 8px 30px rgb(255 77 61 / 0.32); }
+  0%, 100% { box-shadow: 0 0 0 0 rgb(229 72 77 / 0.35), 0 8px 30px rgb(229 72 77 / 0.18); }
+  50% { box-shadow: 0 0 0 7px rgb(229 72 77 / 0), 0 8px 30px rgb(229 72 77 / 0.32); }
 }
 .nx-ember-pulse {
   animation: nx-ember-pulse 1.8s ease-in-out infinite;
+}
+
+/*
+ * Living Sonic Canvas � decorative hero mesh.
+ * Token-driven so both themes stay coherent; transform-only drift means
+ * no GPU cost beyond one composited layer, and hidden tabs pause it
+ * automatically (rAF-free).
+ */
+.sonic-canvas {
+  pointer-events: none;
+}
+.sonic-canvas__glow {
+  position: absolute;
+  right: -12%;
+  top: -28%;
+  width: 70rem;
+  height: 70rem;
+  border-radius: 9999px;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-accent) 10%, transparent),
+    transparent 78%
+  );
+  filter: blur(2rem);
+  transform: translateZ(0);
+}
+.sonic-canvas__mesh {
+  position: absolute;
+  inset: -2%;
+  width: 104%;
+  height: 104%;
+  color: var(--color-faint);
+  transform: translateZ(0);
+}
+html.dark .sonic-canvas__glow {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-accent) 16%, transparent),
+    transparent 74%
+  );
+}
+
+@keyframes sonic-drift {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50%  { transform: translate3d(-14px, 8px, 0) rotate(-0.4deg); }
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+@keyframes sonic-breathe {
+  0%, 100% { opacity: 0.8; }
+  50%      { opacity: 1; }
+}
+.sonic-canvas__mesh {
+  animation: sonic-drift 52s ease-in-out infinite;
+}
+.sonic-canvas__glow {
+  animation: sonic-breathe 18s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sonic-canvas__mesh,
+  .sonic-canvas__glow {
+    animation: none;
+  }
+}
+
+/* Signal Strip: seamless preset-name marquee (pure CSS, translateX only). */
+@keyframes preset-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.preset-marquee {
+  animation: preset-marquee-scroll 90s linear infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .preset-marquee {
+    animation: none;
+  }
+}
+
+/* -- Prism Dock ----------------------------------------------- */
+
+/* Active-route pulse equalizer: three tiny bars, CSS only. */
+.dock-eq span {
+  width: 2px;
+  border-radius: 1px;
+  background: var(--color-accent);
+  transform-origin: bottom;
+  animation: dock-eq-pulse 1.1s ease-in-out infinite;
+}
+.dock-eq span:nth-child(1) { height: 55%; animation-delay: 0s; }
+.dock-eq span:nth-child(2) { height: 100%; animation-delay: 0.18s; }
+.dock-eq span:nth-child(3) { height: 75%; animation-delay: 0.36s; }
+@keyframes dock-eq-pulse {
+  0%, 100% { transform: scaleY(0.3); }
+  50%      { transform: scaleY(1); }
+}
+
+/* Viewport hairline light sweep (slow, single direction, no loop jump). */
+.site-hairline-sweep {
+  animation: hairline-sweep 16s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+}
+@keyframes hairline-sweep {
+  0%   { transform: translateX(-110%); }
+  60%  { transform: translateX(410%); }
+  100% { transform: translateX(410%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-eq span,
+  .site-hairline-sweep {
+    animation: none;
+  }
+  .dock-eq span { transform: scaleY(0.8); }
 }

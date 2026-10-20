@@ -24,8 +24,10 @@ export interface ExportConfig {
   channels: ExportChannels;
   profile: ExportProfile;
   outputFilename: string;
-  peakProtection: boolean; // Soft-clipper limiter ceiling at -0.1 dBFS
-  loudnessNormalize: boolean; // Clean peak make-up gain to -0.5 dBFS
+  /** Zero-latency look-ahead limiter with a -0.3 dBFS ceiling. */
+  peakProtection: boolean;
+  /** Peak (sample-peak) make-up gain to -0.5 dBFS. Not a loudness/LUFS measurement. */
+  peakNormalize: boolean;
 }
 
 export const DEFAULT_EXPORT_CONFIG: ExportConfig = {
@@ -39,5 +41,5 @@ export const DEFAULT_EXPORT_CONFIG: ExportConfig = {
   profile: "standard",
   outputFilename: "",
   peakProtection: true,
-  loudnessNormalize: false,
+  peakNormalize: false,
 };

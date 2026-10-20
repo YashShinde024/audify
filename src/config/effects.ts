@@ -40,7 +40,7 @@ export const effects: EffectModule[] = [
     summary: "High-precision resampling changes tempo and playback duration cleanly.",
     dspNodeChain: ["AudioBufferSourceNode.playbackRate"],
     parameters: [
-      { name: "Speed", range: "30% – 175%", unit: "%", description: "Ratio relative to the original recording speed." },
+      { name: "Speed", range: "30% – 180% (preset-dependent)", unit: "%", description: "Ratio relative to the original recording speed." },
     ],
     targetPresetId: "slowed",
     status: "supported",
@@ -50,9 +50,9 @@ export const effects: EffectModule[] = [
     name: "Semitone Pitch Transposition",
     category: "Pitch & Speed",
     summary: "Transposes the tonal root of the recording by fractional or discrete semitones.",
-    dspNodeChain: ["AudioBufferSourceNode.playbackRate", "DetuneCents"],
+    dspNodeChain: ["AudioBufferSourceNode.playbackRate (= speed × 2^(semitones/12))"],
     parameters: [
-      { name: "Pitch Offset", range: "-8 to +8", unit: "st", description: "Semitone musical intervals up or down." },
+      { name: "Pitch Offset", range: "0 to +8 (nightcore), -8 to 0 (daycore), -12 to +12 (pitch-shifter)", unit: "st", description: "Semitone musical intervals up or down." },
     ],
     targetPresetId: "nightcore",
     status: "supported",
@@ -91,10 +91,10 @@ export const effects: EffectModule[] = [
     id: "treble-shelf",
     name: "High-Shelf Air & Treble",
     category: "Tone & EQ",
-    summary: "Boosts or attenuates high frequencies above 8.5 kHz with minimal phase shift.",
-    dspNodeChain: ["BiquadFilterNode (highshelf, 8500 Hz)"],
+    summary: "Boosts high frequencies above the 9 kHz corner with minimal phase shift.",
+    dspNodeChain: ["BiquadFilterNode (highshelf, 9000 Hz)"],
     parameters: [
-      { name: "Treble Gain", range: "-8 dB to +10 dB", unit: "dB", description: "High frequency contour gain." },
+      { name: "High Shelf Boost", range: "0 dB to +10 dB", unit: "dB", description: "High frequency contour gain." },
     ],
     targetPresetId: "treble-air",
     status: "supported",
@@ -104,9 +104,9 @@ export const effects: EffectModule[] = [
     name: "Peaking Mid-Presence Filter",
     category: "Tone & EQ",
     summary: "Parametric peaking bell filter centered at 2.6 kHz to focus vocals and leads.",
-    dspNodeChain: ["BiquadFilterNode (peaking, Q=1.2, 2600 Hz)"],
+    dspNodeChain: ["BiquadFilterNode (peaking, Q=1.0, 2600 Hz)"],
     parameters: [
-      { name: "Presence", range: "-6 dB to +8 dB", unit: "dB", description: "Vocal articulation and mid forwardness." },
+      { name: "Presence", range: "0 dB to +8 dB (default +3.5 dB)", unit: "dB", description: "Vocal articulation and mid forwardness." },
     ],
     targetPresetId: "vocal-clarity",
     status: "supported",
@@ -115,7 +115,7 @@ export const effects: EffectModule[] = [
     id: "mud-cut",
     name: "Low-Cut / Mud High-Pass",
     category: "Tone & EQ",
-    summary: "12 dB/octave high-pass filter clearing boxy low frequencies between 80 Hz and 120 Hz.",
+    summary: "High-pass filter clearing boxy low frequencies below 110 Hz (default enabled).",
     dspNodeChain: ["BiquadFilterNode (highpass, 110 Hz)"],
     parameters: [
       { name: "Filter Enable", range: "On / Off", unit: "bool", description: "Engages high-pass mud cut." },
@@ -127,26 +127,26 @@ export const effects: EffectModule[] = [
   /* 4. Bass */
   {
     id: "low-shelf-bass",
-    name: "Low-Shelf Bass Boost",
+    name: "Low-Shelf Bass Boost (Heavy Tier)",
     category: "Bass",
-    summary: "Delivers clean, powerful low-frequency reinforcement centered at 90 Hz.",
-    dspNodeChain: ["BiquadFilterNode (lowshelf, 90 Hz)"],
+    summary: "Delivers powerful low-frequency reinforcement with a 75 Hz low-shelf.",
+    dspNodeChain: ["BiquadFilterNode (lowshelf, 75 Hz)"],
     parameters: [
-      { name: "Bass Gain", range: "0 dB to +14 dB", unit: "dB", description: "Sub and kick drum reinforcement." },
+      { name: "Bass Gain", range: "8 dB to +14 dB (default +10.5 dB)", unit: "dB", description: "Sub and kick drum reinforcement." },
     ],
-    targetPresetId: "bass-boosted",
+    targetPresetId: "bass-boost-heavy",
     status: "supported",
   },
   {
     id: "sub-harmonic-shelf",
-    name: "Sub Octave Resonance",
+    name: "Sub Shelf (Extreme Tier)",
     category: "Bass",
-    summary: "Targeted sub-low shelf boosting fundamental frequencies below 60 Hz.",
-    dspNodeChain: ["BiquadFilterNode (lowshelf, 55 Hz)"],
+    summary: "Deep sub-low shelf boosting fundamentals below 65 Hz.",
+    dspNodeChain: ["BiquadFilterNode (lowshelf, 65 Hz)"],
     parameters: [
-      { name: "Sub-Bass", range: "0 dB to +12 dB", unit: "dB", description: "Low fundamental chest weight." },
+      { name: "Sub-Bass", range: "12 dB to +18 dB (default +15 dB)", unit: "dB", description: "Low fundamental chest weight." },
     ],
-    targetPresetId: "deep-bass",
+    targetPresetId: "bass-boost-extreme",
     status: "supported",
   },
 
@@ -155,8 +155,8 @@ export const effects: EffectModule[] = [
     id: "8d-orbital-panner",
     name: "360° 8D Orbital Panning",
     category: "Stereo",
-    summary: "Continuous automated sinusoidal stereo panning producing an orbiting sound field.",
-    dspNodeChain: ["StereoPannerNode", "AudioParam.setValueAtTime() (Sinusoidal Modulation)"],
+    summary: "Continuous oscillator-driven sinusoidal stereo panning producing an orbiting sound field; mono sources are widened first so the orbit is audible.",
+    dspNodeChain: ["StereoPannerNode", "OscillatorNode LFO → StereoPanner.pan"],
     parameters: [
       { name: "Orbit Frequency", range: "10% – 100%", unit: "%", description: "Speed of continuous left-right rotation." },
     ],
@@ -167,8 +167,8 @@ export const effects: EffectModule[] = [
     id: "stereo-widener",
     name: "Stereo Boundary Expander",
     category: "Stereo",
-    summary: "Broadens soundstage width while maintaining mono compatibility.",
-    dspNodeChain: ["ChannelSplitterNode", "MicroDelay", "ChannelMergerNode"],
+    summary: "Broadens soundstage width via mid/side processing; already-mono sources pass through unchanged.",
+    dspNodeChain: ["Mid/Side Split", "Side Gain (Width)", "Stereo Re-composition"],
     parameters: [
       { name: "Width", range: "10% – 100%", unit: "%", description: "Stereo spread beyond conventional speaker axes." },
     ],
@@ -205,10 +205,10 @@ export const effects: EffectModule[] = [
     id: "underwater-filter",
     name: "Acoustic Low-Pass Submersion",
     category: "Creative",
-    summary: "Steep 24 dB/octave low-pass filter isolating low rumble and dampening highs.",
-    dspNodeChain: ["BiquadFilterNode (lowpass, 480 Hz, Q=2.0)"],
+    summary: "Two cascaded 24 dB/octave low-pass filters at 520 Hz plus a 160 Hz sub shelf for a static submerged character.",
+    dspNodeChain: ["BiquadFilterNode (lowpass, 520 Hz) ×2", "BiquadFilterNode (lowshelf, 160 Hz)", "Reverb (damped tail)"],
     parameters: [
-      { name: "Muffled Resonance", range: "0 dB to +10 dB", unit: "dB", description: "Deep submerged acoustic volume." },
+      { name: "Muffled Low Body", range: "0 dB to +10 dB", unit: "dB", description: "Sub-surface low end boost." },
     ],
     targetPresetId: "underwater",
     status: "supported",
@@ -217,10 +217,10 @@ export const effects: EffectModule[] = [
   /* 7. Utility & Finishing */
   {
     id: "peak-protection-limiter",
-    name: "True Peak Ceiling Protection",
+    name: "Look-Ahead Peak Protection Limiter",
     category: "Utility & Finishing",
-    summary: "Soft-knee transparent limiter prevents inter-sample clipping and digital overs.",
-    dspNodeChain: ["SoftCeilingLimiter (-0.1 dBFS ceiling)"],
+    summary: "Look-ahead sliding-minimum envelope limiter pulls peaks to a -0.3 dBFS sample-peak ceiling. Runs only when peak protection is enabled (default on); no true-peak or inter-sample limiting.",
+    dspNodeChain: ["Look-ahead sliding-minimum envelope", "Limiter gain application"],
     parameters: [
       { name: "Peak Protection", range: "On / Off", unit: "bool", description: "Protects playback devices from digital clipping." },
     ],
@@ -229,9 +229,9 @@ export const effects: EffectModule[] = [
   },
   {
     id: "loudness-normalization",
-    name: "RMS Headroom Normalization",
+    name: "Peak Headroom Normalization",
     category: "Utility & Finishing",
-    summary: "Analyzes maximum peak amplitude and applies optimal linear gain up to -0.5 dBFS.",
+    summary: "Analyzes the maximum sample peak and applies linear make-up gain up to -0.5 dBFS.",
     dspNodeChain: ["PeakAnalysis", "GainNode (Make-up normalization)"],
     parameters: [
       { name: "Normalization Target", range: "-0.5 dBFS", unit: "dBFS", description: "Headroom-safe peak normalization." },
@@ -248,7 +248,7 @@ export const effects: EffectModule[] = [
     parameters: [
       { name: "Mode", range: "Stereo / Mono", unit: "select", description: "Channel configuration." },
     ],
-    targetPresetId: "mastering-polish",
+    targetPresetId: "downmixer",
     status: "supported",
   },
 ];

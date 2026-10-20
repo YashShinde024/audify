@@ -4,11 +4,8 @@ import {
   PianoKeys,
   Sparkle,
   ArrowRight,
-  Clock,
-  ShieldCheck,
-  Waveform,
 } from "@phosphor-icons/react/dist/ssr";
-import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
+import { SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -27,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "432 Hz vs 440 Hz Tuning: The Acoustic Truth & Mathematics",
     description: "Discover the mathematical formula and acoustic history behind converting music to 432 Hz.",
-    url: "https://svaraya.example.com/blog/432hz-tuning",
+    url: "https://svaraya.vercel.app/blog/432hz-tuning",
     siteName: "Svaraya",
     type: "article",
   },
@@ -51,7 +48,7 @@ const JSON_LD = {
         { "@type": "Person", "name": "Xpert Melody", "url": "https://www.youtube.com/@xpertmelody" },
       ],
       "publisher": { "@type": "Organization", "name": "Svaraya" },
-      "mainEntityOfPage": "https://svaraya.example.com/blog/432hz-tuning",
+      "mainEntityOfPage": "https://svaraya.vercel.app/blog/432hz-tuning",
     },
     {
       "@type": "FAQPage",
@@ -133,7 +130,7 @@ export default function FourThirtyTwoHzGuidePage() {
                 In equal temperament, the ratio between frequencies of two semitones is 2^(1/12). To find the pitch shift in cents (C):
               </p>
               <div className="rounded-xl border border-line bg-surface p-4 font-mono text-xs text-neutral-300 space-y-1">
-                <p className="text-emerald-400 font-semibold">// 440 Hz to 432 Hz Mathematical Formula</p>
+                <p className="text-emerald-400 font-semibold">{"// 440 Hz to 432 Hz Mathematical Formula"}</p>
                 <p>Ratio = 432 / 440 = 0.9818181818...</p>
                 <p>Cents = 1200 * Math.log2(432 / 440)</p>
                 <p>Cents = 1200 * (-0.026472) = -31.7666 cents</p>
@@ -172,3 +169,4 @@ export default function FourThirtyTwoHzGuidePage() {
     </>
   );
 }
+

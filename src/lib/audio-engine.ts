@@ -5,13 +5,14 @@
  * - Real audio file decoding via Web Audio API
  * - Authentic peak extraction for genuine waveform visualization
  * - Native BPM / Tempo detection from decoded PCM energy autocorrelation
- * - Audio buffer trimming and slicing (Cutter / Trimmer utility)
- * - Exact 440 Hz to 432 Hz pitch conversion (432/440 tuning ratio)
- * - Calibrated discrete Bass Boost levels (Light +3dB, Moderate +7dB, Heavy +10dB, Extreme +15dB)
- * - Architectural acoustic reverbs (Bathroom, Small, Medium, Large, Church, Cathedral, Vocal)
+ * - Audio buffer trimming and slicing (Cutter / Trimmer utility), applied at the source
+ * - Varispeed pitch shifting (440 Hz → 432 Hz is a 432/440 playback-rate change)
+ * - Calibrated discrete Bass Boost low-shelf levels (Light +3.5dB, Moderate +7dB, Heavy +10.5dB, Extreme +15dB)
+ * - Synthesised convolution reverbs with damping, pre-delay and equal-power dry/wet
  * - 3-Band Parametric Equalizer (Low-Shelf, Mid-Peaking, High-Shelf)
- * - Auto-Panner with variable modulation rate and depth
+ * - Auto-Panner / 8D orbit with a real LFO, and static stereo balance
  * - Volume / Gain amplifier and attenuator (-18dB to +12dB)
+ * - Peak normalisation and a true look-ahead sample-peak limiter (not LUFS)
  * - Multi-format exporters:
  *   - WAV (16-bit, 24-bit, 32-bit float PCM)
  *   - MP3 (128, 192, 256, 320 kbps via lamejs)
@@ -20,8 +21,41 @@
  */
 
 import lamejs from "lamejs";
+import MPEGMode from "lamejs/src/js/MPEGMode.js";
+import Lame from "lamejs/src/js/Lame.js";
+import BitStream from "lamejs/src/js/BitStream.js";
+
+/**
+ * lamejs 1.2.1 compiles its sources into files that reference `MPEGMode`,
+ * `Lame` and `BitStream` as bare identifiers (leftovers from the originally
+ * concatenated browser bundle). Under any modern module system those names are
+ * undefined, so `new lamejs.Mp3Encoder(...)` would throw
+ * "MPEGMode is not defined" — i.e. MP3 export was broken at runtime.
+ * Re-exposing them on the global object is the canonical fix.
+ */
+if (typeof globalThis !== "undefined") {
+  const g = globalThis as Record<string, unknown>;
+  g.MPEGMode = g.MPEGMode ?? MPEGMode;
+  g.Lame = g.Lame ?? Lame;
+  g.BitStream = g.BitStream ?? BitStream;
+}
 import type { EffectValues } from "@/types/preset";
+import { DEFAULT_EXPORT_CONFIG } from "@/types/export";
 import type { ExportConfig } from "@/types/export";
+import {
+  MAX_OUTPUT_SECONDS,
+  computeRenderSignature,
+  resolveProcessing,
+} from "@/lib/audio/dsp-plan";
+import type { EchoSpec, FilterSpec, PanSpec, ReverbSpec } from "@/lib/audio/dsp-plan";
+import {
+  applyLookaheadLimiter,
+  applyPeakNormalize,
+  downmixChannels,
+  float80Bytes,
+  resampleChannels,
+  sanitizeChannels,
+} from "@/lib/audio/dsp-utils";
 
 export interface DecodedAudio {
   buffer: AudioBuffer;
@@ -44,6 +78,12 @@ export interface ProcessedAudioResult {
   filename: string;
   isPeakProtected: boolean;
   isNormalized: boolean;
+  /** Identifies the exact preset + settings + export config used for this render. */
+  signature: string;
+  /** Largest gain reduction from the look-ahead limiter, in dB (0 = untouched). */
+  limiterReductionDb: number;
+  /** Peak-normalisation make-up gain, in dB (0 = none applied). */
+  normalizeDb: number;
 }
 
 let sharedAudioContext: AudioContext | null = null;
@@ -161,513 +201,617 @@ export async function decodeAudioFile(file: File, peakBuckets = 72): Promise<Dec
   };
 }
 
+/** Thrown when the caller asks to discard an in-flight render. */
+export class ProcessingCancelledError extends Error {
+  constructor() {
+    super("Processing was cancelled.");
+    this.name = "ProcessingCancelledError";
+  }
+}
+
+export interface RenderOptions {
+  /** Real pipeline stages only — no timers, no estimates. */
+  onProgress?: (progress: number, status: string) => void;
+  /** Polled between stages. `startRendering()` itself cannot be aborted. */
+  isCancelled?: () => boolean;
+}
+
+function clampNumber(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+function formatDuration(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds < 0) return "unknown";
+  const minutes = Math.floor(seconds / 60);
+  const rest = Math.round(seconds % 60);
+  return minutes > 0 ? `${minutes} min ${rest} s` : `${rest} s`;
+}
+
+/** OfflineAudioContext only accepts sane, finite rates. */
+function sampleRateForRender(rate: number): number {
+  if (!Number.isFinite(rate) || rate < 8000 || rate > 96000) return 48000;
+  return Math.round(rate);
+}
+
+/** Small deterministic PRNG so an impulse response is identical every render. */
+function mulberry32(seed: number): () => number {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 /**
- * Creates an algorithmic impulse response for realistic room reverbs.
+ * Synthesises a stereo impulse response.
+ *
+ * - exponential decay reaching −60 dB exactly at `durationSeconds`
+ * - sparse early reflections in the first 70 ms
+ * - decorrelated left/right noise for a wide but mono-compatible tail
+ * - one-pole damping so the tail darkens over time instead of hissing
+ * - 2 ms fades at both ends to avoid clicks
+ * - total energy normalised to 1, so `convolver.normalize = false` keeps the
+ *   wet level predictable across room sizes
  */
 function createImpulseResponse(
   ctx: BaseAudioContext,
   durationSeconds: number,
-  decay: number,
-  brightness = 1.0
+  damping = 0.35
 ): AudioBuffer {
   const sampleRate = ctx.sampleRate;
-  const length = Math.max(sampleRate * 0.3, Math.floor(sampleRate * durationSeconds));
+  const seconds = clampNumber(durationSeconds, 0.2, 12);
+  const length = Math.max(1, Math.floor(sampleRate * seconds));
   const impulse = ctx.createBuffer(2, length, sampleRate);
-  const left = impulse.getChannelData(0);
-  const right = impulse.getChannelData(1);
+  const decayRate = Math.log(1000) / seconds;
 
-  for (let i = 0; i < length; i++) {
-    const n = i / length;
-    const envelope = Math.pow(1 - n, decay);
-    const noiseL = (Math.random() * 2 - 1) * envelope;
-    const noiseR = (Math.random() * 2 - 1) * envelope;
+  const reflectionTimes = [0.011, 0.019, 0.031, 0.047, 0.068];
+  const reflectionGains = [0.55, -0.42, 0.33, -0.26, 0.19];
+  const smoothing = clampNumber(1 - 0.92 * clampNumber(damping, 0, 1), 0.05, 1);
 
-    // Apply brightness scaling
-    left[i] = noiseL * brightness;
-    right[i] = noiseR * brightness;
+  for (let channel = 0; channel < 2; channel++) {
+    const data = impulse.getChannelData(channel);
+    const random = mulberry32(0x5f3a + channel * 7919);
+    let lowPassed = 0;
+
+    for (let i = 0; i < length; i++) {
+      const envelope = Math.exp((-decayRate * i) / sampleRate);
+      const noise = random() * 2 - 1;
+      lowPassed += (noise - lowPassed) * smoothing;
+      data[i] = lowPassed * envelope;
+    }
+
+    for (let r = 0; r < reflectionTimes.length; r++) {
+      const index = Math.floor((reflectionTimes[r] + channel * 0.003) * sampleRate);
+      if (index < length) {
+        data[index] += reflectionGains[r] * (channel === 0 ? 1 : 0.85);
+      }
+    }
+
+    const fade = Math.min(Math.floor(sampleRate * 0.002), Math.floor(length / 2));
+    for (let i = 0; i < fade; i++) {
+      const gain = i / fade;
+      data[i] *= gain;
+      data[length - 1 - i] *= gain;
+    }
+  }
+
+  let energy = 0;
+  for (let channel = 0; channel < 2; channel++) {
+    const data = impulse.getChannelData(channel);
+    for (let i = 0; i < length; i++) energy += data[i] * data[i];
+  }
+  if (energy > 1e-9) {
+    const scale = 1 / Math.sqrt(energy);
+    for (let channel = 0; channel < 2; channel++) {
+      const data = impulse.getChannelData(channel);
+      for (let i = 0; i < length; i++) data[i] *= scale;
+    }
   }
 
   return impulse;
 }
 
 /**
- * Creates an analog-style saturation curve for warm tape saturation.
+ * Saturation transfer curve: normalised tanh.
+ *
+ * `drive` grows with the amount control, and dividing by `tanh(drive)` maps
+ * ±1 input to ±1 output, so the shaper can never add hard clipping on its own.
  */
-function makeDistortionCurve(amount: number): Float32Array {
-  const k = typeof amount === "number" ? Math.max(0, Math.min(100, amount)) : 30;
-  const n_samples = 44100;
-  const curve = new Float32Array(n_samples);
-  const xDrive = (k / 100) * 12;
+function makeDistortionCurve(amount: number): Float32Array<ArrayBuffer> {
+  const drive = 1 + clampNumber(amount, 0, 100) * 0.09;
+  const samples = 4096;
+  const curve = new Float32Array(new ArrayBuffer(samples * 4));
+  const norm = Math.tanh(drive);
 
-  for (let i = 0; i < n_samples; ++i) {
-    const x = (i * 2) / n_samples - 1;
-    if (k === 0) {
-      curve[i] = x;
-    } else {
-      curve[i] = Math.tanh(x * (1 + xDrive));
-    }
+  for (let i = 0; i < samples; i++) {
+    const x = (i * 2) / (samples - 1) - 1;
+    curve[i] = Math.tanh(x * drive) / norm;
   }
   return curve;
 }
 
 /**
- * Applies peak protection (transparent soft limiter) to Float32 sample data.
+ * Builds an AudioBuffer from plain channel data. Avoids depending on a live
+ * AudioContext and works in browsers where `new AudioBuffer()` is unsupported.
  */
-function applyPeakLimiter(buffer: AudioBuffer, ceiling = 0.98): void {
-  const numChannels = buffer.numberOfChannels;
-  for (let c = 0; c < numChannels; c++) {
-    const data = buffer.getChannelData(c);
-    for (let i = 0; i < data.length; i++) {
-      const s = data[i];
-      if (Math.abs(s) > ceiling) {
-        const sign = s > 0 ? 1 : -1;
-        const over = Math.abs(s) - ceiling;
-        data[i] = sign * (ceiling + Math.tanh(over) * (1 - ceiling));
-      }
+function createPcmBuffer(channels: Float32Array[], sampleRate: number): AudioBuffer {
+  const length = channels[0]?.length ?? 0;
+  let buffer: AudioBuffer | null = null;
+
+  if (typeof AudioBuffer !== "undefined") {
+    try {
+      buffer = new AudioBuffer({
+        length,
+        numberOfChannels: channels.length,
+        sampleRate,
+      });
+    } catch {
+      buffer = null;
     }
   }
+  if (!buffer) {
+    const context = new OfflineAudioContext(channels.length, 1, sampleRate);
+    buffer = context.createBuffer(channels.length, length, sampleRate);
+  }
+
+  for (let channel = 0; channel < channels.length; channel++) {
+    buffer.getChannelData(channel).set(channels[channel]);
+  }
+  return buffer;
 }
 
 /**
- * Applies loudness normalization (peak make-up gain) up to target -0.5 dBFS.
+ * Copies the trimmed region in reverse at the source's own rate.
+ *
+ * Reversing at source rate keeps the copy sample-exact; the AudioBufferSourceNode
+ * then resamples it to the render rate with its own high-quality resampler.
  */
-function applyLoudnessNormalization(buffer: AudioBuffer, targetLinear = 0.944): void {
-  const numChannels = buffer.numberOfChannels;
-  let maxSample = 0;
+function createReversedSegment(
+  ctx: BaseAudioContext,
+  input: AudioBuffer,
+  startSeconds: number,
+  seconds: number
+): AudioBuffer {
+  const sourceRate = input.sampleRate;
+  const startFrame = clampNumber(Math.round(startSeconds * sourceRate), 0, input.length - 1);
+  const frames = Math.max(1, Math.min(Math.floor(seconds * sourceRate), input.length - startFrame));
+  const buffer = ctx.createBuffer(input.numberOfChannels, frames, sourceRate);
 
-  for (let c = 0; c < numChannels; c++) {
-    const data = buffer.getChannelData(c);
-    for (let i = 0; i < data.length; i++) {
-      const abs = Math.abs(data[i]);
-      if (abs > maxSample) maxSample = abs;
+  for (let channel = 0; channel < input.numberOfChannels; channel++) {
+    const source = input.getChannelData(channel);
+    const target = buffer.getChannelData(channel);
+    for (let i = 0; i < frames; i++) {
+      target[i] = source[startFrame + frames - 1 - i];
     }
   }
+  return buffer;
+}
 
-  if (maxSample > 0.001 && maxSample < targetLinear) {
-    const gain = targetLinear / maxSample;
-    for (let c = 0; c < numChannels; c++) {
-      const data = buffer.getChannelData(c);
-      for (let i = 0; i < data.length; i++) {
-        data[i] *= gain;
-      }
-    }
+/** Chains biquad filters in the order declared by the preset plan. */
+function connectFilters(
+  ctx: BaseAudioContext,
+  input: AudioNode,
+  specs: FilterSpec[]
+): AudioNode {
+  let node = input;
+  for (const spec of specs) {
+    const filter = ctx.createBiquadFilter();
+    filter.type = spec.type;
+    filter.frequency.value = clampNumber(spec.frequency, 20, 20000);
+    if (spec.q != null) filter.Q.value = clampNumber(spec.q, 0.0001, 40);
+    if (spec.gain != null) filter.gain.value = clampNumber(spec.gain, -40, 40);
+    node.connect(filter);
+    node = filter;
   }
+  return node;
 }
 
 /**
- * Downmixes an AudioBuffer to mono.
+ * Reverb send: optional pre-delay → convolution with a normalised IR →
+ * high-pass (removes low-frequency mud from the tail) → damping low-pass.
  */
-function downmixToMono(ctx: BaseAudioContext, buffer: AudioBuffer): AudioBuffer {
-  if (buffer.numberOfChannels === 1) return buffer;
-  const monoBuffer = ctx.createBuffer(1, buffer.length, buffer.sampleRate);
-  const monoData = monoBuffer.getChannelData(0);
-  const left = buffer.getChannelData(0);
-  const right = buffer.getChannelData(1);
+function buildReverbBranch(
+  ctx: BaseAudioContext,
+  input: AudioNode,
+  spec: ReverbSpec
+): AudioNode {
+  let node = input;
 
-  for (let i = 0; i < buffer.length; i++) {
-    monoData[i] = (left[i] + right[i]) * 0.5;
+  if (spec.preDelaySeconds > 0.001) {
+    const preDelay = ctx.createDelay(0.5);
+    preDelay.delayTime.value = clampNumber(spec.preDelaySeconds, 0, 0.45);
+    node.connect(preDelay);
+    node = preDelay;
   }
-  return monoBuffer;
+
+  const convolver = ctx.createConvolver();
+  convolver.normalize = false;
+  convolver.buffer = createImpulseResponse(ctx, spec.decaySeconds, spec.damping);
+  node.connect(convolver);
+
+  const highPass = ctx.createBiquadFilter();
+  highPass.type = "highpass";
+  highPass.frequency.value = 120;
+  highPass.Q.value = 0.707;
+  convolver.connect(highPass);
+
+  const damping = ctx.createBiquadFilter();
+  damping.type = "lowpass";
+  damping.frequency.value = clampNumber(16000 - spec.damping * 12000, 2500, 18000);
+  damping.Q.value = 0.707;
+  highPass.connect(damping);
+
+  return damping;
 }
 
 /**
- * Slices an AudioBuffer between start and end seconds.
+ * Ping-pong delay. The send is forced to mono, the first repeat lands on the
+ * left, then each repeat alternates sides while a < 1 feedback gain decays it.
  */
-function sliceAudioBuffer(ctx: BaseAudioContext, buffer: AudioBuffer, startSec: number, endSec: number): AudioBuffer {
-  const startSample = Math.max(0, Math.floor(startSec * buffer.sampleRate));
-  const endSample = Math.min(buffer.length, Math.floor(endSec * buffer.sampleRate));
-  const slicedLength = Math.max(1, endSample - startSample);
+function buildEchoBranch(
+  ctx: BaseAudioContext,
+  input: AudioNode,
+  spec: EchoSpec,
+  destination: AudioNode
+): void {
+  const send = ctx.createGain();
+  send.gain.value = clampNumber(spec.wet, 0, 1) * 0.9;
 
-  const slicedBuffer = ctx.createBuffer(buffer.numberOfChannels, slicedLength, buffer.sampleRate);
-  for (let c = 0; c < buffer.numberOfChannels; c++) {
-    const src = buffer.getChannelData(c);
-    const dst = slicedBuffer.getChannelData(c);
-    for (let i = 0; i < slicedLength; i++) {
-      dst[i] = src[startSample + i];
-    }
+  const sendFilter = ctx.createBiquadFilter();
+  sendFilter.type = "highpass";
+  sendFilter.frequency.value = 180;
+  sendFilter.Q.value = 0.707;
+  input.connect(sendFilter);
+  sendFilter.connect(send);
+
+  const makeDelay = () => {
+    const delay = ctx.createDelay(5);
+    delay.delayTime.value = clampNumber(spec.timeSeconds, 0.02, 4);
+    delay.channelCount = 1;
+    delay.channelCountMode = "explicit";
+    delay.channelInterpretation = "speakers";
+    return delay;
+  };
+
+  const leftDelay = makeDelay();
+  const rightDelay = makeDelay();
+
+  const leftPan = ctx.createStereoPanner();
+  leftPan.pan.value = -0.85;
+  const rightPan = ctx.createStereoPanner();
+  rightPan.pan.value = 0.85;
+
+  const feedback = ctx.createGain();
+  feedback.gain.value = clampNumber(spec.feedback, 0, 0.85);
+
+  const returnGain = ctx.createGain();
+  returnGain.gain.value = 0.8;
+
+  // Send → L, L → R, R → feedback → L. Each feedback cycle is 2 × delay time.
+  send.connect(leftDelay);
+  leftDelay.connect(leftPan);
+  rightDelay.connect(rightPan);
+  leftDelay.connect(rightDelay);
+  rightDelay.connect(feedback);
+  feedback.connect(leftDelay);
+
+  leftPan.connect(returnGain);
+  rightPan.connect(returnGain);
+  returnGain.connect(destination);
+}
+
+/** Mid/side width control. k = 1 is identity, k < 1 narrows, k > 1 widens. */
+function buildWidthBranch(ctx: BaseAudioContext, input: AudioNode, width: number): AudioNode {
+  const splitter = ctx.createChannelSplitter(2);
+  const merger = ctx.createChannelMerger(2);
+  input.connect(splitter);
+
+  const mid = ctx.createGain();
+  mid.gain.value = 0.5;
+  splitter.connect(mid, 0);
+  splitter.connect(mid, 1);
+  mid.connect(merger, 0, 0);
+  mid.connect(merger, 0, 1);
+
+  const side = ctx.createGain();
+  const sideLeft = ctx.createGain();
+  sideLeft.gain.value = 0.5;
+  const sideRight = ctx.createGain();
+  sideRight.gain.value = -0.5;
+  splitter.connect(sideLeft, 0);
+  splitter.connect(sideRight, 1);
+  sideLeft.connect(side);
+  sideRight.connect(side);
+
+  const toLeft = ctx.createGain();
+  toLeft.gain.value = width;
+  const toRight = ctx.createGain();
+  toRight.gain.value = -width;
+  side.connect(toLeft);
+  side.connect(toRight);
+  toLeft.connect(merger, 0, 0);
+  toRight.connect(merger, 0, 1);
+
+  return merger;
+}
+
+/** Static balance or an LFO-driven orbit/auto pan. */
+function buildPanBranch(ctx: BaseAudioContext, input: AudioNode, spec: PanSpec): AudioNode {
+  const panner = ctx.createStereoPanner();
+  input.connect(panner);
+
+  if (spec.mode === "static") {
+    panner.pan.value = clampNumber(spec.value, -1, 1);
+    return panner;
   }
-  return slicedBuffer;
+
+  panner.pan.value = 0;
+  const oscillator = ctx.createOscillator();
+  oscillator.type = "sine";
+  oscillator.frequency.value = 1 / clampNumber(spec.cycleSeconds, 0.5, 30);
+
+  const depth = ctx.createGain();
+  depth.gain.value = spec.mode === "orbit" ? 0.92 : 0.8;
+
+  oscillator.connect(depth);
+  depth.connect(panner.pan);
+  oscillator.start(0);
+
+  return panner;
 }
 
 /**
- * Renders an AudioBuffer through the full DSP signal chain into an exported audio result.
+ * Renders an AudioBuffer through the resolved DSP plan and encodes it using the
+ * requested export configuration.
+ *
+ * Signal order (documented so the UI copy can match reality):
+ * source → varispeed → filters → saturation → output gain →
+ * dry + reverb wet + echo wet → width → pan → destination.
  */
 export async function renderProcessedAudio(
   inputBuffer: AudioBuffer,
   presetId: string | null,
   effectValues: EffectValues,
   originalFileName: string,
-  exportConfig?: Partial<ExportConfig>
+  exportConfig?: Partial<ExportConfig>,
+  options?: RenderOptions
 ): Promise<ProcessedAudioResult> {
-  const speedParam = typeof effectValues["speed"] === "number" ? (effectValues["speed"] as number) : 100;
-  const pitchParam = typeof effectValues["pitch"] === "number" ? (effectValues["pitch"] as number) : 0;
-  const bassParam = typeof effectValues["bass"] === "number" ? (effectValues["bass"] as number) : 0;
-  const trebleParam = typeof effectValues["treble"] === "number" ? (effectValues["treble"] as number) : 0;
-  const presenceParam = typeof effectValues["presence"] === "number" ? (effectValues["presence"] as number) : 0;
-  const reverbParam = typeof effectValues["reverb"] === "number" ? (effectValues["reverb"] as number) : 0;
-  const roomSizeParam = typeof effectValues["size"] === "number" ? (effectValues["size"] as number) : 50;
-  const saturationParam = typeof effectValues["saturation"] === "number" ? (effectValues["saturation"] as number) : 0;
-  const warmthParam = typeof effectValues["warmth"] === "number" ? (effectValues["warmth"] as number) : 0;
-  const echoParam = typeof effectValues["echo"] === "number" ? (effectValues["echo"] as number) : 0;
-  const volumeDbParam = typeof effectValues["volume-db"] === "number" ? (effectValues["volume-db"] as number) : 0;
+  const report = (progress: number, status: string) => options?.onProgress?.(progress, status);
+  const assertActive = () => {
+    if (options?.isCancelled?.()) throw new ProcessingCancelledError();
+  };
 
-  // Trimming parameters
-  const trimStart = typeof effectValues["trim-start"] === "number" ? (effectValues["trim-start"] as number) : 0;
-  const trimEnd = typeof effectValues["trim-end"] === "number" ? (effectValues["trim-end"] as number) : inputBuffer.duration;
+  if (typeof window === "undefined") {
+    throw new Error("Audio processing requires a browser environment.");
+  }
+  if (!inputBuffer || inputBuffer.length === 0 || inputBuffer.numberOfChannels === 0) {
+    throw new Error("The decoded audio is empty. Try a different file.");
+  }
 
-  // 432 Hz exact tuning conversion ratio (432 / 440 = 0.98181818)
-  const is432Hz = presetId === "pitch-432hz" || Boolean(effectValues["432hz-enabled"]);
-  const tuningRatio = is432Hz ? 432 / 440 : 1.0;
+  const config: ExportConfig = { ...DEFAULT_EXPORT_CONFIG, ...exportConfig };
+  if (config.format === "opus") {
+    throw new Error("Opus export is not available yet. Choose WAV, AIFF, or MP3.");
+  }
 
-  const isMudCut = Boolean(effectValues["mud-cut"]);
-  const isReverse = Boolean(effectValues["reverse-enabled"]) || presetId === "reverse";
+  report(0.02, "Reading source audio…");
+  assertActive();
 
-  // Calculate speed & pitch transposition
-  const semitoneMultiplier = Math.pow(2, pitchParam / 12);
-  const finalPlaybackRate = Math.max(
-    0.25,
-    Math.min(2.5, (speedParam / 100) * semitoneMultiplier * tuningRatio)
+  const plan = resolveProcessing(presetId, effectValues);
+  const sourceDuration = inputBuffer.duration;
+  const renderRate = sampleRateForRender(inputBuffer.sampleRate);
+
+  const trimStart = clampNumber(plan.trim?.start ?? 0, 0, Math.max(0, sourceDuration - 0.01));
+  const trimEnd = clampNumber(plan.trim?.end ?? sourceDuration, trimStart, sourceDuration);
+  const trimmedSeconds = trimEnd - trimStart;
+  if (trimmedSeconds < 0.02) {
+    throw new Error("The trim range is too short to render. Move the trim handles further apart.");
+  }
+
+  const plannedSeconds = trimmedSeconds / plan.playbackRate + plan.tailSeconds;
+  if (plannedSeconds > MAX_OUTPUT_SECONDS) {
+    throw new Error(
+      `This render would be ${formatDuration(plannedSeconds)} long, above the ${formatDuration(
+        MAX_OUTPUT_SECONDS
+      )} limit. Shorten the clip or use a less extreme slowdown.`
+    );
+  }
+
+  const targetRate = config.sampleRate === 0 ? renderRate : config.sampleRate;
+  const graphChannels = plan.mono
+    ? 1
+    : inputBuffer.numberOfChannels > 1 || plan.needsStereo
+      ? 2
+      : 1;
+  const finalChannels = plan.mono || config.channels === "mono" ? 1 : graphChannels;
+
+  const maxFrames = 48_000 * MAX_OUTPUT_SECONDS;
+  const renderFrames = Math.ceil(plannedSeconds * renderRate);
+  const outputFrames = Math.ceil(plannedSeconds * targetRate);
+  if (renderFrames > maxFrames || outputFrames > maxFrames) {
+    throw new Error(
+      `Rendering this clip at ${(targetRate / 1000).toFixed(1)} kHz would exceed the memory limit. ` +
+        "Choose a lower sample rate or a shorter selection."
+    );
+  }
+
+  report(0.08, "Building the effect chain…");
+  assertActive();
+
+  const offline = new OfflineAudioContext(
+    graphChannels,
+    Math.max(1, renderFrames),
+    renderRate
   );
 
-  // Apply trimming to source buffer if specified
-  let workingBuffer = inputBuffer;
-  if ((trimStart > 0 || trimEnd < inputBuffer.duration) && trimEnd > trimStart) {
-    const tempCtx = new OfflineAudioContext(inputBuffer.numberOfChannels, 1, inputBuffer.sampleRate);
-    workingBuffer = sliceAudioBuffer(tempCtx, inputBuffer, trimStart, trimEnd);
+  const source = offline.createBufferSource();
+  source.buffer = plan.reverse
+    ? createReversedSegment(offline, inputBuffer, trimStart, trimmedSeconds)
+    : inputBuffer;
+  source.playbackRate.value = plan.playbackRate;
+
+  let node: AudioNode = source;
+  node = connectFilters(offline, node, plan.filters);
+
+  if (plan.saturation > 0) {
+    const shaper = offline.createWaveShaper();
+    shaper.curve = makeDistortionCurve(plan.saturation);
+    shaper.oversample = "4x";
+    node.connect(shaper);
+    node = shaper;
   }
 
-  // Determine output duration
-  let outputDuration = workingBuffer.duration / finalPlaybackRate;
-  const hasReverb =
-    reverbParam > 0 ||
-    presetId?.includes("reverb") ||
-    presetId === "hall-reverb" ||
-    presetId === "cathedral-reverb" ||
-    presetId === "church-hall-reverb" ||
-    presetId === "ethereal-space" ||
-    presetId === "bathroom-reverb" ||
-    presetId === "vocal-reverb";
-
-  if (hasReverb) {
-    outputDuration += Math.min(6.5, (roomSizeParam / 100) * 5.5);
+  if (Math.abs(plan.outputGainDb) > 0.001) {
+    const gain = offline.createGain();
+    gain.gain.value = Math.pow(10, plan.outputGainDb / 20);
+    node.connect(gain);
+    node = gain;
   }
 
-  // Handle Target Sample Rate & Channels
-  const targetSampleRate =
-    exportConfig?.sampleRate && exportConfig.sampleRate > 0
-      ? exportConfig.sampleRate
-      : workingBuffer.sampleRate;
-  const targetChannels =
-    exportConfig?.channels === "mono" || presetId === "downmixer"
-      ? 1
-      : Math.max(2, workingBuffer.numberOfChannels);
-  const totalRenderFrames = Math.ceil(outputDuration * targetSampleRate);
+  const bus = offline.createGain();
+  if (plan.reverb) {
+    const dry = offline.createGain();
+    dry.gain.value = Math.cos((plan.reverb.wet * Math.PI) / 2);
+    const wet = offline.createGain();
+    wet.gain.value = Math.sin((plan.reverb.wet * Math.PI) / 2);
 
-  // Initialize OfflineAudioContext
-  const offlineCtx = new OfflineAudioContext(targetChannels, totalRenderFrames, targetSampleRate);
+    node.connect(dry);
+    dry.connect(bus);
+    const tail = buildReverbBranch(offline, node, plan.reverb);
+    tail.connect(wet);
+    wet.connect(bus);
+  } else {
+    node.connect(bus);
+  }
 
-  // Prepare input buffer (applying reverse if enabled)
-  let processBuffer = workingBuffer;
-  if (isReverse) {
-    processBuffer = offlineCtx.createBuffer(
-      workingBuffer.numberOfChannels,
-      workingBuffer.length,
-      workingBuffer.sampleRate
+  if (plan.echo) {
+    buildEchoBranch(offline, node, plan.echo, bus);
+  }
+
+  let finalNode: AudioNode = bus;
+  // Widening a mono source is a documented pass-through: there is no side signal.
+  if (plan.width != null && graphChannels === 2 && inputBuffer.numberOfChannels > 1) {
+    finalNode = buildWidthBranch(offline, finalNode, plan.width);
+  }
+  if (plan.pan) {
+    finalNode = buildPanBranch(offline, finalNode, plan.pan);
+  }
+  finalNode.connect(offline.destination);
+
+  report(0.18, "Rendering offline…");
+  assertActive();
+  source.start(0, plan.reverse ? 0 : trimStart, trimmedSeconds);
+  const rendered = await offline.startRendering();
+  assertActive();
+
+  const channelData: Float32Array[] = [];
+  for (let channel = 0; channel < rendered.numberOfChannels; channel++) {
+    channelData.push(rendered.getChannelData(channel));
+  }
+
+  report(0.62, "Checking for invalid samples…");
+  sanitizeChannels(channelData);
+
+  const downmixed =
+    plan.mono || config.channels === "mono" ? downmixChannels(channelData) : channelData;
+
+  report(0.7, `Resampling to ${(targetRate / 1000).toFixed(1)} kHz…`);
+  assertActive();
+  const resampled =
+    targetRate === renderRate
+      ? downmixed
+      : resampleChannels(downmixed, renderRate, targetRate);
+  assertActive();
+
+  let normalizeDb = 0;
+  if (config.peakNormalize) {
+    report(0.8, "Applying peak normalisation…");
+    normalizeDb = applyPeakNormalize(resampled, 0.944);
+  }
+
+  let limiterReductionDb = 0;
+  if (config.peakProtection) {
+    report(0.86, "Applying look-ahead peak limiting…");
+    limiterReductionDb = applyLookaheadLimiter(resampled, targetRate).maxReductionDb;
+    assertActive();
+  }
+
+  if (resampled.length !== finalChannels) {
+    throw new Error("Internal channel mismatch while preparing the export.");
+  }
+
+  report(0.92, "Packaging audio…");
+  const outputBuffer = createPcmBuffer(resampled, targetRate);
+
+  let blob: Blob;
+  let bitDepthOrBitrate: string;
+  let extension: "wav" | "mp3" | "aiff";
+
+  if (config.format === "mp3") {
+    if (targetRate !== 32000 && targetRate !== 44100 && targetRate !== 48000) {
+      throw new Error(
+        `MP3 encoding supports 32 kHz, 44.1 kHz and 48 kHz only (this render is ${(targetRate / 1000).toFixed(
+          1
+        )} kHz). Choose WAV or AIFF, or pick a supported sample rate.`
+      );
+    }
+    report(0.94, `Encoding MP3 at ${config.mp3Bitrate} kbps…`);
+    blob = encodeMp3(outputBuffer, config.mp3Bitrate);
+    bitDepthOrBitrate = `${config.mp3Bitrate} kbps`;
+    extension = "mp3";
+  } else if (config.format === "aiff") {
+    report(0.94, `Encoding AIFF at ${config.aiffBitDepth}-bit…`);
+    blob = encodeAiff(outputBuffer, config.aiffBitDepth);
+    bitDepthOrBitrate = `${config.aiffBitDepth}-bit`;
+    extension = "aiff";
+  } else {
+    report(
+      0.94,
+      config.wavBitDepth === 32
+        ? "Encoding WAV (32-bit float)…"
+        : `Encoding WAV at ${config.wavBitDepth}-bit…`
     );
-    for (let c = 0; c < workingBuffer.numberOfChannels; c++) {
-      const src = workingBuffer.getChannelData(c);
-      const dst = processBuffer.getChannelData(c);
-      for (let i = 0; i < src.length; i++) {
-        dst[i] = src[src.length - 1 - i];
-      }
-    }
+    blob = encodeWav(outputBuffer, config.wavBitDepth);
+    bitDepthOrBitrate = config.wavBitDepth === 32 ? "32-bit float" : `${config.wavBitDepth}-bit`;
+    extension = "wav";
   }
 
-  const sourceNode = offlineCtx.createBufferSource();
-  sourceNode.buffer = processBuffer;
-  sourceNode.playbackRate.value = finalPlaybackRate;
+  assertActive();
 
-  let currentNode: AudioNode = sourceNode;
+  const baseName =
+    originalFileName
+      .replace(/\.[^./\\]+$/, "")
+      .trim()
+      .replace(/[^\w\-. ]+/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "") || "audio";
 
-  // 1. High-Pass Mud Cut / Rumble Reducer
-  if (isMudCut || presetId === "vocal-clarity" || presetId === "sub-rumble-cut" || presetId === "noise-reducer") {
-    const hpCut = offlineCtx.createBiquadFilter();
-    hpCut.type = "highpass";
-    hpCut.frequency.value = presetId === "sub-rumble-cut" ? 80 : 120;
-    hpCut.Q.value = 0.707;
-    currentNode.connect(hpCut);
-    currentNode = hpCut;
-  }
+  const requestedName = config.outputFilename.trim().replace(/[\\/:*?"<>|]+/g, "-");
+  const filename = requestedName
+    ? `${requestedName.replace(/\.(wav|mp3|aiff|aif|opus)$/i, "")}.${extension}`
+    : `svaraya-${presetId ?? "custom"}-${baseName}.${extension}`;
 
-  // 2. Steep Low-Pass Filter (Underwater or Telephone effect)
-  if (presetId === "underwater") {
-    const lpUnderwater = offlineCtx.createBiquadFilter();
-    lpUnderwater.type = "lowpass";
-    lpUnderwater.frequency.value = 480;
-    lpUnderwater.Q.value = 1.8;
-    currentNode.connect(lpUnderwater);
-    currentNode = lpUnderwater;
-  } else if (presetId === "vintage-radio" || presetId === "telephone-voice") {
-    const bpRadio = offlineCtx.createBiquadFilter();
-    bpRadio.type = "bandpass";
-    bpRadio.frequency.value = 1600;
-    bpRadio.Q.value = 1.4;
-    currentNode.connect(bpRadio);
-    currentNode = bpRadio;
-  }
-
-  // 3. Calibrated Bass Booster Levels
-  let effectiveBass = bassParam;
-  let bassFreq = 85;
-  if (presetId === "bass-boost-light") {
-    effectiveBass = 3.5;
-    bassFreq = 95;
-  } else if (presetId === "bass-boost-mod") {
-    effectiveBass = 7.0;
-    bassFreq = 85;
-  } else if (presetId === "bass-boost-heavy") {
-    effectiveBass = 10.5;
-    bassFreq = 75;
-  } else if (presetId === "bass-boost-extreme") {
-    effectiveBass = 15.0;
-    bassFreq = 65;
-  } else if (presetId === "deep-bass") {
-    effectiveBass = 6.0;
-    bassFreq = 55;
-  } else if (presetId === "cinematic-trailer") {
-    effectiveBass = 6.5;
-    bassFreq = 65;
-  }
-
-  if (effectiveBass !== 0) {
-    const bassFilter = offlineCtx.createBiquadFilter();
-    bassFilter.type = "lowshelf";
-    bassFilter.frequency.value = bassFreq;
-    bassFilter.gain.value = effectiveBass;
-    currentNode.connect(bassFilter);
-    currentNode = bassFilter;
-  }
-
-  // 4. Peaking Mid-Presence (Vocals, Equalizer Mid, Punch)
-  const eqMidParam = typeof effectValues["eq-mid"] === "number" ? (effectValues["eq-mid"] as number) : 0;
-  const effectivePresence = presenceParam || eqMidParam || (presetId === "vocal-clarity" ? 3.5 : presetId === "punchy-mids" ? 4 : 0);
-  if (effectivePresence !== 0) {
-    const presenceFilter = offlineCtx.createBiquadFilter();
-    presenceFilter.type = "peaking";
-    presenceFilter.frequency.value = 2400;
-    presenceFilter.Q.value = 1.2;
-    presenceFilter.gain.value = effectivePresence;
-    currentNode.connect(presenceFilter);
-    currentNode = presenceFilter;
-  }
-
-  // 5. High-Shelf Treble / Air / De-Harsh
-  const eqHighParam = typeof effectValues["eq-high"] === "number" ? (effectValues["eq-high"] as number) : 0;
-  const effectiveTreble = trebleParam || eqHighParam || (presetId === "nightcore" ? 4 : presetId === "treble-air" ? 5 : presetId === "de-harsh" ? -3.5 : 0);
-  if (effectiveTreble !== 0) {
-    const trebleFilter = offlineCtx.createBiquadFilter();
-    trebleFilter.type = "highshelf";
-    trebleFilter.frequency.value = 9000;
-    trebleFilter.gain.value = effectiveTreble;
-    currentNode.connect(trebleFilter);
-    currentNode = trebleFilter;
-  }
-
-  // 6. Analog Tape / Tube Saturation
-  const effectiveSaturation =
-    saturationParam ||
-    (warmthParam > 0 ? warmthParam * 0.6 : presetId === "lofi-tape" ? 50 : presetId === "warm-tube" ? 45 : 0);
-  if (effectiveSaturation > 0) {
-    const waveshaper = offlineCtx.createWaveShaper();
-    waveshaper.curve = makeDistortionCurve(effectiveSaturation) as Float32Array<ArrayBuffer>;
-    waveshaper.oversample = "4x";
-    currentNode.connect(waveshaper);
-    currentNode = waveshaper;
-  }
-
-  // 7. Volume Changer / Gain Adjustment (dB)
-  if (volumeDbParam !== 0 || presetId === "volume-changer") {
-    const volumeGain = offlineCtx.createGain();
-    const gainFactor = Math.pow(10, volumeDbParam / 20);
-    volumeGain.gain.value = gainFactor;
-    currentNode.connect(volumeGain);
-    currentNode = volumeGain;
-  }
-
-  // Main mixing buses
-  const dryGain = offlineCtx.createGain();
-  const wetGain = offlineCtx.createGain();
-  const masterBus = offlineCtx.createGain();
-
-  currentNode.connect(dryGain);
-  dryGain.connect(masterBus);
-
-  // 8. Architectural Room Reverbs
-  let roomDecay = (roomSizeParam / 100) * 4.2;
-  let reverbWet = reverbParam / 100;
-  let brightness = 1.0;
-
-  if (presetId === "bathroom-reverb") {
-    roomDecay = 0.6;
-    reverbWet = reverbWet || 0.35;
-    brightness = 1.6; // bright tiled flutter
-  } else if (presetId === "small-room-reverb") {
-    roomDecay = 1.2;
-    reverbWet = reverbWet || 0.25;
-    brightness = 1.1;
-  } else if (presetId === "medium-room-reverb") {
-    roomDecay = 2.2;
-    reverbWet = reverbWet || 0.35;
-  } else if (presetId === "large-room-reverb") {
-    roomDecay = 3.4;
-    reverbWet = reverbWet || 0.45;
-  } else if (presetId === "church-hall-reverb") {
-    roomDecay = 4.8;
-    reverbWet = reverbWet || 0.55;
-    brightness = 0.9;
-  } else if (presetId === "cathedral-reverb") {
-    roomDecay = 6.2;
-    reverbWet = reverbWet || 0.65;
-    brightness = 0.85;
-  } else if (presetId === "vocal-reverb") {
-    roomDecay = 1.8;
-    reverbWet = reverbWet || 0.28;
-    brightness = 1.2;
-  } else if (presetId === "slowed-reverb") {
-    reverbWet = reverbWet || 0.42;
-  }
-
-  if (reverbWet > 0) {
-    const convolver = offlineCtx.createConvolver();
-    convolver.buffer = createImpulseResponse(offlineCtx, Math.max(0.4, roomDecay), 2.1, brightness);
-    currentNode.connect(convolver);
-
-    wetGain.gain.value = Math.min(1.0, reverbWet * 1.35);
-    dryGain.gain.value = Math.max(0.4, 1.0 - reverbWet * 0.35);
-
-    convolver.connect(wetGain);
-    wetGain.connect(masterBus);
-  }
-
-  // 9. Stereo Feedback Delay / Echo
-  const echoWet = echoParam / 100 || (presetId === "ping-pong" ? 0.4 : 0);
-  if (echoWet > 0) {
-    const delay = offlineCtx.createDelay(1.2);
-    delay.delayTime.value = 0.32;
-    const feedback = offlineCtx.createGain();
-    feedback.gain.value = Math.min(0.68, echoWet * 0.7);
-
-    const echoBus = offlineCtx.createGain();
-    echoBus.gain.value = echoWet * 0.8;
-
-    currentNode.connect(delay);
-    delay.connect(feedback);
-    feedback.connect(delay);
-    delay.connect(echoBus);
-    echoBus.connect(masterBus);
-  }
-
-  // 10. Auto-Panner & 360° 8D Orbital Panning
-  const isAutoPanner = presetId === "auto-panner" || typeof effectValues["pan-speed"] === "number";
-  const is8D = presetId === "8d-audio" || presetId === "8d-slowed" || typeof effectValues["rotation"] === "number";
-
-  if ((is8D || isAutoPanner) && targetChannels >= 2 && offlineCtx.createStereoPanner) {
-    const panner = offlineCtx.createStereoPanner();
-    const rotSpeed =
-      typeof effectValues["rotation"] === "number"
-        ? (effectValues["rotation"] as number)
-        : typeof effectValues["pan-speed"] === "number"
-        ? (effectValues["pan-speed"] as number)
-        : 50;
-
-    const cycleTimeSeconds = isAutoPanner
-      ? Math.max(1.0, 6.0 - (rotSpeed / 100) * 4.5) // Auto panner cycles faster (1-6s)
-      : Math.max(3.0, 14.0 - (rotSpeed / 100) * 10.0); // 8D orbits (3-14s)
-
-    const panParam = panner.pan;
-    panParam.setValueAtTime(0, 0);
-    const steps = Math.floor(outputDuration * 12);
-    for (let s = 0; s <= steps; s++) {
-      const t = s / 12;
-      const angle = (t / cycleTimeSeconds) * Math.PI * 2;
-      panParam.setValueAtTime(Math.sin(angle), t);
-    }
-
-    masterBus.connect(panner);
-    panner.connect(offlineCtx.destination);
-  } else {
-    masterBus.connect(offlineCtx.destination);
-  }
-
-  sourceNode.start(0);
-
-  // Render in OfflineAudioContext
-  let renderedBuffer = await offlineCtx.startRendering();
-
-  // If Mono downmix was selected
-  if ((exportConfig?.channels === "mono" || presetId === "downmixer") && renderedBuffer.numberOfChannels > 1) {
-    renderedBuffer = downmixToMono(offlineCtx, renderedBuffer);
-  }
-
-  // Peak Protection Limiter (always active for extreme bass boost or user toggle)
-  const isExtremeBass = presetId === "bass-boost-heavy" || presetId === "bass-boost-extreme";
-  const peakProtection = exportConfig?.peakProtection ?? (isExtremeBass ? true : true);
-  if (peakProtection) {
-    applyPeakLimiter(renderedBuffer, 0.98);
-  }
-
-  // Loudness Normalization
-  const loudnessNormalize = exportConfig?.loudnessNormalize ?? false;
-  if (loudnessNormalize) {
-    applyLoudnessNormalization(renderedBuffer, 0.944);
-  }
-
-  // Generate output file based on requested format
-  const format = exportConfig?.format || "wav";
-  const baseName = originalFileName.replace(/\.[^/.]+$/, "");
-  const presetSlug = presetId || "custom";
-
-  let outBlob: Blob;
-  let ext = "wav";
-  let bitDepthOrBitrate = "16-bit PCM";
-
-  if (format === "mp3") {
-    const kbps = exportConfig?.mp3Bitrate || 320;
-    outBlob = encodeMp3(renderedBuffer, kbps);
-    ext = "mp3";
-    bitDepthOrBitrate = `${kbps} kbps MP3`;
-  } else if (format === "aiff") {
-    const depth = exportConfig?.aiffBitDepth || 16;
-    outBlob = encodeAiff(renderedBuffer, depth);
-    ext = "aiff";
-    bitDepthOrBitrate = `${depth}-bit AIFF`;
-  } else {
-    // Standard WAV PCM
-    const depth = exportConfig?.wavBitDepth || 16;
-    outBlob = encodeWav(renderedBuffer, depth);
-    ext = "wav";
-    bitDepthOrBitrate = depth === 32 ? "32-bit Float WAV" : `${depth}-bit PCM WAV`;
-  }
-
-  const customName = exportConfig?.outputFilename?.trim();
-  const finalFilename = customName
-    ? customName.endsWith(`.${ext}`)
-      ? customName
-      : `${customName}.${ext}`
-    : `svaraya-${presetSlug}-${baseName}.${ext}`;
+  const url = URL.createObjectURL(blob);
+  report(1, "Complete");
 
   return {
-    blob: outBlob,
-    url: URL.createObjectURL(outBlob),
-    duration: renderedBuffer.duration,
-    sampleRate: renderedBuffer.sampleRate,
-    channels: renderedBuffer.numberOfChannels,
-    format: ext.toUpperCase(),
+    blob,
+    url,
+    duration: resampled[0].length / targetRate,
+    sampleRate: targetRate,
+    channels: resampled.length,
+    format: extension,
     bitDepthOrBitrate,
-    sizeBytes: outBlob.size,
-    filename: finalFilename,
-    isPeakProtected: peakProtection,
-    isNormalized: loudnessNormalize,
+    sizeBytes: blob.size,
+    filename,
+    isPeakProtected: config.peakProtection,
+    isNormalized: Math.abs(normalizeDb) > 0.01,
+    signature: computeRenderSignature(presetId, effectValues, config),
+    limiterReductionDb,
+    normalizeDb,
   };
 }
 
@@ -761,7 +905,8 @@ export function encodeAiff(buffer: AudioBuffer, bitDepth: 16 | 24 = 16): Blob {
 
   const ssndDataSize = numSamples * numChannels * bytesPerSample;
   const commChunkSize = 18;
-  const ssndChunkSize = 8 + ssndDataSize;
+  // SSND carries an 8-byte offset/blockSize header and pads to an even length.
+  const ssndChunkSize = 8 + ssndDataSize + (ssndDataSize % 2);
   const formSize = 4 + (8 + commChunkSize) + (8 + ssndChunkSize);
 
   const arrayBuffer = new ArrayBuffer(8 + formSize);
@@ -784,10 +929,11 @@ export function encodeAiff(buffer: AudioBuffer, bitDepth: 16 | 24 = 16): Blob {
   view.setUint32(offset + 10, numSamples, false);
   view.setInt16(offset + 14, bitDepth, false);
 
-  const exp = 16383 + 15;
-  view.setUint16(offset + 16, exp, false);
-  view.setUint32(offset + 18, (sampleRate << 16) >>> 0, false);
-  view.setUint32(offset + 22, 0, false);
+  // 80-bit IEEE 754 extended float sample rate (handles 96 kHz correctly).
+  const rateBytes = float80Bytes(sampleRate);
+  for (let i = 0; i < rateBytes.length; i++) {
+    view.setUint8(offset + 16 + i, rateBytes[i]);
+  }
 
   offset += 8 + commChunkSize;
 
@@ -835,6 +981,13 @@ export function encodeAiff(buffer: AudioBuffer, bitDepth: 16 | 24 = 16): Blob {
 export function encodeMp3(buffer: AudioBuffer, kbps: 128 | 192 | 256 | 320 = 320): Blob {
   const numChannels = buffer.numberOfChannels;
   const sampleRate = buffer.sampleRate;
+
+  if (sampleRate !== 32000 && sampleRate !== 44100 && sampleRate !== 48000) {
+    throw new Error(
+      `MP3 supports 32 kHz, 44.1 kHz and 48 kHz only (${Math.round(sampleRate / 1000)} kHz requested). Choose WAV or AIFF instead.`
+    );
+  }
+
   const mp3encoder = new lamejs.Mp3Encoder(numChannels, sampleRate, kbps);
 
   const leftChannel = buffer.getChannelData(0);
@@ -885,7 +1038,7 @@ export function encodeMp3(buffer: AudioBuffer, kbps: 128 | 192 | 256 | 320 = 320
 export function estimateExportFileSize(
   durationSeconds: number,
   format: string,
-  wavBitDepth: number,
+  bitDepth: number,
   mp3Bitrate: number,
   sampleRate: number,
   channels: "stereo" | "mono"
@@ -901,9 +1054,10 @@ export function estimateExportFileSize(
   } else if (format === "opus") {
     bytes = ((128 * 1000) / 8) * durationSeconds;
   } else if (format === "aiff") {
-    bytes = sr * numChannels * (wavBitDepth / 8) * durationSeconds + 54;
+    // Callers must pass the AIFF bit depth here (16 or 24), not the WAV depth.
+    bytes = sr * numChannels * (bitDepth / 8) * durationSeconds + 54;
   } else {
-    bytes = sr * numChannels * (wavBitDepth / 8) * durationSeconds + 44;
+    bytes = sr * numChannels * (bitDepth / 8) * durationSeconds + 44;
   }
 
   if (bytes < 1024 * 1024) {

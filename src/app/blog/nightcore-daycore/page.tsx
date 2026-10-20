@@ -4,12 +4,8 @@ import {
   TrendUp,
   Sparkle,
   ArrowRight,
-  SunHorizon,
-  FastForward,
-  Clock,
-  Waveform,
 } from "@phosphor-icons/react/dist/ssr";
-import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
+import { SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -27,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Nightcore vs Daycore: The Math of Pitch & Tempo Transposition",
     description: "Understanding the speed ratios, semitones, and vocal acoustics of Nightcore & Daycore.",
-    url: "https://svaraya.example.com/blog/nightcore-daycore",
+    url: "https://svaraya.vercel.app/blog/nightcore-daycore",
     siteName: "Svaraya",
     type: "article",
   },
@@ -51,7 +47,7 @@ const JSON_LD = {
         { "@type": "Person", "name": "Xpert Melody", "url": "https://www.youtube.com/@xpertmelody" },
       ],
       "publisher": { "@type": "Organization", "name": "Svaraya" },
-      "mainEntityOfPage": "https://svaraya.example.com/blog/nightcore-daycore",
+      "mainEntityOfPage": "https://svaraya.vercel.app/blog/nightcore-daycore",
     },
     {
       "@type": "FAQPage",
@@ -145,7 +141,7 @@ export default function NightcoreDaycoreGuidePage() {
                 Because pitch perception in the human auditory cortex is logarithmic, equal physical multiples of frequency correspond to equal musical intervals:
               </p>
               <div className="rounded-xl border border-line bg-surface p-4 font-mono text-xs text-neutral-300 space-y-2">
-                <p className="text-amber-400 font-semibold">// The Equal Temperament Pitch Formula</p>
+                <p className="text-amber-400 font-semibold">{"// The Equal Temperament Pitch Formula"}</p>
                 <p>Semitones = 12 * Math.log2(playbackRate)</p>
                 <div className="pt-2 text-faint border-t border-line space-y-1">
                   <p>• At 1.20x speed: 12 * log2(1.20) = +3.156 semitones (Minor Third)</p>
@@ -176,3 +172,4 @@ export default function NightcoreDaycoreGuidePage() {
     </>
   );
 }
+

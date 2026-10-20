@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
-import { Sparkle, ShieldCheck, Scales } from "@phosphor-icons/react/dist/ssr";
+import { Sparkle } from "@phosphor-icons/react/dist/ssr";
 
 export const metadata: Metadata = {
   title: "Terms of Service — 100% Creator Ownership · Svaraya",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Terms of Service — Svaraya Audio Processing",
     description: "Terms governing access to Svaraya by Nyxen × Xpert Melody. Clear, creator-first legal conditions.",
-    url: "https://svaraya.example.com/terms",
+    url: "https://svaraya.vercel.app/terms",
     siteName: "Svaraya",
   },
   other: {
@@ -34,7 +34,7 @@ const JSON_LD = {
       "name": "Svaraya Terms of Service",
       "description":
         "Legal terms governing the use of Svaraya client-side Web Audio software and creator intellectual property ownership.",
-      "url": "https://svaraya.example.com/terms",
+      "url": "https://svaraya.vercel.app/terms",
     },
   ],
 };

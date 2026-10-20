@@ -4,12 +4,8 @@ import {
   Planet,
   Sparkle,
   ArrowRight,
-  Headphones,
-  SlidersHorizontal,
-  Waveform,
-  ShieldCheck,
 } from "@phosphor-icons/react/dist/ssr";
-import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
+import { SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -29,7 +25,7 @@ export const metadata: Metadata = {
     title: "8D Audio Explained: Binaural Panning & Headphone Acoustics",
     description:
       "The physics and digital signal processing behind 8D music that moves around your head in headphones.",
-    url: "https://svaraya.example.com/blog/8d-audio",
+    url: "https://svaraya.vercel.app/blog/8d-audio",
     siteName: "Svaraya",
     type: "article",
   },
@@ -53,7 +49,7 @@ const JSON_LD = {
         { "@type": "Person", "name": "Xpert Melody", "url": "https://www.youtube.com/@xpertmelody" },
       ],
       "publisher": { "@type": "Organization", "name": "Svaraya" },
-      "mainEntityOfPage": "https://svaraya.example.com/blog/8d-audio",
+      "mainEntityOfPage": "https://svaraya.vercel.app/blog/8d-audio",
     },
     {
       "@type": "FAQPage",
@@ -164,7 +160,7 @@ export default function EightDAudioGuidePage() {
                 Inside Svaraya&apos;s Web Audio DSP engine, 8D audio is computed using real-time parameter automation:
               </p>
               <div className="rounded-xl border border-line bg-surface p-4 font-mono text-xs text-neutral-300 space-y-1">
-                <p className="text-blue-400 font-semibold">// Svaraya 8D Panning Automation</p>
+                <p className="text-blue-400 font-semibold">{"// Svaraya 8D Panning Automation"}</p>
                 <p>const panner = offlineContext.createStereoPanner();</p>
                 <p>const orbitPeriod = 8.5; // seconds per 360° circle</p>
                 <p>for (let t = 0; t &lt; duration; t += 0.05) &#123;</p>
@@ -194,3 +190,4 @@ export default function EightDAudioGuidePage() {
     </>
   );
 }
+

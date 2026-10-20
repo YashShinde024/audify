@@ -1,9 +1,10 @@
 import React from "react";
 import { Waves, TrendUp, Waveform, MicrophoneStage } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils";
+import type { IconWeight } from "@phosphor-icons/react";
 
 interface UseCase {
-  icon: React.ComponentType<{ size?: number | string; weight?: any; className?: string }>;
+  icon: React.ComponentType<{ size?: number | string; weight?: IconWeight; className?: string }>;
   title: string;
   body: string;
 }
@@ -46,3 +47,7 @@ export function FeatureGrid({ className }: { className?: string }) {
     </div>
   );
 }
+
+
+
+
