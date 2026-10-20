@@ -331,3 +331,65 @@ html.dark .nx-corner-brackets::after,
 .nx-ember-pulse {
   animation: nx-ember-pulse 1.8s ease-in-out infinite;
 }
+
+/*
+ * Living Sonic Canvas — decorative hero mesh.
+ * Token-driven so both themes stay coherent; transform-only drift means
+ * no GPU cost beyond one composited layer, and hidden tabs pause it
+ * automatically (rAF-free).
+ */
+.sonic-canvas {
+  pointer-events: none;
+}
+.sonic-canvas__glow {
+  position: absolute;
+  right: -12%;
+  top: -28%;
+  width: 70rem;
+  height: 70rem;
+  border-radius: 9999px;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-accent) 10%, transparent),
+    transparent 78%
+  );
+  filter: blur(2rem);
+  transform: translateZ(0);
+}
+.sonic-canvas__mesh {
+  position: absolute;
+  inset: -2%;
+  width: 104%;
+  height: 104%;
+  color: var(--color-faint);
+  transform: translateZ(0);
+}
+html.dark .sonic-canvas__glow {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-accent) 16%, transparent),
+    transparent 74%
+  );
+}
+
+@keyframes sonic-drift {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50%  { transform: translate3d(-14px, 8px, 0) rotate(-0.4deg); }
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+@keyframes sonic-breathe {
+  0%, 100% { opacity: 0.8; }
+  50%      { opacity: 1; }
+}
+.sonic-canvas__mesh {
+  animation: sonic-drift 52s ease-in-out infinite;
+}
+.sonic-canvas__glow {
+  animation: sonic-breathe 18s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sonic-canvas__mesh,
+  .sonic-canvas__glow {
+    animation: none;
+  }
+}
