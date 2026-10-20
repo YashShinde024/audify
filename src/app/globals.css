@@ -393,3 +393,18 @@ html.dark .sonic-canvas__glow {
     animation: none;
   }
 }
+
+/* Signal Strip: seamless preset-name marquee (pure CSS, translateX only). */
+@keyframes preset-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.preset-marquee {
+  animation: preset-marquee-scroll 90s linear infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .preset-marquee {
+    animation: none;
+  }
+}
