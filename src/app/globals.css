@@ -39,34 +39,45 @@
   --color-error: #d64545;
 }
 
-/* ── Dark theme & Studio theme: Professional Dark Graphite ──────────────────── */
+/* Signature crimson — the red thread through the Svaraya wordmark */
+:root {
+  --color-ember: #e2483f;
+}
+
+.dark,
+.studio-theme {
+  --color-ember: #ff4d3d;
+
+  /* Functional status */
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
+}
+
+/* ── Dark theme & Studio theme: Pitch Black · Red Ambient ──────────────────── */
 .dark,
 .studio-theme {
   color-scheme: dark;
-  --color-canvas: #19181f;
-  --color-surface: #201e28;
-  --color-raised: #272533;
-  --color-deep: #131218;
+  --color-canvas: #0a090d;
+  --color-surface: #111013;
+  --color-raised: #161419;
+  --color-deep: #060509;
 
-  --color-line: rgb(255 255 255 / 0.08);
-  --color-line-strong: rgb(255 255 255 / 0.14);
+  --color-line: rgb(255 255 255 / 0.09);
+  --color-line-strong: rgb(255 255 255 / 0.16);
 
-  --color-fg: #f5f3fa;
-  --color-muted: #a39ead;
-  --color-faint: #726e80;
+  --color-fg: #f6f4f9;
+  --color-muted: #a09caa;
+  --color-faint: #6e6a7a;
 
   --color-violet: #8b5cf6;
   --color-purple: #9d7df8;
   --color-blue: #6366f1;
-  --color-coral: #d99091;
+  --color-coral: #e86a60;
   --color-peach: #f0b68e;
   --color-lavender: #e7ddfb;
   --color-accent: #8b5cf6;
   --color-accent-hover: #9d7df8;
-
-  --color-success: #34d399;
-  --color-warning: #fbbf24;
-  --color-error: #f87171;
 }
 
 @theme inline {
@@ -87,6 +98,7 @@
   --color-lavender: var(--color-lavender);
   --color-accent: var(--color-accent);
   --color-accent-hover: var(--color-accent-hover);
+  --color-ember: var(--color-ember);
   --color-success: var(--color-success);
   --color-warning: var(--color-warning);
   --color-error: var(--color-error);
@@ -217,4 +229,108 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* ═══ Pitch-Dark Ambient Red Atmosphere ═══════════════════════════════════════ */
+/* Faint crimson "ember" radiance pinned to the viewport in dark mode. */
+.dark body,
+.studio-theme body {
+  background-color: var(--color-canvas);
+  background-image:
+    radial-gradient(42rem 20rem at 12% -8rem, rgb(255 77 61 / 0.075), transparent 68%),
+    radial-gradient(56rem 26rem at 92% -6rem, rgb(139 92 246 / 0.05), transparent 66%);
+  background-repeat: no-repeat;
+}
+
+/* ═══ Signature Header — "Ember Console" utilities ═══════════════════════════ */
+
+/* Slim animated crimson hairline above the bar (dark mode) */
+.nx-ember-line {
+  background: linear-gradient(90deg, transparent 5%, rgb(255 77 61 / 0.55) 38%, rgb(255 214 200 / 0.85) 50%, rgb(255 77 61 / 0.55) 62%, transparent 95%);
+  animation: nx-ember-breathe 7s ease-in-out infinite;
+}
+
+@keyframes nx-ember-breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* Corner brackets — console chassis accents */
+.nx-corner-brackets::before,
+.nx-corner-brackets::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+  z-index: 1;
+  background: linear-gradient(90deg, var(--color-ember), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.nx-corner-brackets::after {
+  right: 22px;
+  transform: scaleX(-1);
+}
+.nx-corner-brackets::before {
+  left: 22px;
+}
+.dark .nx-corner-brackets::before,
+.dark .nx-corner-brackets::after,
+.studio-theme .nx-corner-brackets::before,
+.studio-theme .nx-corner-brackets::after {
+  opacity: 0.85;
+}
+
+/* Cursor-following aurora sheen for nav items */
+.nx-nav-sheen {
+  position: relative;
+  overflow: hidden;
+}
+.nx-nav-sheen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    5.5rem 2.5rem at var(--sheen-x, 50%) 120%,
+    color-mix(in srgb, var(--color-ember) 22%, transparent),
+    transparent 72%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.nx-nav-sheen:hover::before {
+  opacity: 1;
+}
+
+/* Active-link spectrum meter (mini equalizer) */
+@keyframes nx-eq {
+  0%, 100% { transform: scaleY(0.35); }
+  25% { transform: scaleY(1); }
+  50% { transform: scaleY(0.55); }
+  75% { transform: scaleY(0.8); }
+}
+.nx-eq-bar {
+  transform-origin: bottom;
+  animation: nx-eq 0.9s ease-in-out infinite;
+}
+
+/* Shimmer sweep for the processing progress bar */
+@keyframes nx-shimmer {
+  0% { transform: translateX(-130%); }
+  100% { transform: translateX(430%); }
+}
+.nx-shimmer-sweep {
+  animation: nx-shimmer 1.6s ease-in-out infinite;
+}
+
+/* Ember glow pulse for the processing action */
+@keyframes nx-ember-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(255 77 61 / 0.35), 0 8px 30px rgb(255 77 61 / 0.18); }
+  50% { box-shadow: 0 0 0 7px rgb(255 77 61 / 0), 0 8px 30px rgb(255 77 61 / 0.32); }
+}
+.nx-ember-pulse {
+  animation: nx-ember-pulse 1.8s ease-in-out infinite;
 }
