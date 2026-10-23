@@ -38,7 +38,7 @@ export const siteConfig = {
   },
   youtubeUrl: "https://www.youtube.com/@xpertmelody",
   youtubeHandle: "@xpertmelody",
-  githubUrl: "https://github.com/YashShinde024/svaraya",
+  githubUrl: "https://github.com/YashShinde024/audify",
   emails: {
     general: "hello@nyxen.in",
     support: "support@nyxen.in",

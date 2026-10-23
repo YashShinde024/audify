@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useTheme } from "./theme-provider";
@@ -27,11 +26,6 @@ export function Logo({
   priority = true,
 }: LogoProps) {
   const { theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const width = Math.round(height * 3);
 

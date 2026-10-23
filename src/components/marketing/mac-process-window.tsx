@@ -7,12 +7,8 @@ import {
   Lock,
   ArrowRight,
   DownloadSimple,
-  Play,
-  Pause,
-  Sliders,
   ShieldCheck,
   CheckCircle,
-  Lightning,
   Sparkle,
 } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "motion/react";
@@ -64,7 +60,6 @@ const steps: StepData[] = [
 
 export function MacProcessWindow() {
   const [activeStep, setActiveStep] = useState(1);
-  const [isPlayingDemo, setIsPlayingDemo] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
 
   // Auto-cycle gently every 10s, pausing when user hovers to reduce animation churn
@@ -113,7 +108,7 @@ export function MacProcessWindow() {
                 className={cn(
                   "relative px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer",
                   active
-                    ? "bg-accent text-white shadow-[0_4px_16px_rgba(230,0,38,0.35)]"
+                    ? "bg-primary text-white shadow-xs"
                     : "border border-line bg-surface hover:bg-surface-raised text-muted hover:text-fg"
                 )}
               >
@@ -309,7 +304,7 @@ export function MacProcessWindow() {
                           <p className="text-fg font-bold">14.2 dB</p>
                         </div>
                         <div className="rounded-lg border border-line bg-surface p-2">
-                          <p className="text-muted">True Peak</p>
+                          <p className="text-muted">Sample Peak</p>
                           <p className="text-emerald-500 font-bold">−0.3 dBFS</p>
                         </div>
                         <div className="rounded-lg border border-line bg-surface p-2">

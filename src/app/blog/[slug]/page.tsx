@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import {
-  presetArticleRegistry,
-} from "@/config/blog-registry";
+import { presetArticleRegistry } from "@/config/blog-registry";
 import { articleBodies } from "@/config/preset-article-bodies";
 import {
   generateArticleMetadata,
@@ -14,6 +13,7 @@ import {
  * static page (the six legacy static pages under `src/app/blog/<slug>/`
  * win over this route when both exist).
  */
+
 export function generateStaticParams() {
   return presetArticleRegistry
     .filter((entry) => !entry.legacyStatic)
@@ -31,7 +31,7 @@ export async function generateMetadata({
   return generateArticleMetadata(entry);
 }
 
-export default async function PresetGuidePage({
+async function PresetGuideContent({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -42,8 +42,6 @@ export default async function PresetGuidePage({
 
   const presetId = meta.presetId;
   if (!presetId) {
-    // Extra overview entries (e.g. the legacy bass-boost overview) are
-    // static pages; dynamic rendering has no body for them.
     notFound();
   }
 
@@ -51,4 +49,14 @@ export default async function PresetGuidePage({
   if (!body) notFound();
 
   return <PresetArticle meta={meta} body={body} />;
+}
+
+export default function PresetGuidePage(props: {
+  params: Promise<{ slug: string }>;
+}) {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-canvas" />}>
+      <PresetGuideContent params={props.params} />
+    </Suspense>
+  );
 }

@@ -1,5 +1,5 @@
 /**
- * Svaraya Audio DSP & Pipeline Verification Test
+ * Audify Audio DSP & Pipeline Verification Test
  * Validates audio math, pitch conversion, downmixing, trimmer logic, and encoder byte calculations.
  */
 
@@ -93,7 +93,7 @@ function testLimiterSoftKnee() {
   assert(softLimit(5.0) <= 1.0 && softLimit(5.0) >= 0.99, "Extreme signal +5.0 strictly bounded within 1.0 (no hard 0dBFS overshoot)");
 }
 
-console.log("=== Running Svaraya Audio DSP Verification ===");
+console.log("=== Running Audify Audio DSP Verification ===");
 test432HzRatio();
 testMonoDownmix();
 testTrimmerBounds();

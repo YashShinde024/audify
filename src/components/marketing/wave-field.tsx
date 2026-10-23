@@ -101,7 +101,7 @@ export function WaveField({ className }: { className?: string }) {
       ctx.restore();
     };
 
-    let startTime = performance.now();
+    const startTime = performance.now();
 
     const loop = (now: number) => {
       // Pause completely if tab is hidden or canvas is outside viewport
@@ -129,25 +129,25 @@ export function WaveField({ className }: { className?: string }) {
       const isDark = document.documentElement.classList.contains("dark");
 
       if (isDark) {
-        // Dark theme: balanced, sonic violet & pink ribbons
+        // Dark theme: signature Audify violet and coral/pink ribbons
         renderRibbon(
           elapsed,
           0.002,
           46,
-          height * 0.72,
-          "rgba(119, 43, 238, 0.45)",
-          "rgba(37, 27, 55, 0.01)",
-          0.38,
+          height * 0.74,
+          "rgba(138, 63, 252, 0.50)",
+          "rgba(17, 16, 22, 0.0)",
+          0.36,
           0.85
         );
         renderRibbon(
           elapsed + 4.0,
-          0.0028,
-          36,
-          height * 0.82,
-          "rgba(241, 45, 145, 0.4)",
+          0.0026,
+          32,
+          height * 0.84,
+          "rgba(241, 45, 145, 0.30)",
           "rgba(17, 16, 22, 0.0)",
-          0.36,
+          0.28,
           -1.0
         );
       } else {
@@ -155,9 +155,9 @@ export function WaveField({ className }: { className?: string }) {
         renderRibbon(
           elapsed,
           0.002,
-          42,
+          46,
           height * 0.74,
-          "rgba(119, 43, 238, 0.22)",
+          "rgba(121, 40, 202, 0.35)",
           "rgba(240, 233, 255, 0.01)",
           0.4,
           0.85

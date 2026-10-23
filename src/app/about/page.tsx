@@ -3,15 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   Sparkle,
-  ShieldCheck,
   Waveform,
-  Sliders,
-  Cpu,
   ArrowRight,
   Globe,
   EnvelopeSimple,
   ArrowUpRight,
-  Headphones,
   MusicNotes,
   LockKey,
   Lightning,
@@ -188,7 +184,7 @@ export default function AboutPage() {
               </h3>
               <p>
                 Unlike traditional online audio converters that upload your songs to remote servers, Audify processes
-                everything in your browser's memory using the <strong>W3C Web Audio API</strong>. Your files are decoded,
+                everything in your browser&apos;s memory using the <strong>W3C Web Audio API</strong>. Your files are decoded,
                 manipulated, and encoded entirely on your local machine.
               </p>
             </div>
@@ -254,7 +250,7 @@ export default function AboutPage() {
                 </span>
               </div>
               <p className="text-xs text-muted max-w-xl leading-relaxed">
-                Sound designer and producer collaborating on Audify's signature acoustic presets, room impulse response
+                Sound designer and producer collaborating on Audify&apos;s signature acoustic presets, room impulse response
                 decays, and binaural 8D spatial panning orbits.
               </p>
             </div>

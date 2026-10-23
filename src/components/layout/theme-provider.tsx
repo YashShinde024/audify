@@ -57,8 +57,7 @@ export function ThemeProvider({
   children: React.ReactNode;
   initialTheme?: Theme;
 }) {
-  const [theme, setThemeState] = useState<Theme>(initialTheme || "dark");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setThemeState] = useState<Theme>(() => initialTheme || resolveInitialTheme());
 
   useEffect(() => {
     const initial = resolveInitialTheme();
@@ -68,8 +67,6 @@ export function ThemeProvider({
     } catch {
       /* ignore */
     }
-    setThemeState(initial);
-    setMounted(true);
 
     // Follow OS preference only while the user has not made an explicit choice.
     const media = window.matchMedia("(prefers-color-scheme: dark)");

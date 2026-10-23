@@ -38,7 +38,7 @@ export function Hero() {
           </h1>
 
           <div className="mt-6 flex items-center gap-3" aria-hidden="true">
-            <span className="h-px w-10 bg-primary" />
+            <span className="h-px w-10 bg-primary/60" />
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">
               Audify · 32-bit float dsp · zero server uploads
             </span>
@@ -50,7 +50,7 @@ export function Hero() {
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Button asChild size="lg" className="bg-primary hover:bg-primary-hover text-white shadow-sm">
+            <Button asChild size="lg">
               <Link href="/studio" aria-label="Open Audify Studio">
                 Open Audify Studio
                 <ArrowRight aria-hidden="true" className="h-4 w-4" />

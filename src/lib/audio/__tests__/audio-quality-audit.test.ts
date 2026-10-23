@@ -11,7 +11,7 @@ import {
   computeRenderSignature,
   resolveProcessing,
 } from "../dsp-plan";
-import { encodeAiff, encodeMp3, encodeWav } from "../../audio-engine";
+import { encodeAiff, encodeMp3, encodeWav, ProcessingCancelledError } from "../../audio-engine";
 
 // Helper to create synthetic Float32Array channels
 function createChannel(length: number, generator: (i: number) => number): Float32Array {
@@ -233,4 +233,66 @@ describe("Audio Quality & DSP Engine Objective Audit", () => {
       expect(mp3_128.size).toBeLessThan(mp3_320.size);
     });
   });
+
+  describe("Sharp Transients & Broadband Speech Material", () => {
+    it("safely handles Dirac delta impulses without digital clipping or NaN", () => {
+      const sampleRate = 44100;
+      // High-energy impulse at sample 100 with broadband white noise floor
+      const broadband = createChannel(4410, (i) =>
+        i === 100 ? 4.0 : (Math.random() * 2 - 1) * 0.1
+      );
+      const channels = [broadband];
+
+      const res = applyLookaheadLimiter(channels, sampleRate, -0.3);
+      expect(res.limited).toBe(true);
+
+      const peak = measurePeak(channels);
+      expect(peak).toBeLessThanOrEqual(Math.pow(10, -0.3 / 20) + 1e-5);
+
+      for (let i = 0; i < broadband.length; i++) {
+        expect(Number.isFinite(broadband[i])).toBe(true);
+      }
+    });
+
+    it("clamps hot stereo speech sibilance without phase divergence", () => {
+      const sampleRate = 48000;
+      const left = createChannel(4800, (i) => Math.sin((i / 8) * Math.PI * 2) * 2.5); // 6kHz sibilance burst
+      const right = createChannel(4800, (i) => Math.sin((i / 8) * Math.PI * 2) * 2.5);
+      const stereo = [left, right];
+
+      const res = applyLookaheadLimiter(stereo, sampleRate, -0.3);
+      expect(res.limited).toBe(true);
+      expect(measurePeak(stereo)).toBeLessThanOrEqual(Math.pow(10, -0.3 / 20) + 1e-5);
+    });
+  });
+
+  describe("Extreme Slowdown & Effect Tail Durations", () => {
+    it("computes accurate non-zero tails for extreme slowdown and long reverbs", () => {
+      // 0.5x speed with 85% reverb wetness
+      const plan = resolveProcessing("slowed-reverb", {
+        speed: 50,
+        reverb: 85,
+        size: 90,
+      });
+
+      expect(plan.playbackRate).toBe(0.5);
+      expect(plan.tailSeconds).toBeGreaterThan(1.5);
+
+      // Verify that planned seconds with tail is strictly finite and bounded
+      const sourceDuration = 30; // 30s audio
+      const plannedSeconds = sourceDuration / plan.playbackRate + plan.tailSeconds;
+      expect(plannedSeconds).toBeCloseTo(30 / 0.5 + plan.tailSeconds, 3);
+      expect(Number.isFinite(plannedSeconds)).toBe(true);
+    });
+  });
+
+  describe("Processing Cancellation Contract", () => {
+    it("instantiates ProcessingCancelledError with accurate name and message", () => {
+      const err = new ProcessingCancelledError();
+      expect(err).toBeInstanceOf(Error);
+      expect(err.name).toBe("ProcessingCancelledError");
+      expect(err.message).toBe("Processing was cancelled.");
+    });
+  });
 });
+

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { footerCompanyNav, footerProductNav, legalNav } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { Logo } from "./logo";
-import { YouTubeIcon } from "@/components/icons/preset-icons";
 import { FooterAttribution } from "./footer-attribution";
 
 const currentYear = new Date().getFullYear();

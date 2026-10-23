@@ -9,11 +9,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-primary text-white font-semibold shadow-xs hover:bg-primary-hover hover:shadow-sm active:translate-y-[0.5px]",
+          "bg-gradient-to-r from-[#6b00f5] via-[#8518f8] via-45% to-[#e60067] text-white font-semibold shadow-[0_2px_10px_rgba(107,0,245,0.32),0_1px_2px_rgba(230,0,103,0.2)] hover:brightness-115 hover:shadow-[0_4px_18px_rgba(107,0,245,0.45)] active:brightness-95 active:translate-y-[0.5px] border border-white/15 focus-visible:ring-[#8518f8]",
         secondary:
-          "border border-line-strong bg-surface text-fg font-medium shadow-xs hover:bg-raised hover:border-primary/40 hover:text-fg active:translate-y-[0.5px]",
+          "border border-line-strong bg-surface text-fg font-medium shadow-xs hover:bg-raised hover:border-pink/40 hover:text-fg active:translate-y-[0.5px]",
         outline:
-          "border border-line-strong bg-surface/90 text-fg font-medium shadow-xs hover:bg-raised hover:border-primary/40 active:translate-y-[0.5px]",
+          "border border-line-strong bg-surface/90 text-fg font-medium shadow-xs hover:bg-raised hover:border-pink/40 active:translate-y-[0.5px]",
         ghost:
           "text-fg hover:bg-black/5 dark:hover:bg-white/10 hover:text-primary font-medium rounded-lg",
         subtle:

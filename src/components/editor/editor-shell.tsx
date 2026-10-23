@@ -21,14 +21,12 @@ import {
   ArrowRight,
   ArrowLeft,
   ArrowsClockwise,
-  Waveform,
 } from "@phosphor-icons/react";
 import { cn, formatTime } from "@/lib/utils";
 
 export function EditorShell() {
   const file = useEditorStore((s) => s.file);
   const isDecoding = useEditorStore((s) => s.isDecoding);
-  const isProcessing = useEditorStore((s) => s.isProcessing);
   const processedResult = useEditorStore((s) => s.processedResult);
   const selectedPresetId = useEditorStore((s) => s.selectedPresetId);
   const selectedPreset = getPresetById(selectedPresetId ?? "slowed-reverb");
@@ -42,16 +40,27 @@ export function EditorShell() {
   if (file && !isDecoding && selectedPresetId) maxUnlockedStep = 3;
   if (file && !isDecoding && processedResult) maxUnlockedStep = 4;
 
-  // Auto-advance when file is uploaded or processing finishes
+  // Auto-advance asynchronously when file is uploaded or processing finishes
   useEffect(() => {
     if (!file) {
-      setActiveStep(1);
-    } else if (file && !isDecoding && activeStep === 1) {
-      setActiveStep(2);
-    } else if (processedResult && activeStep < 4) {
-      setActiveStep(4);
+      const timer = setTimeout(() => setActiveStep(1), 0);
+      return () => clearTimeout(timer);
+    } else if (!isDecoding) {
+      const timer = setTimeout(() => {
+        setActiveStep((prev) => (prev === 1 ? 2 : prev));
+      }, 0);
+      return () => clearTimeout(timer);
     }
-  }, [file, isDecoding, processedResult]);
+  }, [file, isDecoding]);
+
+  useEffect(() => {
+    if (processedResult) {
+      const timer = setTimeout(() => {
+        setActiveStep((prev) => (prev < 4 ? 4 : prev));
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [processedResult]);
 
   const steps = [
     {
@@ -148,7 +157,9 @@ export function EditorShell() {
                       <Lock size={12} className="text-muted" />
                     ) : isCurrent ? (
                       <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
-                    ) : null}
+                    ) : (
+                      <Icon size={14} className="text-muted/70" />
+                    )}
                   </div>
 
                   <p className="text-xs font-semibold text-fg truncate w-full">{step.title}</p>

@@ -7,8 +7,6 @@ import {
   X,
   List,
   Waveform,
-  Play,
-  Pause,
   ArrowRight,
   Sparkle,
   Compass,
@@ -52,17 +50,26 @@ export function SiteHeader() {
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
 
-  // Close more dropdown on outside click
+  // Close more dropdown on outside click or Escape
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
         setMoreOpen(false);
       }
     };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMoreOpen(false);
+      }
+    };
     if (moreOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [moreOpen]);
 
   // Track scroll position for subtle blur and shadow elevation
@@ -143,14 +150,14 @@ export function SiteHeader() {
                   className={cn(
                     "relative px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200",
                     active
-                      ? "text-white font-semibold shadow-xs"
+                      ? "text-white font-semibold"
                       : "text-muted hover:text-fg hover:bg-black/5 dark:hover:bg-white/5"
                   )}
                 >
                   {active && (
                     <motion.span
                       layoutId="island-active-pill"
-                      className="absolute inset-0 rounded-full bg-wire-gradient shadow-glow-wire z-0"
+                      className="absolute inset-0 rounded-full bg-wire-gradient shadow-xs z-0"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -226,21 +233,15 @@ export function SiteHeader() {
             {/* Theme Toggle (Adapts Light & Dark Mode according to user choice) */}
             <ThemeToggle />
 
-            {/* Bespoke Tactile Studio Action CTA */}
+            {/* Tactile Studio Action CTA */}
             <Link
               href="/studio"
               className={cn(
                 "group relative inline-flex items-center gap-1.5 rounded-full px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold text-white",
-                "bg-wire-gradient shadow-glow-wire hover:shadow-glow-wire-strong",
-                "hover:scale-[1.03] active:scale-[0.97] transition-all duration-200"
+                "bg-wire-gradient shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(230,0,38,0.2)] hover:brightness-110",
+                "hover:scale-[1.02] active:scale-[0.98] transition-all duration-150"
               )}
             >
-              {/* Micro pulse indicator */}
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
-              </span>
-
               <span className="hidden xs:inline">Open Studio</span>
               <span className="xs:hidden">Studio</span>
               <ArrowRight
@@ -306,7 +307,7 @@ export function SiteHeader() {
                       className={cn(
                         "flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-xs font-semibold transition-all",
                         active
-                          ? "bg-primary text-white shadow-glow-wire/40"
+                          ? "bg-primary text-white shadow-xs"
                           : "bg-surface hover:bg-raised text-fg border border-line hover:border-primary/40"
                       )}
                     >
