@@ -3,6 +3,7 @@ import { footerCompanyNav, footerProductNav, legalNav } from "@/config/navigatio
 import { siteConfig } from "@/config/site";
 import { Logo } from "./logo";
 import { FooterAttribution } from "./footer-attribution";
+import { CookiePreferencesButton } from "./cookie-preferences-button";
 
 const currentYear = new Date().getFullYear();
 
@@ -96,6 +97,9 @@ export function SiteFooter() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <CookiePreferencesButton />
+              </li>
             </ul>
             <p className="mt-4 text-[11px] leading-relaxed text-faint">
               100% in-browser processing. Zero server-side uploads or telemetry storage.

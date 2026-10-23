@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   DownloadSimple,
   CircleNotch,
@@ -173,42 +174,67 @@ export function ProcessAndOutput() {
         </div>
       )}
 
-      <div className="flex flex-col justify-between gap-4 border-t border-line pt-5 sm:flex-row sm:items-center">
-        <div className="min-w-0">
-          <h3 id="processing-action-heading" className="text-sm font-semibold text-fg">
-            {isProcessing ? "Rendering Master Audio" : "Render Master File"}
-          </h3>
-          <p className="mt-0.5 text-xs text-muted">
-            {isProcessing ? (
-              processingStatus
-            ) : isDecoding ? (
-              "Decoding source audio…"
-            ) : (
-              <>
-                Applies <strong className="font-semibold text-fg">{presetName}</strong> DSP curve to{" "}
-                <span className="font-mono text-muted">{file.name}</span>.
-              </>
-            )}
-          </p>
+      <div className="space-y-2.5 border-t border-line pt-5">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div className="min-w-0">
+            <h3 id="processing-action-heading" className="text-sm font-semibold text-fg">
+              {isProcessing ? "Rendering Master Audio" : "Render Master File"}
+            </h3>
+            <p className="mt-0.5 text-xs text-muted">
+              {isProcessing ? (
+                processingStatus
+              ) : isDecoding ? (
+                "Decoding source audio…"
+              ) : (
+                <>
+                  Applies <strong className="font-semibold text-fg">{presetName}</strong> DSP curve to{" "}
+                  <span className="font-mono text-muted">{file.name}</span>.
+                </>
+              )}
+            </p>
+          </div>
+
+          {isProcessing ? (
+            <Button variant="outline" size="md" onClick={cancelProcessing} className="shrink-0 text-xs">
+              <X size={14} />
+              <span>Cancel Render</span>
+            </Button>
+          ) : (
+            <Button
+              size="md"
+              disabled={!canProcess}
+              onClick={() => void processAudio()}
+              aria-label={`Process audio with ${presetName}`}
+              className="shrink-0 rounded-full shadow-glow-wire px-6 cursor-pointer"
+            >
+              <Waveform size={16} weight="duotone" />
+              <span>Render Master</span>
+            </Button>
+          )}
         </div>
 
-        {isProcessing ? (
-          <Button variant="outline" size="md" onClick={cancelProcessing} className="shrink-0 text-xs">
-            <X size={14} />
-            <span>Cancel Render</span>
-          </Button>
-        ) : (
-          <Button
-            size="md"
-            disabled={!canProcess}
-            onClick={() => void processAudio()}
-            aria-label={`Process audio with ${presetName}`}
-            className="shrink-0 rounded-full shadow-glow-wire px-6 cursor-pointer"
+        {/* Quiet, accessible legal agreement notice adjacent to primary processing action */}
+        <p className="text-[11px] text-faint leading-normal">
+          By submitting your audio for processing, you agree to our{" "}
+          <Link
+            href="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-fg/80 underline decoration-line underline-offset-2 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
           >
-            <Waveform size={16} weight="duotone" />
-            <span>Render Master</span>
-          </Button>
-        )}
+            Terms of Service
+          </Link>{" "}
+          and acknowledge our{" "}
+          <Link
+            href="/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-fg/80 underline decoration-line underline-offset-2 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
       </div>
 
       <AnimatePresence initial={false}>
