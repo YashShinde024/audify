@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Clock, Waveform } from "@phosphor-icons/react/dist/ssr";
+import { Waveform, BookOpen } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { presetArticleRegistry } from "@/config/blog-registry";
-import { PresetIcon } from "@/components/icons/preset-icons";
-
 import { siteConfig } from "@/config/site";
+import { BlogClient } from "./blog-client";
 
 export const metadata: Metadata = {
   title: "Audio Engineering & Preset Guides — Audify Knowledge Base",
   description:
-    "Authoritative deep dives into audio transformation techniques: Slowed + Reverb, 8D Audio binaural panning, Nightcore pitch shifting, 432 Hz tuning, bass boost DSP math, reverb acoustics, and more — one complete guide for every preset.",
+    "Authoritative deep dives into audio transformation techniques: Slowed + Reverb, 8D Audio binaural panning, Nightcore pitch shifting, 432 Hz tuning, bass boost DSP math, and reverb acoustics — 38 complete guides backed by our actual browser Web Audio pipeline.",
   keywords: [
     "audio editing guide",
     "slowed and reverb tutorial",
@@ -33,86 +32,81 @@ export const metadata: Metadata = {
   },
 };
 
+const BLOG_COLLECTION_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Audify Audio Engineering & Acoustic Guides",
+  description:
+    "Authoritative deep dives into audio transformation techniques, DSP formulas, and acoustic theory.",
+  url: `${siteConfig.url}/blog`,
+  publisher: {
+    "@type": "Organization",
+    name: siteConfig.name,
+    url: siteConfig.url,
+  },
+  mainEntity: {
+    "@type": "ItemList",
+    itemListElement: presetArticleRegistry.map((article, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: article.title,
+      url: `${siteConfig.url}/blog/${article.slug}`,
+    })),
+  },
+};
+
 export default function BlogIndexPage() {
-  const guides = presetArticleRegistry;
-
   return (
-    <div className="min-h-full bg-canvas py-10 sm:py-16">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-12">
-        {/* Header */}
-        <PageHeader
-          eyebrow="Editorial & Acoustic Research"
-          title="Audify Blog & Acoustic Articles"
-          lead="Deep, authoritative breakdowns of modern audio transformation techniques, acoustic formulas, and sound design theory — one complete article for every preset in the Studio."
-        />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(BLOG_COLLECTION_JSON_LD) }}
+      />
+      <div className="min-h-full bg-canvas py-10 sm:py-16">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 space-y-12">
+          {/* Header */}
+          <PageHeader
+            eyebrow="Editorial & Acoustic Research"
+            title="Audio Engineering & Acoustic Guides"
+            lead="Deep, authoritative breakdowns of modern audio transformation techniques, acoustic formulas, and sound design theory — one complete guide for every preset in the Studio."
+          />
 
-        <SectionSeam />
+          <SectionSeam />
 
-        {/* Guides Grid — generated from the preset → article registry */}
-        <div className="grid gap-6 md:grid-cols-2">
-          {guides.map((guide) => {
-            const inner = (
-              <>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-accent">
-                      <PresetIcon presetId={guide.presetId ?? ""} size={18} weight="duotone" className="shrink-0" />
-                      <span>{guide.categoryLabel}</span>
-                    </span>
-                    <span className="flex shrink-0 items-center gap-1 text-[11px] font-mono text-faint">
-                      <Clock size={12} />
-                      <span>{guide.readMinutes} min</span>
-                    </span>
-                  </div>
+          {/* Interactive Editorial Blog Client */}
+          <section aria-label="Audio Guides Archive">
+            <BlogClient articles={presetArticleRegistry} />
+          </section>
 
-                  <h2 className="text-base font-semibold tracking-tight text-fg group-hover:text-accent transition-colors text-balance">
-                    {guide.title}
-                  </h2>
-
-                  <p className="text-xs text-muted leading-relaxed line-clamp-3">
-                    {guide.description}
-                  </p>
-                </div>
-
-                <div className="mt-5 flex items-center justify-between border-t border-line/60 pt-4 text-xs font-semibold text-accent">
-                  <span>Read the guide</span>
-                  <ArrowRight size={14} weight="bold" className="transition-transform group-hover:translate-x-1" />
-                </div>
-              </>
-            );
-
-            return (
-              <article key={guide.slug}>
-                <Link
-                  href={`/blog/${guide.slug}`}
-                  aria-label={guide.title}
-                  className="group relative flex h-full flex-col justify-between rounded-2xl border border-line bg-raised p-6 transition hover:border-accent/50 hover:bg-raised/80"
-                >
-                  {inner}
-                </Link>
-              </article>
-            );
-          })}
+          {/* Practical Studio Bridge Section */}
+          <section className="rounded-2xl border border-line bg-surface p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="space-y-1.5">
+              <h3 className="text-base font-semibold text-fg">
+                Put acoustic theory into practice
+              </h3>
+              <p className="text-xs text-muted max-w-lg leading-relaxed">
+                Every mathematical concept and DSP routing chain in these articles is available live in the Audify Studio. Load your track to test any preset with zero server latency.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
+              <Link
+                href="/how-it-works"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-canvas px-4 py-2.5 text-xs font-semibold text-fg hover:border-violet transition-colors"
+              >
+                <BookOpen size={15} />
+                <span>Audio Pipeline Guide</span>
+              </Link>
+              <Link
+                href="/studio"
+                className="inline-flex items-center gap-2 rounded-xl bg-violet px-4 py-2.5 text-xs font-semibold text-white hover:bg-violet-dark transition-colors shadow-sm"
+              >
+                <Waveform size={15} weight="bold" />
+                <span>Open Audify Studio</span>
+              </Link>
+            </div>
+          </section>
         </div>
-
-        {/* Studio Link Footer */}
-        <section className="rounded-2xl border border-line bg-raised p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div>
-            <h3 className="text-base font-semibold text-fg">Want to test these effects live?</h3>
-            <p className="mt-1 text-xs text-muted max-w-md">
-              Load your track into Audify Studio and hear every preset in this library instantly —
-              all processing happens locally in your browser.
-            </p>
-          </div>
-          <Link
-            href="/studio"
-            className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-xs font-semibold text-white hover:bg-accent-hover transition-colors shrink-0"
-          >
-            <Waveform size={15} weight="bold" />
-            <span>Open Audify Studio</span>
-          </Link>
-        </section>
       </div>
-    </div>
+    </>
   );
 }

@@ -20,9 +20,9 @@ export default function PresetsPage() {
     <div className="min-h-full bg-canvas py-10 sm:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 space-y-10">
         <PageHeader
-          eyebrow="Acoustic Catalog & DSP Matrix"
-          title="Audio Effects & Presets Directory"
-          lead="Audify by Nyxen × Xpert Melody: 36+ browser-native audio modules spanning spatial 8D orbits, atmospheric slowed+reverbs, psychoacoustic bass boosters, and studio utilities."
+          eyebrow="Sound Library"
+          title="Find your sound."
+          lead="Explore ready-made treatments, preview the difference, and make the sound yours."
         />
 
         <SectionSeam />
