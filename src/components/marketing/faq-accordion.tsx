@@ -10,68 +10,63 @@ export interface FaqEntry {
 
 const defaultFaqs: FaqEntry[] = [
   {
-    question: "Is Audify free to use?",
+    question: "Do my audio uploads ever leave my computer or device?",
     answer: (
       <p>
-        Yes. Audify is a completely free, browser-based audio platform with no subscriptions,
-        no required accounts, and no paywalls.
+        Never. All audio decoding, parameter shaping, effects calculation, and export rendering happen
+        strictly inside your browser&apos;s memory using the Web Audio API and OfflineAudioContext. No audio
+        bytes are ever transmitted over the network to external servers or cloud storage.
       </p>
     ),
   },
   {
-    question: "What file formats and sizes are supported?",
+    question: "Which audio formats and file sizes are supported?",
     answer: (
       <p>
-        Audify accepts MP3, WAV, OGG, FLAC, and AAC files up to 10 MB in size. Files are
-        validated immediately in your browser.
+        Audify imports <strong>MP3, WAV, OGG, FLAC, and AAC</strong> files up to a maximum limit of
+        <strong> 10 MB</strong> and 10 minutes in duration. The 10 MB boundary ensures browser memory
+        safety and avoids tab crashes on mobile devices or memory-constrained environments.
       </p>
     ),
   },
   {
-    question: "What export formats can I download?",
+    question: "How do Audify presets work under the hood?",
     answer: (
       <p>
-        You can export in <strong>WAV (16-bit, 24-bit integer, and 32-bit float PCM)</strong>,
-        <strong> MP3 (128, 192, 256, and 320 kbps CBR)</strong>, and <strong>AIFF (16/24-bit)</strong>.
-        You can also customize sample rates (44.1 kHz, 48.0 kHz) and apply mono downmixing.
+        Presets are pre-configured chains of real Web Audio DSP nodes—including biquad filter cascades,
+        stereo convolution impulses for spatial reverb, dynamic LFO-modulated stereo panners for 8D motion,
+        and playback rate manipulation. You can use any preset as a foundation and further tweak its parameters in Studio.
       </p>
     ),
   },
   {
-    question: "Does my audio ever get uploaded to a server?",
+    question: "Does changing audio speed also change the pitch?",
     answer: (
       <p>
-        Never. All decoding, DSP effect application, and multi-format file export happen 100% locally
-        within your browser tab using Web Audio API buffers. Your audio never touches an external server.
+        By default in standard varispeed mode (such as <em>Slowed + Reverb</em> or <em>Nightcore</em>), speed and pitch are
+        acoustically linked just like an analog tape deck or vinyl turntable—slowing playback lowers the pitch, and speeding it up
+        raises the pitch. When decoupled pitch shifting is required, our polyphase sinc resampling pipeline modulates pitch independently.
       </p>
     ),
   },
   {
-    question: "What are Peak Protection and Peak Normalization?",
+    question: "How is output audio quality determined upon export?",
     answer: (
       <p>
-        <strong>Peak Protection</strong> engages a look-ahead peak limiter at −0.3 dBFS with a sliding minimum deque to ensure
-        heavy bass or boosted effects do not digitally clip. <strong>Peak Normalization</strong> calculates
-        the peak amplitude and applies clean linear make-up gain so the loudest sample sits at −0.5 dBFS (0.944 linear peak;
-        this is a sample-peak process, not perceived LUFS loudness matching).
+        Output quality depends on your selected export profile. For bit-accurate, uncompressed fidelity, export in
+        <strong> WAV (24-bit or 32-bit float)</strong> or <strong>AIFF</strong> at 44.1 kHz or 48.0 kHz. If you choose MP3,
+        Audify uses a client-side LAME encoder with selectable bitrates up to <strong>320 kbps CBR</strong>. All exports pass through
+        our Look-Ahead Sample-Peak Limiter at −0.3 dBFS to prevent clipping distortion.
       </p>
     ),
   },
   {
-    question: "How does the A/B comparison feature work?",
+    question: "Why is there a 10 MB file-size limitation?",
     answer: (
       <p>
-        In the audition player, toggle between &ldquo;Original&rdquo; and &ldquo;Processed&rdquo;
-        to immediately hear how the chosen DSP parameters transformed your sound with zero latency.
-      </p>
-    ),
-  },
-  {
-    question: "What happens when I close the tab?",
-    answer: (
-      <p>
-        Because Audify maintains zero server logs and zero remote session tracking, closing the tab
-        safely clears all in-memory buffers. Make sure to download your processed audio before navigating away.
+        Because all processing occurs uncompressed in client RAM (where a 5-minute stereo 44.1 kHz WAV consumes ~50 MB of raw PCM buffers,
+        and multi-pass convolution impulse processing requires duplicate working buffers), the 10 MB compressed file ceiling ensures
+        flawless performance without exceeding mobile browser memory quotas.
       </p>
     ),
   },

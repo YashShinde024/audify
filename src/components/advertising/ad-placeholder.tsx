@@ -1,46 +1,70 @@
-/**
- * Reserved advertising placement. Renders a clearly labeled, empty slot with
- * stable dimensions to prevent layout shift. No ad provider is connected and
- * no fake ad content is shown. Connect an approved provider here later — the
- * slot never overlaps playback controls.
- */
-
 import { cn } from "@/lib/utils";
 import { Megaphone } from "@phosphor-icons/react/dist/ssr";
 
 export type AdSlotSize = "banner" | "sidebar" | "inline";
 
 const slotStyles: Record<AdSlotSize, { container: string; inner: string }> = {
-  banner: { container: "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8", inner: "h-24 sm:h-28" },
-  sidebar: { container: "", inner: "h-64" },
-  inline: { container: "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8", inner: "h-24" },
+  banner: {
+    container: "mx-auto max-w-6xl px-4 sm:px-6 lg:px-8",
+    inner: "h-24 sm:h-28",
+  },
+  sidebar: {
+    container: "w-full",
+    inner: "h-64 sm:h-72",
+  },
+  inline: {
+    container: "mx-auto max-w-4xl px-4 sm:px-6 lg:px-8",
+    inner: "h-20 sm:h-24",
+  },
 };
 
-export function AdPlaceholder({ size = "banner", className, note }: {
+interface AdPlaceholderProps {
   size?: AdSlotSize;
   className?: string;
   note?: string;
-}) {
+  label?: string;
+}
+
+/**
+ * Reserved advertising placement.
+ * Renders a clearly labeled, stable-dimension slot preventing Cumulative Layout Shift (CLS).
+ * Completely unobtrusive, never overlaps playback or DSP controls.
+ */
+export function AdPlaceholder({
+  size = "banner",
+  className,
+  note,
+  label = "Sponsor Advertisement",
+}: AdPlaceholderProps) {
   return (
     <aside
-      aria-label="Advertising slot (empty)"
+      aria-label="Advertising slot"
       className={cn(slotStyles[size].container, className)}
       data-ad-slot={size}
     >
-      <div
-        role="img"
-        aria-label="Advertising slot — no advertisement loaded"
-        className={cn(
-          "flex h-full w-full items-center justify-center gap-2.5 rounded-2xl border border-dashed border-line-strong bg-surface/60",
-          slotStyles[size].inner,
-        )}
-      >
-        <Megaphone aria-hidden="true" className="h-4 w-4 text-faint" />
-        <span className="text-xs font-medium tracking-wide text-faint">
-          Ad slot — nothing loaded
+      <div className="flex flex-col items-center justify-center">
+        <span className="mb-1.5 font-mono text-[10px] uppercase tracking-wider text-faint">
+          {label}
         </span>
+        <div
+          role="img"
+          aria-label="Advertising slot — layout preserved to prevent shift"
+          className={cn(
+            "flex w-full items-center justify-center gap-2.5 rounded-xl border border-dashed border-line/70 bg-surface/40 backdrop-blur-xs transition-colors",
+            slotStyles[size].inner,
+          )}
+        >
+          <Megaphone aria-hidden="true" size={16} className="text-faint" />
+          <span className="font-mono text-xs text-faint">
+            Reserved Advertising Space · 100% Free Platform Supporter
+          </span>
+        </div>
+        {note && (
+          <p className="mt-2 text-center font-mono text-[11px] text-faint">
+            {note}
+          </p>
+        )}
       </div>
-      {note ? <p className="mt-2 text-center text-[11px] text-faint">{note}</p> : null}
     </aside>
   );
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Faders, Sparkle } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, Faders } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button";
 import { HeroVisual } from "./hero-visual";
 import { SonicCanvas } from "./sonic-canvas";
@@ -13,65 +13,78 @@ import { SonicCanvas } from "./sonic-canvas";
  */
 export function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-line bg-canvas/40">
-      {/* Living Sonic Canvas mesh with crimson light source */}
-      <SonicCanvas className="opacity-40 dark:opacity-80" />
+    <section className="relative overflow-hidden border-b border-line bg-canvas">
+      {/* Purposeful, restrained sonic wave mesh — secondary to headline */}
+      <SonicCanvas className="opacity-20 dark:opacity-35" />
 
-      {/* Subtle directional veil for text contrast */}
+      {/* Subtle directional vignette for clean text contrast */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-full bg-gradient-to-r from-canvas/90 via-canvas/50 to-transparent max-lg:opacity-95"
+        className="pointer-events-none absolute inset-x-0 top-0 h-full bg-gradient-to-r from-canvas via-canvas/70 to-transparent max-lg:opacity-95"
       />
 
-      <div className="relative mx-auto grid max-w-7xl gap-14 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:py-28">
-        {/* Left: editorial content */}
+      <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[0.92fr_1.08fr] lg:items-center lg:gap-12 lg:px-8 lg:py-20">
+        {/* Left: Editorial Content */}
         <div className="max-w-xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary shadow-xs">
-            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            <span>Audify by Nyxen × Xpert Melody · 100% Client-Side DSP</span>
+          {/* Compact brand attribution eyebrow */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-line/80 bg-surface/80 px-3 py-1 text-xs font-medium text-muted">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
+            <span>Audify by Nyxen × Xpert Melody</span>
           </div>
 
-          <h1 className="display-title mt-5 text-5xl leading-[0.95] tracking-tight text-fg sm:text-6xl lg:text-7xl">
+          {/* Art-directed headline */}
+          <h1 className="mt-4 text-4xl font-bold tracking-[-0.035em] text-fg sm:text-5xl lg:text-[3.75rem] leading-[1.04]">
             Sound,
-            <br />
-            <span className="text-sonic-gradient font-extrabold">reimagined.</span>
+            <span className="block font-extrabold bg-gradient-to-r from-[#6b00f5] via-[#a81dfc] via-35% to-[#ff2a5f] bg-clip-text text-transparent">
+              reimagined.
+            </span>
           </h1>
 
-          <div className="mt-6 flex items-center gap-3" aria-hidden="true">
-            <span className="h-px w-10 bg-primary/60" />
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">
-              Audify · 32-bit float dsp · zero server uploads
-            </span>
-          </div>
-
-          <p className="mt-5 text-base leading-relaxed text-muted sm:text-lg">
-            Sculpt acoustic spaces, spatial 8D orbits, and slowed+reverb warmth directly inside your browser.
-            Instant in-memory decoding and CPU-accelerated rendering — your creative tracks never leave your machine.
+          {/* Concise, confident description */}
+          <p className="mt-4 text-base sm:text-lg leading-relaxed text-muted max-w-lg">
+            Slow it down. Add space. Shape your sound. Create slowed + reverb, 8D audio, bass boosts, and more — right in your browser.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Button asChild size="lg">
+          {/* Action CTAs */}
+          <div className="mt-7 flex flex-wrap items-center gap-3">
+            <Button
+              asChild
+              size="lg"
+              className="h-11 px-6 rounded-xl bg-gradient-to-r from-[#6b00f5] via-[#8518f8] via-45% to-[#e60067] text-white font-medium shadow-sm hover:brightness-110 active:scale-[0.98] transition-all"
+            >
               <Link href="/studio" aria-label="Open Audify Studio">
-                Open Audify Studio
-                <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                <span>Open Audify Studio</span>
+                <ArrowRight aria-hidden="true" className="ml-1.5 h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="secondary" className="border-line-strong hover:border-primary/50">
-              <Link href="/presets">
-                <Faders className="h-4 w-4 text-primary" />
-                Explore 36+ Presets
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="h-11 px-5 rounded-xl border-line/80 bg-surface/60 hover:bg-surface text-fg font-medium transition-colors"
+            >
+              <Link href="#presets">
+                <Faders className="mr-1.5 h-4 w-4 text-muted" />
+                <span>Explore Presets</span>
               </Link>
             </Button>
           </div>
 
-          <p className="mt-6 text-xs text-faint flex items-center gap-2">
-            <Sparkle size={13} className="text-primary" weight="fill" />
-            <span>100% Free · No account needed · Up to 10 MB per file · WAV, AIFF &amp; MP3 export</span>
-          </p>
+          {/* Verified supporting metadata row */}
+          <div className="mt-6 flex flex-wrap items-center gap-x-3.5 gap-y-1.5 text-xs text-muted">
+            <span className="inline-flex items-center gap-1.5 font-medium text-fg">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+              Up to 10 MB per file
+            </span>
+            <span className="text-line-strong" aria-hidden="true">·</span>
+            <span>WAV, AIFF &amp; MP3 export</span>
+            <span className="text-line-strong" aria-hidden="true">·</span>
+            <span>No account required</span>
+          </div>
         </div>
 
-        {/* Right: file-to-result product composition */}
-        <div className="relative">
+        {/* Right: macOS Browser Window Showcasing Real Audify Studio */}
+        <div className="relative w-full">
           <HeroVisual />
         </div>
       </div>
