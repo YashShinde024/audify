@@ -468,11 +468,10 @@ export default function TermsPage() {
               </a>
             </p>
             <p>
-              <strong>Legal Notices:</strong>{" "}
-              <a href="mailto:legal@nyxen.in" className="text-primary hover:underline font-mono">
-                legal@nyxen.in
-              </a>{" "}
-              <span className="text-faint">(routed to support@nyxen.in)</span>
+              <strong>Support & Notices:</strong>{" "}
+              <a href="mailto:support@nyxen.in" className="text-primary hover:underline font-mono">
+                support@nyxen.in
+              </a>
             </p>
             <p>
               <strong>Online Contact Form:</strong>{" "}
