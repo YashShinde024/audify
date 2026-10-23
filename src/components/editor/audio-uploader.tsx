@@ -79,7 +79,7 @@ export function AudioUploader() {
   if (file) {
     const ext = file.name.split(".").pop()?.toUpperCase() || "AUDIO";
     return (
-      <section aria-label="Loaded audio file" className="rounded-xl border border-line bg-surface p-4 sm:p-5 transition-all duration-200">
+      <section aria-label="Loaded audio file" className="rounded-2xl border border-line bg-surface p-4 sm:p-5 transition-all duration-200 min-w-0 overflow-hidden shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* File details */}
           <div className="flex items-start sm:items-center gap-3.5 min-w-0">
@@ -182,7 +182,7 @@ export function AudioUploader() {
 
   // Initial State: No file uploaded yet
   return (
-    <section aria-labelledby="uploader-heading" className="rounded-2xl border border-line bg-surface p-6 sm:p-8 transition-all duration-200">
+    <section aria-labelledby="uploader-heading" className="rounded-2xl border border-line bg-surface p-6 sm:p-8 transition-all duration-200 min-w-0 overflow-hidden shadow-xs">
       <div
         role="region"
         aria-label="Audio file drag and drop zone"

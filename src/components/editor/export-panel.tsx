@@ -54,9 +54,9 @@ function OptionButton({
       disabled={disabled}
       title={title}
       onClick={onClick}
-      className={`flex flex-col items-center justify-center gap-0.5 rounded-md border px-2 py-2 text-center text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40 ${
+      className={`flex flex-col items-center justify-center gap-0.5 rounded-md border px-1.5 py-1.5 text-center text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40 min-w-0 overflow-hidden cursor-pointer ${
         active
-          ? "border-accent bg-accent-soft text-fg"
+          ? "border-accent bg-accent-soft text-fg font-semibold"
           : "border-line bg-canvas text-muted hover:border-line-strong hover:text-fg"
       }`}
     >
@@ -77,13 +77,13 @@ function Field({
   hint?: string;
 }) {
   return (
-    <div className="space-y-2 rounded-lg border border-line bg-canvas p-3.5">
-      <div className="flex items-baseline justify-between gap-3">
-        <span className="text-xs font-medium text-fg">{label}</span>
-        <span className="font-mono text-[11px] uppercase tracking-wide text-muted">{value}</span>
+    <div className="space-y-2 rounded-lg border border-line bg-canvas p-3 sm:p-3.5 min-w-0 overflow-hidden">
+      <div className="flex items-baseline justify-between gap-2 min-w-0">
+        <span className="text-xs font-medium text-fg truncate">{label}</span>
+        <span className="font-mono text-[11px] uppercase tracking-wide text-muted shrink-0">{value}</span>
       </div>
       {children}
-      {hint && <p className="text-[11px] leading-snug text-faint">{hint}</p>}
+      {hint && <p className="text-[11px] leading-snug text-faint break-words">{hint}</p>}
     </div>
   );
 }
@@ -357,7 +357,7 @@ export function ExportPanel() {
         </div>
 
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-          <div className="w-full space-y-1 sm:max-w-md">
+          <div className="w-full min-w-0 space-y-1">
             <label htmlFor="export-filename" className="text-xs font-medium text-fg">
               Custom filename <span className="font-normal text-faint">(optional)</span>
             </label>
@@ -367,16 +367,15 @@ export function ExportPanel() {
               placeholder={`audify-${presetSlug}-${baseName}.${exportConfig.format}`}
               value={exportConfig.outputFilename}
               onChange={(event) => setExportConfig({ outputFilename: event.target.value })}
-              className="w-full rounded-md border border-line bg-raised px-3 py-1.5 font-mono text-xs text-fg placeholder:text-faint focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="w-full min-w-0 rounded-md border border-line bg-raised px-3 py-1.5 font-mono text-xs text-fg placeholder:text-faint truncate focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             />
             <p className="flex items-start gap-1.5 text-[11px] text-faint">
               <Info aria-hidden="true" size={12} className="mt-0.5 shrink-0" />
-              Leave empty to use the preset name and source filename. The correct extension is
-              added automatically.
+              <span>Leave empty to use default name. Correct extension is added automatically.</span>
             </p>
           </div>
 
-          <div className="flex shrink-0 items-center gap-3 self-start rounded-md border border-line bg-raised px-3 py-1.5 sm:self-auto">
+          <div className="flex shrink-0 items-center gap-2.5 self-start rounded-md border border-line bg-raised px-3 py-1.5 sm:self-auto">
             <DownloadSimple aria-hidden="true" size={16} className="text-muted" />
             <div>
               <span className="block text-[10px] font-medium uppercase tracking-wide text-faint">

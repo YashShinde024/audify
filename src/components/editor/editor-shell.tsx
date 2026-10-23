@@ -231,11 +231,11 @@ export function EditorShell() {
           </div>
         )}
 
-        {/* STATE C: LOADED-AUDIO WORKSTATION (Focused 2-Column Workstation Layout) */}
+        {/* STATE C: LOADED-AUDIO WORKSTATION */}
         {file && !isDecoding && (
-          <div className="space-y-6">
+          <div className="space-y-6 min-w-0">
             {/* Active Track Metadata Bar */}
-            <div className="rounded-xl border border-line bg-surface/60 px-4 py-3 text-xs flex flex-wrap items-center justify-between gap-3 shadow-xs">
+            <div className="rounded-xl border border-line bg-surface/60 px-4 py-3 text-xs flex flex-wrap items-center justify-between gap-3 shadow-xs min-w-0 overflow-hidden">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
                   <FileAudio size={16} weight="duotone" />
@@ -248,7 +248,7 @@ export function EditorShell() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 font-mono text-[11px] text-muted">
+              <div className="flex items-center gap-2 font-mono text-[11px] text-muted shrink-0">
                 {file.sampleRate && <span>{(file.sampleRate / 1000).toFixed(1)} kHz</span>}
                 {file.channels && (
                   <>
@@ -265,20 +265,21 @@ export function EditorShell() {
               </div>
             </div>
 
-            {/* 2-Column Desktop Studio Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              {/* PRIMARY LEFT WORKSPACE (Col 1-7 on desktop): Waveform, Transport, & Export Console */}
-              <div className="lg:col-span-7 space-y-6">
-                {/* 1. Track Waveform & Transport Deck */}
-                <AudioPlayer />
+            {/* 1. HERO TRACK WAVEFORM & AUDITION DECK (Full-Width, Uncramped) */}
+            <div className="w-full min-w-0">
+              <AudioPlayer />
+            </div>
 
-                {/* 2. Mastering & Export Console */}
-                <ProcessAndOutput />
+            {/* 2. DUAL WORKSTATION DECKS: Presets Sculpting & Mastering Console */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full min-w-0">
+              {/* Presets & Acoustic DSP Rack (Cols 1-7 on desktop) */}
+              <div className="lg:col-span-7 space-y-6 min-w-0 overflow-hidden">
+                <SoundSelector />
               </div>
 
-              {/* SECONDARY RIGHT RACK (Col 8-12 on desktop): Presets Catalog & DSP Knobs */}
-              <div className="lg:col-span-5 space-y-6">
-                <SoundSelector />
+              {/* Mastering & Lossless Export Console (Cols 8-12 on desktop) */}
+              <div className="lg:col-span-5 space-y-6 min-w-0 overflow-hidden">
+                <ProcessAndOutput />
               </div>
             </div>
           </div>

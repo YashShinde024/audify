@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function StudioPage() {
   return (
-    <div className="bg-canvas min-h-[calc(100vh-4rem)]">
+    <div className="bg-canvas min-h-[calc(100vh-4rem)] w-full max-w-full overflow-x-hidden">
       <Suspense fallback={null}>
         <StudioInitializer />
       </Suspense>

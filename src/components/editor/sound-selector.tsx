@@ -85,7 +85,7 @@ export function SoundSelector() {
   const totalToolsCount = presets.filter((p) => p.kind === "tool").length;
 
   return (
-    <section aria-labelledby="sound-selection-heading" className="rounded-xl border border-line bg-surface p-5 sm:p-6 space-y-5">
+    <section aria-labelledby="sound-selection-heading" className="rounded-2xl border border-line bg-surface p-4 sm:p-5 space-y-4 min-w-0 overflow-hidden shadow-sm">
       {/* Header and Mode switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-line pb-4">
         <div>
@@ -343,7 +343,7 @@ export function SoundSelector() {
           </div>
 
           {/* Preset & Tool Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-2.5 min-w-0">
             {filteredPresets.map((preset) => {
               const isSelected = selectedPresetId === preset.id;
 
@@ -353,26 +353,26 @@ export function SoundSelector() {
                   type="button"
                   onClick={() => selectPreset(preset.id)}
                   className={cn(
-                    "flex flex-col justify-between rounded-xl border p-4 text-left transition-all cursor-pointer group shadow-xs",
+                    "flex flex-col justify-between rounded-xl border p-3.5 text-left transition-all cursor-pointer group shadow-xs min-w-0 overflow-hidden",
                     isSelected
                       ? "border-primary bg-primary/5 ring-1 ring-primary shadow-glow-wire/20"
                       : "border-line bg-surface hover:bg-raised hover:border-line-strong",
                   )}
                 >
-                  <div className="w-full">
-                    <div className="flex items-start gap-2.5">
+                  <div className="w-full min-w-0">
+                    <div className="flex items-start gap-2.5 min-w-0">
                       <div
                         className={cn(
-                          "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition-colors",
+                          "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors",
                           isSelected
                             ? "border-primary/40 bg-primary/10 text-primary"
                             : "border-line bg-surface text-muted group-hover:text-primary group-hover:border-primary/30",
                         )}
                       >
-                        <PresetIcon presetId={preset.id} size={18} />
+                        <PresetIcon presetId={preset.id} size={16} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-1.5">
+                        <div className="flex items-center justify-between gap-1.5 min-w-0">
                           <span className={cn("text-xs font-semibold truncate", isSelected ? "text-primary" : "text-fg")}>
                             {preset.name}
                           </span>
@@ -384,7 +384,7 @@ export function SoundSelector() {
                             <span className="h-4 w-4 shrink-0 rounded-full border border-line" />
                           )}
                         </div>
-                        <p className="mt-1 text-[11px] leading-relaxed text-muted line-clamp-2">
+                        <p className="mt-1 text-[11px] leading-relaxed text-muted line-clamp-2 break-words">
                           {preset.description}
                         </p>
                       </div>
@@ -392,17 +392,17 @@ export function SoundSelector() {
                   </div>
 
                   {/* Operations & Param summary badges */}
-                  <div className="mt-3 pt-2.5 border-t border-line/60 flex flex-wrap items-center justify-between gap-1 text-[10px]">
-                    <div className="flex items-center gap-1 text-faint">
-                      <Cpu className="w-2.5 h-2.5" />
-                      <span>{preset.supportedOps[0]}</span>
+                  <div className="mt-2.5 pt-2 border-t border-line/60 flex flex-wrap items-center justify-between gap-1 text-[10px] min-w-0">
+                    <div className="flex items-center gap-1 text-faint truncate">
+                      <Cpu className="w-2.5 h-2.5 shrink-0" />
+                      <span className="truncate">{preset.supportedOps[0]}</span>
                     </div>
 
-                    <div className="flex flex-wrap gap-1 font-mono text-muted">
+                    <div className="flex flex-wrap gap-1 font-mono text-muted overflow-hidden">
                       {preset.params.slice(0, 2).map((p) => {
                         const defVal = preset.defaults[p.id];
                         return (
-                          <span key={p.id} className="bg-raised px-1 py-0.5 rounded border border-line text-[10px]">
+                          <span key={p.id} className="bg-raised px-1 py-0.5 rounded border border-line text-[10px] truncate">
                             {p.id}: {p.kind === "slider" ? `${defVal}${p.unit}` : "on"}
                           </span>
                         );

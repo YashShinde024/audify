@@ -54,7 +54,7 @@ export function ProcessAndOutput() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.24, ease: easeOut }}
-        className="space-y-4 rounded-2xl border border-line bg-surface p-5 sm:p-6 shadow-sm"
+        className="space-y-4 rounded-2xl border border-line bg-surface p-4 sm:p-5 shadow-sm min-w-0 overflow-hidden"
       >
         <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line pb-4">
           <div className="flex items-start gap-2.5">
@@ -165,10 +165,10 @@ export function ProcessAndOutput() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.24, ease: easeOut }}
-      className="space-y-5 rounded-2xl border border-line bg-surface p-5 sm:p-6 shadow-sm"
+      className="space-y-5 rounded-2xl border border-line bg-surface p-4 sm:p-5 shadow-sm min-w-0 overflow-hidden"
     >
       {!isProcessing && (
-        <div>
+        <div className="min-w-0 overflow-hidden">
           <ExportPanel />
         </div>
       )}
@@ -222,7 +222,7 @@ export function ProcessAndOutput() {
             transition={{ duration: 0.24, ease: easeOut }}
             className="overflow-hidden"
           >
-            <div className="rounded-xl border border-primary/25 bg-surface p-4 sm:p-5 space-y-4 shadow-sm">
+            <div className="rounded-xl border border-primary/25 bg-surface p-4 sm:p-5 space-y-4 shadow-sm min-w-0 overflow-hidden">
               <div className="flex items-center justify-between gap-3 text-xs">
                 <span className="flex min-w-0 items-center gap-2 font-medium text-fg">
                   <CircleNotch size={16} className="shrink-0 animate-spin text-primary" />
@@ -247,7 +247,7 @@ export function ProcessAndOutput() {
               </div>
 
               {/* Visual DSP Node Pipeline Stages */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] font-mono">
+              <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-2 text-[10px] font-mono min-w-0">
                 <div className={cn(
                   "p-2 rounded-lg border text-center transition-all duration-150",
                   percent >= 15 ? "border-primary/40 bg-primary/10 text-primary font-semibold" : "border-line/60 text-faint"

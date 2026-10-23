@@ -208,7 +208,7 @@ export function AudioPlayer() {
         className="group relative flex h-24 w-full cursor-pointer items-center overflow-hidden rounded-xl border border-line bg-deep/80 px-2.5 select-none transition-colors hover:border-line-strong"
       >
         {/* Authentic Peaks bars */}
-        <div className="flex h-full w-full items-center justify-between gap-[2px]">
+        <div className="flex h-full w-full items-center justify-between gap-[1px] sm:gap-[2px] overflow-hidden">
           {peaks.length > 0 ? (
             peaks.map((peak, idx) => {
               const barRatio = idx / peaks.length;
@@ -216,7 +216,7 @@ export function AudioPlayer() {
               return (
                 <div
                   key={idx}
-                  className="w-full min-w-[2px] max-w-[5px] rounded-full transition-colors duration-150"
+                  className="h-full flex-1 min-w-0 max-w-[4px] rounded-full transition-colors duration-150"
                   style={{
                     height: `${Math.max(10, Math.round(peak * 90))}%`,
                     backgroundColor: isPassed
@@ -240,7 +240,7 @@ export function AudioPlayer() {
             className="pointer-events-none absolute inset-y-0 w-px bg-fg/40 z-10"
             style={{ left: `${hoverPosition}px` }}
           >
-            <div className="absolute -top-1 -translate-x-1/2 rounded bg-surface border border-line px-1.5 py-0.5 text-[10px] font-mono font-medium text-fg shadow-sm">
+            <div className="absolute top-1.5 -translate-x-1/2 rounded bg-surface border border-line px-1.5 py-0.5 text-[10px] font-mono font-medium text-fg shadow-sm">
               {formatTime(hoverTime)}
             </div>
           </div>
