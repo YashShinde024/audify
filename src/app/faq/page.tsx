@@ -4,9 +4,9 @@ import { FAQAccordion } from "@/components/marketing/faq-accordion";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 
 export const metadata: Metadata = {
-  title: "Frequently Asked Questions — AudioMorph",
+  title: "Frequently Asked Questions — Audify",
   description:
-    "Everything you need to know about AudioMorph: local audio processing, file formats, export fidelity, and privacy guarantees.",
+    "Everything you need to know about Audify: local audio processing, file formats, export fidelity, and privacy guarantees.",
 };
 
 export default function FAQPage() {
@@ -16,7 +16,7 @@ export default function FAQPage() {
         <PageHeader
           eyebrow="Help & Information"
           title="Questions & Answers"
-          lead="Everything you need to know about AudioMorph, from supported audio formats and local browser DSP to export downloads and privacy."
+          lead="Everything you need to know about Audify, from supported audio formats and local browser DSP to export downloads and privacy."
         />
 
         <SectionSeam />

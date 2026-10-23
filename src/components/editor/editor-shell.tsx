@@ -16,10 +16,10 @@ import {
   Faders,
   Play,
   Cpu,
-  DownloadSimple,
-  Check,
   Lock,
+  Check,
   ArrowRight,
+  ArrowLeft,
   ArrowsClockwise,
   Waveform,
 } from "@phosphor-icons/react";
@@ -98,7 +98,7 @@ export function EditorShell() {
             <span>Interactive DSP Workspace · Developed by Nyxen</span>
           </div>
           <h1 className="mt-3 text-2xl font-bold tracking-tight text-fg sm:text-3xl">
-            AudioMorph Studio
+            Audify Studio
           </h1>
           <p className="mt-1.5 max-w-2xl text-xs sm:text-sm leading-relaxed text-muted">
             Guided 4-step workflow: Ingest your track, dial in signature acoustic DSP, audition in real-time,
@@ -300,8 +300,10 @@ export function EditorShell() {
                       size="sm"
                       variant="outline"
                       onClick={() => setActiveStep(1)}
+                      className="gap-1.5"
                     >
-                      ← Back to Audio
+                      <ArrowLeft size={13} weight="bold" />
+                      <span>Back to Audio</span>
                     </Button>
 
                     <Button
@@ -371,8 +373,10 @@ export function EditorShell() {
                       size="sm"
                       variant="outline"
                       onClick={() => setActiveStep(2)}
+                      className="gap-1.5"
                     >
-                      ← Back to Presets
+                      <ArrowLeft size={13} weight="bold" />
+                      <span>Back to Presets</span>
                     </Button>
 
                     <Button

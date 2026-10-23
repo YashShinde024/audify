@@ -3,35 +3,33 @@ export interface NavItem {
   label: string;
 }
 
-/** Center navigation — the product's primary, high-impact surfaces only. */
+/** Center navigation — concise primary routes */
 export const primaryNav: NavItem[] = [
   { href: "/studio", label: "Studio" },
   { href: "/presets", label: "Presets" },
-  { href: "/how-it-works", label: "How It Works" },
+  { href: "/how-it-works", label: "Audio Guide" },
   { href: "/about", label: "About" },
 ];
 
-/** Secondary routes for dropdowns and deeper exploration */
+/** Secondary routes inside "More" dropdown */
 export const secondaryNav: NavItem[] = [
-  { href: "/effects", label: "DSP Effects" },
-  { href: "/blog", label: "Audio Guides" },
-  { href: "/contact", label: "Contact Dispatch" },
+  { href: "/effects", label: "Effects" },
+  { href: "/blog", label: "Blog" },
   { href: "/faq", label: "FAQ" },
+  { href: "/contact", label: "Contact" },
 ];
 
-/**
- * Documentation / company pages live in the footer, not the header.
- * (Formerly a compact header menu — now grouped in footerNav.)
- */
+/** Product navigation in footer */
 export const footerProductNav: NavItem[] = [
   { href: "/studio", label: "Studio" },
-  { href: "/presets", label: "Presets" },
-  { href: "/effects", label: "Effects" },
-  { href: "/blog", label: "Audio Guides" },
+  { href: "/presets", label: "Presets Directory" },
+  { href: "/effects", label: "DSP Effects" },
+  { href: "/how-it-works", label: "Audio Guide" },
+  { href: "/blog", label: "Blog & Articles" },
 ];
 
+/** Company and support navigation */
 export const footerCompanyNav: NavItem[] = [
-  { href: "/how-it-works", label: "How It Works" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
   { href: "/faq", label: "FAQ" },

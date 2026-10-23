@@ -31,8 +31,9 @@ export function Slider({ className, ...props }: SliderProps) {
       <SliderPrimitive.Thumb
         data-slot="slider-thumb"
         className={cn(
-          "block h-3.5 w-3.5 rounded-full border-2 border-accent bg-surface shadow-xs",
-          "transition-transform hover:scale-115 focus-visible:scale-115 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
+          "relative block h-4 w-4 rounded-full border-2 border-primary bg-surface shadow-xs",
+          "before:absolute before:-inset-2.5 before:content-['']",
+          "transition-transform hover:scale-115 focus-visible:scale-115 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
           props.disabled && "pointer-events-none",
         )}
         aria-label={props["aria-label"]}

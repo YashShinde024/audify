@@ -23,7 +23,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { primaryNav, secondaryNav } from "@/config/navigation";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
-import { useEditorStore } from "@/stores/editor-store";
 import { cn } from "@/lib/utils";
 
 const NAV_ICONS: Record<string, typeof Waveform> = {
@@ -33,6 +32,7 @@ const NAV_ICONS: Record<string, typeof Waveform> = {
   "/how-it-works": Compass,
   "/about": Info,
   "/blog": Article,
+  "/faq": Question,
   "/contact": EnvelopeSimple,
 };
 
@@ -40,12 +40,6 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  // Read active audio state from Studio Editor Store
-  const file = useEditorStore((s) => s.file);
-  const isPlaying = useEditorStore((s) => s.isPlaying);
-  const isProcessing = useEditorStore((s) => s.isProcessing);
-  const togglePlay = useEditorStore((s) => s.togglePlay);
 
   const drawerRef = useRef<HTMLDivElement>(null);
   const lastPathRef = useRef(pathname);
@@ -91,13 +85,22 @@ export function SiteHeader() {
     }
   }, [pathname]);
 
-  // Lock scroll when mobile drawer is open
+  // Lock scroll and handle Escape key when mobile drawer is open
   useEffect(() => {
     if (!drawerOpen) return;
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setDrawerOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
       document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [drawerOpen]);
 
@@ -117,78 +120,11 @@ export function SiteHeader() {
           <div className="flex items-center gap-3 shrink-0">
             <Link
               href="/"
-              aria-label="AudioMorph homepage"
-              className="group relative inline-flex items-center gap-2.5 rounded-full p-1 pl-1.5 pr-2.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200"
+              aria-label="Audify homepage"
+              className="group relative inline-flex items-center rounded-lg py-1 px-1.5 hover:opacity-90 transition-opacity"
             >
-              <div className="relative shrink-0 transition-transform duration-300 group-hover:scale-110">
-                <Logo height={26} variant="icon-only" />
-                <span className="absolute -inset-1 rounded-full bg-primary/20 blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="flex flex-col text-left leading-none">
-                <span className="font-bold tracking-tight text-sm text-fg group-hover:text-primary transition-colors">
-                  AudioMorph
-                </span>
-                <span className="text-[9px] font-mono tracking-wider text-muted uppercase">
-                  Studio DSP
-                </span>
-              </div>
+              <Logo height={30} variant="adaptive" priority />
             </Link>
-
-            {/* Dynamic Island Audio Activity Pill (shown when file is loaded) */}
-            <AnimatePresence>
-              {file && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8, x: -10 }}
-                  animate={{ opacity: 1, scale: 1, x: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, x: -10 }}
-                  transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                  className="hidden xl:flex items-center gap-2 pl-2 pr-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-xs text-fg overflow-hidden shadow-xs"
-                >
-                  <button
-                    type="button"
-                    onClick={() => togglePlay()}
-                    aria-label={isPlaying ? "Pause audio" : "Play audio"}
-                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-xs hover:scale-110 active:scale-95 transition-transform cursor-pointer"
-                  >
-                    {isPlaying ? (
-                      <Pause size={10} weight="fill" />
-                    ) : (
-                      <Play size={10} weight="fill" className="translate-x-[0.5px]" />
-                    )}
-                  </button>
-
-                  {/* Equalizer Kinetic Bars */}
-                  <div className="flex items-center gap-0.5 h-3">
-                    <span
-                      className={cn(
-                        "w-[2px] rounded-full bg-primary transition-all",
-                        isPlaying ? "h-3 animate-pulse" : "h-1.5"
-                      )}
-                    />
-                    <span
-                      className={cn(
-                        "w-[2px] rounded-full bg-primary transition-all",
-                        isPlaying ? "h-2 animate-bounce" : "h-2.5"
-                      )}
-                    />
-                    <span
-                      className={cn(
-                        "w-[2px] rounded-full bg-primary transition-all",
-                        isPlaying ? "h-3.5 animate-pulse" : "h-1.5"
-                      )}
-                    />
-                  </div>
-
-                  <Link
-                    href="/studio"
-                    className="max-w-[120px] truncate text-[11px] font-mono text-fg hover:text-primary transition-colors"
-                    title={file.name}
-                  >
-                    {file.name}
-                  </Link>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
 
           {/* Center: Dynamic Island Navigation Capsule (Desktop & Tablets 768px+) */}
@@ -349,39 +285,12 @@ export function SiteHeader() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Mobile Navigation Menu"
               className="relative border-b border-line bg-surface/95 dark:bg-surface/95 px-5 py-6 shadow-xl backdrop-blur-md"
             >
-              {/* Audio Status on Mobile if active */}
-              {file && (
-                <div className="mb-4 flex items-center justify-between rounded-xl bg-primary/10 p-3.5 border border-primary/25">
-                  <div className="flex items-center gap-2.5 overflow-hidden">
-                    <button
-                      type="button"
-                      onClick={() => togglePlay()}
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-xs cursor-pointer"
-                    >
-                      {isPlaying ? <Pause size={13} weight="fill" /> : <Play size={13} weight="fill" />}
-                    </button>
-                    <div className="truncate">
-                      <p className="text-xs font-semibold text-fg truncate">{file.name}</p>
-                      <p className="text-[10px] text-muted">
-                        {isProcessing
-                          ? "Rendering in browser..."
-                          : isPlaying
-                          ? "Playing active preview"
-                          : "Ready in Studio"}
-                      </p>
-                    </div>
-                  </div>
-                  <Link
-                    href="/studio"
-                    onClick={() => setDrawerOpen(false)}
-                    className="shrink-0 rounded-full bg-primary px-3 py-1 text-[11px] font-semibold text-white shadow-xs"
-                  >
-                    Studio
-                  </Link>
-                </div>
-              )}
+
 
               {/* Primary Nav List */}
               <div className="grid grid-cols-2 gap-2">
@@ -467,7 +376,7 @@ export function SiteHeader() {
 
               {/* Mobile Drawer Footer */}
               <div className="mt-5 pt-3.5 border-t border-line flex items-center justify-between text-[11px] text-muted">
-                <span>AudioMorph · Developed by Nyxen</span>
+                <span>Audify by Nyxen × Xpert Melody</span>
                 <span className="font-mono text-primary font-medium">100% Client-Side DSP</span>
               </div>
             </motion.div>

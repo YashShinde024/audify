@@ -21,6 +21,7 @@ import {
   PushPin,
   PushPinSlash,
   DotsSixVertical,
+  ArrowUpRight,
 } from "@phosphor-icons/react";
 import { Logo } from "./logo";
 import { siteConfig } from "@/config/site";
@@ -332,7 +333,10 @@ export function StudioSidebar() {
                     <YoutubeLogo size={15} weight="fill" className="text-red-500 shrink-0" />
                     <span>Xpert Melody YouTube</span>
                   </span>
-                  <span className="text-[10px] text-faint">Channel ↗</span>
+                  <span className="inline-flex items-center gap-0.5 text-[10px] text-faint">
+                    <span>Channel</span>
+                    <ArrowUpRight size={11} />
+                  </span>
                 </a>
               </li>
               <li>
@@ -346,7 +350,10 @@ export function StudioSidebar() {
                     <Cpu size={15} weight="duotone" className="text-primary shrink-0" />
                     <span>Nyxen.in Ecosystem</span>
                   </span>
-                  <span className="text-[10px] text-faint">Portal ↗</span>
+                  <span className="inline-flex items-center gap-0.5 text-[10px] text-faint">
+                    <span>Portal</span>
+                    <ArrowUpRight size={11} />
+                  </span>
                 </a>
               </li>
             </ul>

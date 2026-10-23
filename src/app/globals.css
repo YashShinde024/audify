@@ -1,92 +1,141 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
- * AudioMorph — Refined Creative Audio Studio Design Tokens
- * Light: Porcelain (#F7F5F0) canvas / white surfaces / graphite type.
- * Dark:  Pitch black (#09090C) canvas / #121216 raised surfaces.
- * Accent: Metallic wire crimson (#e60026 / #ff2a4b) matching 3D ribbon emblem.
- * Hardware Panels: .studio-hardware-dark preserves deep graphite contrast in light mode.
+ * Audify Brand Color System — Quartz & Sonic
+ * Brand attribution: Audify by Nyxen × Xpert Melody
+ * Light: Quartz (#F8F7F5) background, crisp white (#FFFFFF) cards, Ink (#17151D) typography.
+ * Dark:  Deep Ink (#111016) background, #1D1A24 cards, elevated #262130, light (#F7F5FA) typography.
+ * Primary Action: Audify Violet (#772BEE).
+ * Official Gradient: linear-gradient(110deg, #FF8A3D 0%, #FF4F76 35%, #F12D91 58%, #772BEE 100%).
  *
  * Theming scope: a single `dark` class on <html> drives every dark rule.
- * `.studio-theme` is kept only as a deprecated alias so legacy selectors
- * still resolve; the ThemeProvider never sets it.
  */
 
-:root {
-  /* Surfaces — Porcelain & White */
-  --color-canvas: #f7f5f0;
-  --color-surface: #ffffff;
-  --color-raised: #efece5;
-  --color-deep: #e9e5dc;
-
-  /* Lines & Dividers — Fine neutral hairlines */
-  --color-line: rgb(37 35 43 / 0.08);
-  --color-line-strong: rgb(37 35 43 / 0.15);
-
-  /* Typography — Graphite */
-  --color-fg: #25232b;
-  --color-muted: #5e5a6a;
-  --color-faint: #8d8999;
-
-  /* Wire Crimson Accent — Matching the 3D AudioMorph Ruby Ribbon */
-  --color-accent: #e60026;
-  --color-accent-hover: #c4001f;
-  --color-accent-soft: rgb(230 0 38 / 0.09);
-  --color-wire-light: #ff334f;
-  --color-wire-deep: #940016;
-
-  /* Deprecated aliases — repointed to the wire crimson family */
-  --color-violet: var(--color-accent);
-  --color-purple: var(--color-accent);
-  --color-lavender: var(--color-accent-soft);
-  --color-blue: #4e7de0;
-  --color-coral: #e60026;
-  --color-peach: #f0b68e;
-
-  /* Ember / Wire — signature chrome wire used by audio console */
-  --color-ember: #e60026;
-
-  /* Functional status */
-  --color-success: #1a9e6e;
-  --color-warning: #c07f10;
-  --color-error: #e60026;
+/* Smooth animated theme transition (Light ↔ Dark) */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 380ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 380ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 320ms cubic-bezier(0.4, 0, 0.2, 1),
+              fill 320ms cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 320ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 380ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-delay: 0s !important;
 }
 
-/* ── Dark theme: Pitch Black · Wire Crimson Ambient ─────────────────────── */
-/* Scoped exclusively to html.dark so the user's light/dark mode preference is honored everywhere */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root {
+  /* Surfaces — Quartz & White */
+  --color-canvas: #f8f7f5;
+  --color-surface: #ffffff;
+  --color-raised: #f0ede8;
+  --color-deep: #eae6df;
+
+  /* Lines & Dividers */
+  --color-line: #eae7ed;
+  --color-line-strong: #dcd7e2;
+
+  /* Typography */
+  --color-fg: #17151d;
+  --color-muted: #6d6875;
+  --color-faint: #8b8592;
+
+  /* Core Brand Colors */
+  --color-orange: #ff6b45;
+  --color-pink: #f12d91;
+  --color-violet: #772bee;
+  --color-ink: #17151d;
+  --color-quartz: #f8f7f5;
+  --color-white: #ffffff;
+
+  /* Primary Interactive Action — Audify Violet */
+  --color-primary: #772bee;
+  --color-primary-hover: #6420d0;
+  --color-primary-soft: #f0e9ff;
+  --color-accent: #772bee;
+  --color-accent-hover: #6420d0;
+  --color-accent-soft: #f0e9ff;
+
+  /* Brand Accents & Aliases */
+  --color-wire-light: #9157ff;
+  --color-wire-deep: #541bb5;
+  --color-purple: #772bee;
+  --color-lavender: #f0e9ff;
+  --color-blue: #4387f5;
+  --color-coral: #f12d91;
+  --color-peach: #ff8a3d;
+  --color-ember: #772bee;
+
+  /* Functional status */
+  --color-success: #16a36a;
+  --color-warning: #e9a23b;
+  --color-error: #e5484d;
+  --color-info: #4387f5;
+
+  /* Shadows */
+  --shadow-glow-wire: 0 0 20px -2px rgb(119 43 238 / 0.28);
+  --shadow-glow-wire-strong: 0 0 32px -2px rgb(119 43 238 / 0.45);
+  --shadow-glow-sonic: 0 0 24px -2px rgb(119 43 238 / 0.35);
+  --shadow-glow-sonic-strong: 0 0 36px 0 rgb(119 43 238 / 0.55);
+}
+
+/* ── Dark theme: Deep Ink · Cinematic Sonic Ambient ─────────────────────── */
 html.dark {
   color-scheme: dark;
 
-  --color-canvas: #09090c;
-  --color-surface: #0f0f13;
-  --color-raised: #121216;
-  --color-deep: #060608;
+  /* Surfaces — Deep Ink */
+  --color-canvas: #111016;
+  --color-surface: #1d1a24;
+  --color-raised: #262130;
+  --color-deep: #16131d;
 
-  --color-line: rgb(255 255 255 / 0.09);
-  --color-line-strong: rgb(255 255 255 / 0.16);
+  /* Lines & Dividers */
+  --color-line: #332d40;
+  --color-line-strong: #453e54;
 
-  --color-fg: #f6f4f9;
-  --color-muted: #a09caa;
-  --color-faint: #6e6a7a;
+  /* Typography */
+  --color-fg: #f7f5fa;
+  --color-muted: #b7b0c2;
+  --color-faint: #8e879a;
 
-  --color-accent: #ff2a4b;
-  --color-accent-hover: #ff526d;
-  --color-accent-soft: rgb(255 42 75 / 0.14);
-  --color-wire-light: #ff5e76;
-  --color-wire-deep: #b3001b;
+  /* Primary Interactive Action — Audify Violet */
+  --color-primary: #772bee;
+  --color-primary-hover: #9157ff;
+  --color-primary-soft: #251b37;
+  --color-accent: #772bee;
+  --color-accent-hover: #9157ff;
+  --color-accent-soft: #251b37;
 
-  --color-violet: var(--color-accent);
-  --color-purple: var(--color-accent);
-  --color-lavender: var(--color-accent-soft);
-  --color-blue: #6366f1;
-  --color-coral: #ff2a4b;
-  --color-peach: #f0b68e;
+  /* Brand Accents & Aliases */
+  --color-wire-light: #a777ff;
+  --color-wire-deep: #541bb5;
+  --color-purple: #772bee;
+  --color-lavender: #251b37;
+  --color-blue: #4387f5;
+  --color-coral: #f12d91;
+  --color-peach: #ff8a3d;
+  --color-ember: #9157ff;
 
-  --color-ember: #ff2a4b;
+  /* Functional status */
+  --color-success: #16a36a;
+  --color-warning: #e9a23b;
+  --color-error: #e5484d;
+  --color-info: #4387f5;
 
-  --color-success: #34d399;
-  --color-warning: #fbbf24;
-  --color-error: #f87171;
+  /* Shadows */
+  --shadow-glow-wire: 0 0 24px -2px rgb(119 43 238 / 0.35);
+  --shadow-glow-wire-strong: 0 0 36px 0 rgb(119 43 238 / 0.55);
+  --shadow-glow-sonic: 0 0 28px -2px rgb(119 43 238 / 0.45);
+  --shadow-glow-sonic-strong: 0 0 40px 0 rgb(119 43 238 / 0.65);
 }
 
 @theme inline {
@@ -99,8 +148,12 @@ html.dark {
   --color-fg: var(--color-fg);
   --color-muted: var(--color-muted);
   --color-faint: var(--color-faint);
+  --color-orange: var(--color-orange);
+  --color-pink: var(--color-pink);
   --color-violet: var(--color-violet);
-  --color-purple: var(--color-purple);
+  --color-ink: var(--color-ink);
+  --color-quartz: var(--color-quartz);
+  --color-white: var(--color-white);
   --color-blue: var(--color-blue);
   --color-coral: var(--color-coral);
   --color-peach: var(--color-peach);
@@ -108,10 +161,14 @@ html.dark {
   --color-accent: var(--color-accent);
   --color-accent-hover: var(--color-accent-hover);
   --color-accent-soft: var(--color-accent-soft);
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-soft: var(--color-primary-soft);
   --color-ember: var(--color-ember);
   --color-success: var(--color-success);
   --color-warning: var(--color-warning);
   --color-error: var(--color-error);
+  --color-info: var(--color-info);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --radius-xs: 0.25rem;
@@ -119,6 +176,10 @@ html.dark {
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
+  --shadow-glow-wire: var(--shadow-glow-wire);
+  --shadow-glow-wire-strong: var(--shadow-glow-wire-strong);
+  --shadow-glow-sonic: var(--shadow-glow-sonic);
+  --shadow-glow-sonic-strong: var(--shadow-glow-sonic-strong);
 }
 
 html {
@@ -205,23 +266,27 @@ html.dark .studio-hardware-dark .text-faint {
   color: #6e6a7a !important;
 }
 
-/* Ruby Wire Glow and Gradients */
-.glass-glow-wire {
-  box-shadow: 0 0 24px -4px rgb(230 0 38 / 0.3), inset 0 1px 1px 0 rgb(255 255 255 / 0.25);
+/* Official Audify Sonic Gradients & Glows */
+.glass-glow-wire,
+.glass-glow-sonic {
+  box-shadow: 0 0 24px -4px rgb(119 43 238 / 0.25), inset 0 1px 1px 0 rgb(255 255 255 / 0.25);
 }
 
-html.dark .glass-glow-wire {
-  box-shadow: 0 0 32px -4px rgb(255 42 75 / 0.4), inset 0 1px 1px 0 rgb(255 255 255 / 0.1);
+html.dark .glass-glow-wire,
+html.dark .glass-glow-sonic {
+  box-shadow: 0 0 32px -4px rgb(119 43 238 / 0.35), inset 0 1px 1px 0 rgb(255 255 255 / 0.08);
 }
 
+.text-sonic-gradient,
 .text-wire-gradient {
-  background: linear-gradient(135deg, #ff3856 0%, #e60026 50%, #990018 100%);
+  background: linear-gradient(110deg, #FF8A3D 0%, #FF4F76 35%, #F12D91 58%, #772BEE 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+.bg-sonic-gradient,
 .bg-wire-gradient {
-  background: linear-gradient(135deg, #ff2a4b 0%, #e60026 55%, #940016 100%);
+  background: linear-gradient(110deg, #FF8A3D 0%, #FF4F76 35%, #F12D91 58%, #772BEE 100%);
 }
 
 /* Fine hairline dividers */
@@ -320,16 +385,16 @@ html.dark body,
 .studio-theme body {
   background-color: var(--color-canvas);
   background-image:
-    radial-gradient(42rem 20rem at 12% -8rem, rgb(229 72 77 / 0.06), transparent 68%),
-    radial-gradient(56rem 26rem at 92% -6rem, rgb(229 72 77 / 0.03), transparent 66%);
+    radial-gradient(42rem 20rem at 12% -8rem, rgb(119 43 238 / 0.08), transparent 68%),
+    radial-gradient(56rem 26rem at 92% -6rem, rgb(241 45 145 / 0.05), transparent 66%);
   background-repeat: no-repeat;
 }
 
 /* ═══ Signature Header — "Ember Console" utilities ═══════════════════════════ */
 
-/* Slim animated crimson hairline above the bar (dark mode) */
+/* Slim animated sonic hairline above the bar (dark mode) */
 .nx-ember-line {
-  background: linear-gradient(90deg, transparent 5%, rgb(229 72 77 / 0.55) 38%, rgb(255 214 200 / 0.85) 50%, rgb(229 72 77 / 0.55) 62%, transparent 95%);
+  background: linear-gradient(90deg, transparent 5%, rgb(119 43 238 / 0.6) 35%, rgb(241 45 145 / 0.85) 50%, rgb(255 107 69 / 0.6) 65%, transparent 95%);
   animation: nx-ember-breathe 7s ease-in-out infinite;
 }
 
@@ -348,7 +413,7 @@ html.dark body,
   height: 3px;
   border-radius: 2px;
   z-index: 1;
-  background: linear-gradient(90deg, var(--color-ember), transparent);
+  background: linear-gradient(90deg, var(--color-primary), transparent);
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -377,7 +442,7 @@ html.dark .nx-corner-brackets::after,
   inset: 0;
   background: radial-gradient(
     5.5rem 2.5rem at var(--sheen-x, 50%) 120%,
-    color-mix(in srgb, var(--color-ember) 22%, transparent),
+    color-mix(in srgb, var(--color-primary) 22%, transparent),
     transparent 72%
   );
   opacity: 0;
@@ -397,10 +462,10 @@ html.dark .nx-corner-brackets::after,
   animation: nx-shimmer 1.6s ease-in-out infinite;
 }
 
-/* Ember glow pulse for the processing action */
+/* Sonic glow pulse for the processing action */
 @keyframes nx-ember-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgb(229 72 77 / 0.35), 0 8px 30px rgb(229 72 77 / 0.18); }
-  50% { box-shadow: 0 0 0 7px rgb(229 72 77 / 0), 0 8px 30px rgb(229 72 77 / 0.32); }
+  0%, 100% { box-shadow: 0 0 0 0 rgb(119 43 238 / 0.4), 0 8px 30px rgb(119 43 238 / 0.2); }
+  50% { box-shadow: 0 0 0 7px rgb(119 43 238 / 0), 0 8px 30px rgb(119 43 238 / 0.35); }
 }
 .nx-ember-pulse {
   animation: nx-ember-pulse 1.8s ease-in-out infinite;
@@ -493,9 +558,9 @@ html.dark .sonic-ribbon[data-scrolled="true"] {
   position: absolute;
   bottom: 0;
   height: 2px;
-  background: var(--color-accent);
+  background: linear-gradient(110deg, #FF8A3D 0%, #FF4F76 35%, #F12D91 58%, #772BEE 100%);
   border-radius: 9999px;
-  box-shadow: 0 0 10px var(--color-accent);
+  box-shadow: 0 0 10px rgb(119 43 238 / 0.45);
   transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), width 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease;
 }
 
@@ -503,7 +568,7 @@ html.dark .sonic-ribbon[data-scrolled="true"] {
 .dock-eq span {
   width: 2px;
   border-radius: 1px;
-  background: var(--color-accent);
+  background: var(--color-primary);
   transform-origin: bottom;
   animation: dock-eq-pulse 1.1s ease-in-out infinite;
 }

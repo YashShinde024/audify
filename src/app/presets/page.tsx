@@ -4,13 +4,13 @@ import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Audio Presets & DSP Tools Matrix — AudioMorph",
+  title: "Audio Presets & DSP Tools Matrix — Audify",
   description:
-    "Explore AudioMorph's full acoustic matrix: 8D Audio, Slowed + Reverb, 432 Hz Sacred Pitch Tuning, Bass Boosters, Room Reverbs, Trimmer, Equalizer, and Audio Utilities engineered by Nyxen.",
+    "Explore Audify's full acoustic matrix: 8D Audio, Slowed + Reverb, 432 Hz Sacred Pitch Tuning, Bass Boosters, Room Reverbs, Trimmer, Equalizer, and Audio Utilities by Nyxen × Xpert Melody.",
   openGraph: {
-    title: "Audio Presets & DSP Tools Matrix — AudioMorph",
+    title: "Audio Presets & DSP Tools Matrix — Audify",
     description:
-      "Instant client-side audio transformations engineered by Nyxen with 32-bit float Web Audio DSP.",
+      "Instant client-side audio transformations engineered by Nyxen in partnership with Xpert Melody with 32-bit float Web Audio DSP.",
     url: `${siteConfig.url}/presets`,
   },
 };
@@ -22,7 +22,7 @@ export default function PresetsPage() {
         <PageHeader
           eyebrow="Acoustic Catalog & DSP Matrix"
           title="Audio Effects & Presets Directory"
-          lead="Engineered by Nyxen: 36+ browser-native audio modules spanning spatial 8D orbits, atmospheric slowed+reverbs, psychoacoustic bass boosters, and studio utilities."
+          lead="Audify by Nyxen × Xpert Melody: 36+ browser-native audio modules spanning spatial 8D orbits, atmospheric slowed+reverbs, psychoacoustic bass boosters, and studio utilities."
         />
 
         <SectionSeam />

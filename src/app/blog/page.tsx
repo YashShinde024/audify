@@ -8,7 +8,7 @@ import { PresetIcon } from "@/components/icons/preset-icons";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Audio Engineering & Preset Guides — AudioMorph Knowledge Base",
+  title: "Audio Engineering & Preset Guides — Audify Knowledge Base",
   description:
     "Authoritative deep dives into audio transformation techniques: Slowed + Reverb, 8D Audio binaural panning, Nightcore pitch shifting, 432 Hz tuning, bass boost DSP math, reverb acoustics, and more — one complete guide for every preset.",
   keywords: [
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     "stereo widening mid side",
   ],
   openGraph: {
-    title: "Audio Engineering & Preset Guides — AudioMorph",
+    title: "Audio Engineering & Preset Guides — Audify",
     description:
       "Explore the science, DSP formulas, and acoustic secrets behind every audio preset — 38 in-depth guides backed by the actual render pipeline.",
     url: `${siteConfig.url}/blog`,
@@ -41,9 +41,9 @@ export default function BlogIndexPage() {
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Header */}
         <PageHeader
-          eyebrow="Knowledge & Audio Science"
-          title="Audio Engineering & Preset Guides"
-          lead="Deep, authoritative breakdowns of modern audio transformation techniques — one complete guide for every preset in the Studio, each grounded in the actual DSP pipeline."
+          eyebrow="Editorial & Acoustic Research"
+          title="Audify Blog & Acoustic Articles"
+          lead="Deep, authoritative breakdowns of modern audio transformation techniques, acoustic formulas, and sound design theory — one complete article for every preset in the Studio."
         />
 
         <SectionSeam />
@@ -100,7 +100,7 @@ export default function BlogIndexPage() {
           <div>
             <h3 className="text-base font-semibold text-fg">Want to test these effects live?</h3>
             <p className="mt-1 text-xs text-muted max-w-md">
-              Load your track into AudioMorph Studio and hear every preset in this library instantly —
+              Load your track into Audify Studio and hear every preset in this library instantly —
               all processing happens locally in your browser.
             </p>
           </div>
@@ -109,7 +109,7 @@ export default function BlogIndexPage() {
             className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-xs font-semibold text-white hover:bg-accent-hover transition-colors shrink-0"
           >
             <Waveform size={15} weight="bold" />
-            <span>Open AudioMorph Studio</span>
+            <span>Open Audify Studio</span>
           </Link>
         </section>
       </div>

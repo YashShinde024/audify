@@ -11,7 +11,7 @@ export function ProcessingNote() {
           No uploads. Ever.
         </h3>
         <p className="mt-3 text-xs sm:text-sm leading-relaxed text-muted max-w-md">
-          AudioMorph executes audio transformations entirely within your browser&apos;s memory using the
+          Audify executes audio transformations entirely within your browser&apos;s memory using the
           Web Audio API. Your tracks never leave your computer, preserving absolute privacy and eliminating server queue wait times.
         </p>
       </div>

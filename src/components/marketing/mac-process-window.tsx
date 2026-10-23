@@ -34,7 +34,7 @@ const steps: StepData[] = [
     badge: "Native Web Audio API",
     headline: "Zero-Latency Client File Decoding",
     subhead: "Audio files are decoded into raw 32-bit floating-point PCM buffers in your browser tab. Never uploaded to the cloud.",
-    url: "audiomorph.nyxen.in/decode",
+    url: "audify.nyxen.in/decode",
   },
   {
     id: 2,
@@ -42,7 +42,7 @@ const steps: StepData[] = [
     badge: "Acoustic Matrix",
     headline: "Instant Sonic Presets & Surgical Knobs",
     subhead: "Select from Slowed + Reverb, 8D Spatial Audio, Nightcore, or Heavy Bass with authentic mathematical routing.",
-    url: "audiomorph.nyxen.in/presets/slowed-reverb",
+    url: "audify.nyxen.in/presets/slowed-reverb",
   },
   {
     id: 3,
@@ -50,7 +50,7 @@ const steps: StepData[] = [
     badge: "Hardware-Accelerated",
     headline: "Live Visual Waveform & Peak Limiting",
     subhead: "Inspect authentic peak tracking and spectrum changes. Look-ahead peak protection guarantees zero digital overs.",
-    url: "audiomorph.nyxen.in/dsp-graph",
+    url: "audify.nyxen.in/dsp-graph",
   },
   {
     id: 4,
@@ -58,7 +58,7 @@ const steps: StepData[] = [
     badge: "Direct Bitstream",
     headline: "Studio-Grade WAV & 320kbps MP3",
     subhead: "Rendered via OfflineAudioContext at up to 16x real-time speed. Download instantly with pristine bit integrity.",
-    url: "audiomorph.nyxen.in/export",
+    url: "audify.nyxen.in/export",
   },
 ];
 
@@ -94,7 +94,7 @@ export function MacProcessWindow() {
             <span>Interactive Process Engine</span>
           </div>
           <h2 id="process-window-heading" className="mt-3 text-3xl sm:text-4xl font-bold tracking-tight text-fg">
-            How AudioMorph Transforms Sound
+            How Audify Transforms Sound
           </h2>
           <p className="mt-2 text-xs sm:text-sm text-muted">
             Observe the entire journey from raw audio ingestion to multi-threaded DSP rendering inside your browser.
@@ -299,7 +299,7 @@ export function MacProcessWindow() {
                           <DownloadSimple size={20} weight="bold" />
                         </div>
                         <div className="overflow-hidden">
-                          <p className="text-xs font-bold text-fg truncate">audiomorph-slowed-reverb.wav</p>
+                          <p className="text-xs font-bold text-fg truncate">audify-slowed-reverb.wav</p>
                           <p className="text-[10px] text-muted font-mono">24-bit 44.1 kHz PCM · Normalized to −0.5 dBFS</p>
                         </div>
                       </div>
@@ -327,7 +327,7 @@ export function MacProcessWindow() {
             <div className="mt-8 pt-4 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted">
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                <span>Web Audio OfflineAudioContext Pipeline · AudioMorph Engine</span>
+                <span>Web Audio OfflineAudioContext Pipeline · Audify DSP Engine</span>
               </div>
               <div className="flex items-center gap-4 text-[11px] font-mono">
                 <span>Memory Allocation: Isolated Tab</span>

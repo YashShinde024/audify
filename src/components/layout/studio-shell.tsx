@@ -7,7 +7,7 @@ import { FloatingAudioController } from "./floating-audio-controller";
 
 export function StudioShell({ children }: { children: ReactNode }) {
   return (
-    <div className="relative min-h-screen flex flex-col bg-canvas text-fg overflow-x-hidden selection:bg-accent selection:text-white">
+    <div className="relative min-h-screen flex flex-col bg-canvas text-fg overflow-x-clip selection:bg-primary selection:text-white">
       {/* Global Background Ambient Continuous Wave Canvas */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <WaveField className="opacity-45 dark:opacity-60" />

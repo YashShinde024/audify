@@ -325,7 +325,7 @@ export function PresetExplorer() {
             )}
           >
             <Sparkle className="w-3.5 h-3.5 text-amber-400" weight="fill" />
-            ★ Standard Presets ({FEATURED_IDS.length})
+            <span>Standard Presets ({FEATURED_IDS.length})</span>
           </button>
 
           <button
@@ -412,69 +412,74 @@ export function PresetExplorer() {
         )}
 
         {/* Presets Grid */}
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredPresets.map((preset) => {
             const isAuditioning = auditioningId === preset.id;
 
             return (
               <div
                 key={preset.id}
-                className="surface-card glass-panel rounded-xl p-4 flex flex-col justify-between hover:border-primary/40 transition-all"
+                className={cn(
+                  "surface-card glass-panel rounded-2xl p-5 flex flex-col justify-between border transition-all duration-200 group",
+                  isAuditioning
+                    ? "border-primary ring-1 ring-primary/40 shadow-md"
+                    : "border-line hover:border-primary/40 hover:shadow-sm"
+                )}
               >
                 <div>
                   <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line/70 bg-deep text-primary">
-                      <PresetIcon presetId={preset.id} size={17} />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/25 bg-primary/10 text-primary group-hover:scale-105 transition-transform">
+                      <PresetIcon presetId={preset.id} size={19} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] uppercase font-mono tracking-wider text-muted bg-deep px-1.5 py-0.5 rounded border border-line/60 flex items-center gap-1">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="text-[9px] uppercase font-mono tracking-wider text-muted bg-surface px-2 py-0.5 rounded-full border border-line flex items-center gap-1">
                           {preset.kind === "tool" ? <Wrench className="w-2.5 h-2.5 text-primary" /> : <MusicNotes className="w-2.5 h-2.5 text-primary" />}
                           {presetCategories.find((c) => c.id === preset.category)?.label}
                         </span>
                         <span className="text-[10px] text-faint font-mono">
-                          {preset.supportedOps.length} DSP Ops
+                          {preset.supportedOps.length} Ops
                         </span>
                       </div>
-                      <h3 className="mt-1 text-sm font-semibold text-fg">
+                      <h3 className="mt-1.5 text-sm font-bold text-fg group-hover:text-primary transition-colors">
                         {preset.name}
                       </h3>
                     </div>
                   </div>
 
-                  <p className="mt-2 text-xs text-muted leading-relaxed">
+                  <p className="mt-2.5 text-xs text-muted leading-relaxed line-clamp-3">
                     {preset.description}
                   </p>
 
                   {preset.compatibilityNote && (
-                    <p className="mt-2 text-[10px] text-primary flex items-center gap-1">
-                      <Headphones className="w-2.5 h-2.5" />
-                      {preset.compatibilityNote}
+                    <p className="mt-2 text-[10px] text-primary flex items-center gap-1 font-medium">
+                      <Headphones className="w-3 h-3 shrink-0" />
+                      <span>{preset.compatibilityNote}</span>
                     </p>
                   )}
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-line/60 flex items-center justify-between gap-2">
+                <div className="mt-4 pt-3.5 border-t border-line/60 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
                     <button
                       type="button"
                       onClick={() => playAudition(preset.id)}
                       className={cn(
-                        "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-mono transition-colors",
+                        "inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-mono transition-all cursor-pointer",
                         isAuditioning
-                          ? "bg-primary text-white border-primary"
-                          : "border-line/70 text-muted hover:text-fg hover:border-primary/40"
+                          ? "bg-primary text-white border-primary shadow-xs font-semibold animate-pulse"
+                          : "border-line bg-surface text-muted hover:text-fg hover:border-primary/40"
                       )}
                     >
-                      {isAuditioning ? <Square size={9} weight="fill" /> : <Play size={9} weight="fill" />}
-                      <span>{isAuditioning ? "Stop" : "Audition"}</span>
+                      {isAuditioning ? <Square size={10} weight="fill" /> : <Play size={10} weight="fill" />}
+                      <span>{isAuditioning ? "Auditioning..." : "Audition"}</span>
                     </button>
                     <GuideLink presetId={preset.id} />
                   </div>
 
-                  <Button asChild size="sm" variant="outline" className="h-7 px-2.5 text-xs shrink-0 rounded-lg">
+                  <Button asChild size="sm" variant="outline" className="h-7 px-3 text-xs shrink-0 rounded-lg border-line hover:border-primary/40">
                     <Link href={`/studio?preset=${preset.id}`}>
-                      Open
+                      <span>Open</span>
                       <ArrowRight className="h-3 w-3" />
                     </Link>
                   </Button>

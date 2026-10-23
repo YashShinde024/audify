@@ -12,16 +12,16 @@ import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AudioMorph — Sound, reimagined · Free Web Audio DSP Studio",
+  title: "Audify — Sound, reimagined · Free Web Audio DSP Platform",
   description:
-    "Free, professional browser-based audio DSP studio developed by Nyxen. Transform tracks with Slowed + Reverb, 8D Audio, Nightcore, and 432 Hz tuning locally in client memory.",
+    "Free, professional browser-based audio-effects platform developed by Nyxen in partnership with Xpert Melody. Transform tracks with Slowed + Reverb, 8D Audio, Nightcore, and 432 Hz tuning locally in client memory.",
 };
 
 /**
  * Editorial landing flow:
  *   1. Hero on the Living Sonic Canvas (dark stage)
  *   2. Signal Strip marquee (all preset names)
- *   3. Product demonstration — the real AudioMorph Studio, live, early
+ *   3. Product demonstration — the real Audify Studio, live, early
  *   4. Signature presets (editorial index)
  *   5. Workflow + honest processing note
  *   6. Privacy & quality facts (verified statements only)
@@ -40,7 +40,7 @@ export default function HomePage() {
       {/* 3. Live product demonstration — the real workspace, early */}
       <section
         id="studio"
-        aria-label="AudioMorph Studio preview"
+        aria-label="Audify Studio preview"
         className="bg-canvas border-b border-line py-16 sm:py-20"
       >
         <div className="mx-auto mb-6 max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -48,10 +48,10 @@ export default function HomePage() {
             <div>
               <p className="eyebrow text-primary font-semibold">Live Workspace</p>
               <h2 className="mt-1 text-xl font-semibold tracking-tight text-fg sm:text-2xl">
-                The AudioMorph DSP Engine.
+                The Audify DSP Engine.
               </h2>
               <p className="mt-1 text-xs text-muted">
-                Engineered by Nyxen. Drag an audio file and adjust the DSP parameters in real time.
+                Audify by Nyxen × Xpert Melody. Drag an audio file and adjust the DSP parameters in real time.
               </p>
             </div>
             <Button asChild size="sm" variant="outline" className="border-line/70 hover:border-primary/40">
@@ -189,7 +189,7 @@ export default function HomePage() {
             nothing is stored, and nothing is asked of you in return.
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild size="lg" className="bg-primary hover:bg-primary-hover text-white shadow-glow-wire">
+            <Button asChild size="lg" className="bg-primary hover:bg-primary-hover text-white shadow-sm">
               <Link href="/studio">
                 Open Studio
                 <ArrowRight aria-hidden="true" className="h-4 w-4" />

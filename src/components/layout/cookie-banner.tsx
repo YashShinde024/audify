@@ -5,14 +5,15 @@ import Link from "next/link";
 import { Cookie, ShieldCheck, X } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 
-const COOKIE_CONSENT_KEY = "audiomorph-cookie-consent";
+const COOKIE_CONSENT_KEY = "audify-cookie-consent";
+const LEGACY_COOKIE_KEY = "audiomorph-cookie-consent";
 
 export function CookieBanner() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     try {
-      const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
+      const consent = localStorage.getItem(COOKIE_CONSENT_KEY) || localStorage.getItem(LEGACY_COOKIE_KEY);
       if (!consent) {
         // Small delay so it animates in gracefully after initial page load
         const timer = setTimeout(() => setIsVisible(true), 1200);
@@ -48,7 +49,7 @@ export function CookieBanner() {
             </span>
             <div>
               <h3 className="text-xs font-semibold text-fg">Privacy & Cookie Choices</h3>
-              <p className="text-[11px] text-faint font-mono">AudioMorph Client DSP</p>
+              <p className="text-[11px] text-faint font-mono">Audify Client DSP</p>
             </div>
           </div>
 
@@ -56,14 +57,14 @@ export function CookieBanner() {
             type="button"
             onClick={() => handleConsent("essential")}
             aria-label="Dismiss cookie notice"
-            className="text-muted hover:text-fg p-1 rounded-lg transition-colors"
+            className="text-muted hover:text-fg p-1 rounded-lg transition-colors cursor-pointer"
           >
             <X size={14} weight="bold" />
           </button>
         </div>
 
         <p className="text-xs text-muted leading-relaxed">
-          AudioMorph processes 100% of your audio locally inside your browser memory. We use essential local storage
+          Audify processes 100% of your audio locally inside your browser memory. We use essential local storage
           to save your theme and sidebar preferences. No personal audio is ever uploaded or tracked.
         </p>
 

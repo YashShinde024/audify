@@ -1,5 +1,5 @@
 /**
- * AudioMorph Client Rate Limiter & DSP Concurrency Safeguard.
+ * Audify Client Rate Limiter & DSP Concurrency Safeguard.
  *
  * Protects browser memory and CPU thread pools from runaway execution
  * caused by rapid repeated DSP rendering or contact form spamming.

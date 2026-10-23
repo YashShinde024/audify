@@ -25,8 +25,10 @@ interface SidebarContextValue {
 
 const SidebarContext = createContext<SidebarContextValue | undefined>(undefined);
 
-const DOCKED_STORAGE_KEY = "audiomorph-sidebar-docked";
-const WIDTH_STORAGE_KEY = "audiomorph-sidebar-width";
+const DOCKED_STORAGE_KEY = "audify-sidebar-docked";
+const LEGACY_DOCKED_KEY = "audiomorph-sidebar-docked";
+const WIDTH_STORAGE_KEY = "audify-sidebar-width";
+const LEGACY_WIDTH_KEY = "audiomorph-sidebar-width";
 export const DEFAULT_SIDEBAR_WIDTH = 288;
 export const MIN_SIDEBAR_WIDTH = 220;
 export const MAX_SIDEBAR_WIDTH = 440;
@@ -49,7 +51,7 @@ function subscribeDocked(callback: () => void) {
 function getDockedSnapshot(): boolean {
   if (typeof window === "undefined") return true;
   try {
-    const val = localStorage.getItem(DOCKED_STORAGE_KEY);
+    const val = localStorage.getItem(DOCKED_STORAGE_KEY) ?? localStorage.getItem(LEGACY_DOCKED_KEY);
     if (val !== null) return val === "true";
     return window.innerWidth >= 1280;
   } catch {
@@ -81,7 +83,7 @@ let cachedWidth = DEFAULT_SIDEBAR_WIDTH;
 function getWidthSnapshot(): number {
   if (typeof window === "undefined") return DEFAULT_SIDEBAR_WIDTH;
   try {
-    const val = localStorage.getItem(WIDTH_STORAGE_KEY);
+    const val = localStorage.getItem(WIDTH_STORAGE_KEY) ?? localStorage.getItem(LEGACY_WIDTH_KEY);
     if (val) {
       const parsed = parseInt(val, 10);
       if (!isNaN(parsed) && parsed >= MIN_SIDEBAR_WIDTH && parsed <= MAX_SIDEBAR_WIDTH) {

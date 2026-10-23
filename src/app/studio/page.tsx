@@ -4,9 +4,9 @@ import { StudioInitializer } from "@/components/editor/studio-initializer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Studio — AudioMorph Professional Audio Processing",
+  title: "Studio — Audify Browser Audio DSP Workstation",
   description:
-    "The AudioMorph dedicated audio workspace: load audio, apply DSP presets and effect parameters, audition with authentic peak tracking, and download finished files.",
+    "The Audify dedicated audio workspace: load audio, apply DSP presets and effect parameters, audition with authentic peak tracking, and download finished files.",
 };
 
 export default function StudioPage() {

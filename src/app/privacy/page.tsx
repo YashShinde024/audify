@@ -8,22 +8,23 @@ import {
   Cookie,
   ShieldCheck,
   EnvelopeSimple,
+  ArrowRight,
 } from "@phosphor-icons/react/dist/ssr";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Zero-Server Audio Security · AudioMorph",
+  title: "Privacy Policy — Zero-Server Audio Security · Audify",
   description:
-    "AudioMorph's local-first privacy policy: 100% in-browser audio DSP processing, zero server uploads, no session recording, and zero audio telemetry. Developed by Nyxen.",
+    "Audify's local-first privacy policy: 100% in-browser audio DSP processing, zero server uploads, no session recording, and zero audio telemetry. Audify by Nyxen × Xpert Melody.",
   keywords: [
-    "AudioMorph privacy policy",
+    "Audify privacy policy",
     "private audio editor",
     "client-side audio privacy",
     "local audio processing security",
     "no server upload audio tool",
   ],
   openGraph: {
-    title: "Privacy Policy — 100% In-Browser Audio Security · AudioMorph",
+    title: "Privacy Policy — 100% In-Browser Audio Security · Audify",
     description: "Your audio files never leave your device. Zero cloud uploads, zero audio telemetry.",
     url: `${siteConfig.url}/privacy`,
     siteName: siteConfig.name,
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
   other: {
     "geo.region": "GLOBAL",
     "geo.placename": "Worldwide",
-    "DC.title": "AudioMorph Privacy Policy & Local-First Commitment",
+    "DC.title": "Audify Privacy Policy & Local-First Commitment",
   },
 };
 
@@ -40,7 +41,7 @@ const JSON_LD = {
   "@graph": [
     {
       "@type": "WebPage",
-      "name": "AudioMorph Privacy Policy",
+      "name": "Audify Privacy Policy",
       "description":
         "Commitment to client-side local audio processing with zero remote file transfers or telemetry.",
       "url": `${siteConfig.url}/privacy`,
@@ -61,7 +62,7 @@ export default function PrivacyPage() {
           <PageHeader
             eyebrow="Trust & Security"
             title="Privacy Policy"
-            lead="How AudioMorph handles your audio files, browser storage, and session privacy. Built with an uncompromising local-first architectural guarantee."
+            lead="How Audify handles your audio files, browser storage, and session privacy. Built with an uncompromising local-first architectural guarantee."
           />
 
           <SectionSeam />
@@ -76,7 +77,7 @@ export default function PrivacyPage() {
               <span>Core Privacy Guarantee</span>
             </div>
             <p className="text-sm leading-relaxed text-fg/90">
-              <strong>AudioMorph never uploads, inspects, or transmits your creative audio to any remote server or cloud bucket.</strong>
+              <strong>Audify never uploads, inspects, or transmits your creative audio to any remote server or cloud bucket.</strong>
               All waveform decoding, DSP node graphs, filtering, convolution reverb, and audio file packaging execute
               100% inside your local web browser memory.
             </p>
@@ -90,7 +91,7 @@ export default function PrivacyPage() {
               </div>
               <h2 className="text-sm font-semibold text-fg">Zero Cloud Storage</h2>
               <p className="text-xs text-muted leading-relaxed">
-                When you drag and drop an MP3, WAV, FLAC, or AAC track into AudioMorph, the binary buffer remains strictly
+                When you drag and drop an MP3, WAV, FLAC, or AAC track into Audify, the binary buffer remains strictly
                 within your browser&apos;s allocated memory sandbox. When you close the tab, the buffer is purged.
               </p>
             </div>
@@ -116,13 +117,13 @@ export default function PrivacyPage() {
               <h2 className="text-base font-semibold text-fg">Cookies & Local Storage</h2>
             </div>
             <p className="text-xs sm:text-sm text-muted leading-relaxed">
-              AudioMorph uses minimal client-side <code className="font-mono text-primary bg-primary/10 px-1 py-0.5 rounded">localStorage</code> keys solely to preserve your user preferences:
+              Audify uses minimal client-side <code className="font-mono text-primary bg-primary/10 px-1 py-0.5 rounded">localStorage</code> keys solely to preserve your user preferences:
             </p>
             <ul className="list-disc list-inside space-y-1.5 text-xs text-muted pl-2">
-              <li><strong className="text-fg font-mono">svaraya-theme / audiomorph-theme:</strong> Remembers your chosen theme (Light, Dark, or System).</li>
-              <li><strong className="text-fg font-mono">audiomorph-sidebar-docked:</strong> Preserves your Studio Rack sidebar docked/collapsed state.</li>
-              <li><strong className="text-fg font-mono">audiomorph-sidebar-width:</strong> Remembers your custom resized sidebar width preference.</li>
-              <li><strong className="text-fg font-mono">audiomorph-cookie-consent:</strong> Stores your cookie consent selection.</li>
+              <li><strong className="text-fg font-mono">audify-theme:</strong> Remembers your chosen theme (Light, Dark, or System).</li>
+              <li><strong className="text-fg font-mono">audify-sidebar-docked:</strong> Preserves your Studio Rack sidebar docked/collapsed state.</li>
+              <li><strong className="text-fg font-mono">audify-sidebar-width:</strong> Remembers your custom resized sidebar width preference.</li>
+              <li><strong className="text-fg font-mono">audify-cookie-consent:</strong> Stores your cookie consent selection.</li>
             </ul>
             <p className="text-xs text-muted leading-relaxed">
               None of these stored keys contain personally identifiable information (PII) or track your web activity across external domains.
@@ -143,12 +144,13 @@ export default function PrivacyPage() {
                 <EnvelopeSimple size={14} />
                 <span>support@nyxen.in</span>
               </a>
-              <a href="mailto:contact@nyxen.in" className="inline-flex items-center gap-1.5 text-primary hover:underline">
+              <a href="mailto:hello@nyxen.in" className="inline-flex items-center gap-1.5 text-primary hover:underline">
                 <EnvelopeSimple size={14} />
-                <span>contact@nyxen.in</span>
+                <span>hello@nyxen.in</span>
               </a>
-              <Link href="/contact" className="text-muted hover:text-fg underline ml-auto font-sans">
-                Visit Contact Dispatch →
+              <Link href="/contact" className="inline-flex items-center gap-1 text-muted hover:text-fg underline ml-auto font-sans">
+                <span>Visit Contact Dispatch</span>
+                <ArrowRight size={13} />
               </Link>
             </div>
           </section>

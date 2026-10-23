@@ -1,28 +1,31 @@
 /**
- * Central site configuration for AudioMorph (formerly Svaraya)
- * Product: AudioMorph
+ * Central site configuration for Audify
+ * Product: Audify
  * Tagline: Sound, reimagined.
- * Brand Attribution: Developed by Nyxen · Music Expertise by Xpert Melody
+ * Music partner: Xpert Melody
+ * Brand attribution: Audify by Nyxen × Xpert Melody
  * YouTube: https://www.youtube.com/@xpertmelody
  * Nyxen Ecosystem: https://nyxen.in
  */
 export const siteConfig = {
-  name: "AudioMorph",
+  name: "Audify",
   tagline: "Sound, reimagined.",
-  attribution: "Developed by Nyxen",
+  attribution: "Audify by Nyxen × Xpert Melody",
   by: "Nyxen",
+  musicPartner: "Xpert Melody",
+  fullAttribution: "Audify by Nyxen × Xpert Melody",
   creators: {
     nyxen: {
       name: "Nyxen",
       role: "Lead Software Architect & DSP Engineer",
       website: "https://nyxen.in",
-      email: "contact@nyxen.in",
+      email: "hello@nyxen.in",
       supportEmail: "support@nyxen.in",
-      directEmail: "yash@nyxen.in",
+      buildEmail: "build@nyxen.in",
       ecosystem: [
-        { name: "Nychat", desc: "Next-gen AI conversational platform", url: "https://nyxen.in/nychat" },
-        { name: "Rankly", desc: "Autonomous AI SEO and search ranking engine", url: "https://nyxen.in/rankly" },
-        { name: "Venz", desc: "High-performance cloud developer toolkit", url: "https://nyxen.in/venz" },
+        { name: "Rankly", desc: "Web Intelligence — SEO, GEO and AEO tracking", url: "https://rankly.nyxen.in" },
+        { name: "NyChat", desc: "Private & Ephemeral Communication Workspace", url: "https://nychat.nyxen.in" },
+        { name: "Venz AI", desc: "AI Prompt Workspace & Productivity Tools", url: "https://venz.nyxen.in" },
       ],
     },
     xpertmelody: {
@@ -35,14 +38,15 @@ export const siteConfig = {
   },
   youtubeUrl: "https://www.youtube.com/@xpertmelody",
   youtubeHandle: "@xpertmelody",
+  githubUrl: "https://github.com/YashShinde024/svaraya",
   emails: {
-    general: "contact@nyxen.in",
+    general: "hello@nyxen.in",
     support: "support@nyxen.in",
-    direct: "yash@nyxen.in",
+    build: "build@nyxen.in",
   },
   description:
-    "AudioMorph is a free, privacy-first, browser-native audio DSP studio developed by Nyxen. 32-bit float Web Audio processing, zero server uploads.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://audiomorph.vercel.app",
+    "Audify is a premium browser-based audio-effects platform developed by Nyxen in partnership with Xpert Melody. 32-bit float Web Audio processing, zero server uploads.",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://audify.vercel.app",
   maxFileSizeBytes: 10 * 1024 * 1024, // 10 MB
 } as const;
 

@@ -32,11 +32,11 @@ export const MUSIC_EDIT_FACTS = [
   },
   {
     topic: "True Peak Headroom",
-    fact: "Intersample peaks can clip speakers even if samples read under 0 dBFS. AudioMorph's look-ahead limiter maintains a strict −0.3 dBFS ceiling.",
+    fact: "Intersample peaks can clip speakers even if samples read under 0 dBFS. Audify's look-ahead limiter maintains a strict −0.3 dBFS ceiling.",
   },
   {
     topic: "Private In-Browser DSP",
-    fact: "AudioMorph processes all audio directly on your CPU via multi-threaded Web Audio buffers—zero bytes are ever sent to an external server.",
+    fact: "Audify processes all audio directly on your CPU via multi-threaded Web Audio buffers—zero bytes are ever sent to an external server.",
   },
 ];
 

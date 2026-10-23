@@ -3,6 +3,7 @@ import { footerCompanyNav, footerProductNav, legalNav } from "@/config/navigatio
 import { siteConfig } from "@/config/site";
 import { Logo } from "./logo";
 import { YouTubeIcon } from "@/components/icons/preset-icons";
+import { FooterAttribution } from "./footer-attribution";
 
 const currentYear = new Date().getFullYear();
 
@@ -13,14 +14,14 @@ export function SiteFooter() {
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4 lg:gap-12">
           {/* Brand Column */}
           <div className="sm:col-span-2">
-            <Link href="/" className="inline-flex items-center select-none" aria-label="AudioMorph homepage">
-              <Logo height={34} variant="by-nyxen" />
+            <Link href="/" className="inline-flex items-center select-none" aria-label="Audify homepage">
+              <Logo height={34} variant="adaptive" />
             </Link>
             <p className="mt-2 text-xs font-medium text-accent tracking-wide">
               {siteConfig.tagline}
             </p>
             <p className="mt-3 max-w-md text-xs leading-relaxed text-muted">
-              AudioMorph is an ultra-fast, client-side Web Audio DSP workstation developed by{" "}
+              Audify is a premium browser-based audio-effects platform developed by{" "}
               <a
                 href="https://nyxen.in"
                 target="_blank"
@@ -28,6 +29,15 @@ export function SiteFooter() {
                 className="font-semibold text-fg hover:text-accent underline underline-offset-2 transition-colors"
               >
                 Nyxen
+              </a>{" "}
+              in partnership with music partner{" "}
+              <a
+                href={siteConfig.youtubeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-fg hover:text-accent underline underline-offset-2 transition-colors"
+              >
+                Xpert Melody
               </a>
               . Built for musicians, producers, sound designers, and content creators. 100% in-browser processing with zero audio uploads.
             </p>
@@ -94,14 +104,13 @@ export function SiteFooter() {
           </nav>
         </div>
 
-        {/* Bottom bar */}
-        <div className="mt-10 border-t border-line pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-faint">
-          <p>© {currentYear} AudioMorph. All rights reserved.</p>
-          <p className="flex items-center gap-2">
-            <span>Free browser audio workstation</span>
-            <span aria-hidden="true">·</span>
-            <span className="font-medium text-fg">{siteConfig.attribution}</span>
-          </p>
+        {/* Bottom bar with animated interchangeable attribution */}
+        <div className="mt-10 border-t border-line pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-faint">
+          <p>© {currentYear} Audify. All rights reserved.</p>
+          <div className="flex items-center gap-3">
+            <span className="hidden md:inline-block">Free browser audio workstation ·</span>
+            <FooterAttribution />
+          </div>
         </div>
       </div>
     </footer>

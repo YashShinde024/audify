@@ -479,7 +479,7 @@ export const articleBodiesA: PresetArticleBody[] = [
     presetId: "vocal-reverb",
     slug: "vocal-reverb",
     what:
-      "Vocal Reverb trades room realism for presence: a shorter ~1.8-second decay with a brighter, tilted response. In professional chains this is the vocal plate; in AudioMorph it is the preset that keeps lyrics crisp while giving them a space that feels bigger than the recording booth.",
+      "Vocal Reverb trades room realism for presence: a shorter ~1.8-second decay with a brighter, tilted response. In professional chains this is the vocal plate; in Audify it is the preset that keeps lyrics crisp while giving them a space that feels bigger than the recording booth.",
     sound:
       "Forward, tight, sung-into-microphone. The reverb surrounds the voice without pulling it into the room.",
     dsp: [

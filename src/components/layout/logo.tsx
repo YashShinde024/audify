@@ -1,71 +1,119 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useTheme } from "./theme-provider";
 
 interface LogoProps {
   className?: string;
-  variant?: "standard" | "by-nyxen" | "compact" | "icon-only";
+  variant?: "adaptive" | "by-nyxen" | "icon-only" | "light-only" | "dark-only" | "standard";
   height?: number;
   priority?: boolean;
   showSubtitle?: boolean;
 }
 
 /**
- * Official AudioMorph Brand Identity:
- * Features the signature 3D metallic crimson ribbon emblem ("AM" acoustic flow
- * with ruby star core), paired with crisp contemporary studio typography and
- * authentic creator attribution: "Developed by Nyxen · Music Expertise by Xpert Melody".
+ * Official Audify Brand Logo Component:
+ * - Light Mode: /images/audify-logo.png (black/ink text)
+ * - Dark Mode: /images/audify-logo-alt.png (white text)
+ * - Renders exactly ONE single image tag at any given time.
+ * - Aspect ratio: 2172 x 724 (3:1)
  */
 export function Logo({
   className,
-  variant = "by-nyxen",
+  variant = "adaptive",
   height = 32,
   priority = true,
-  showSubtitle = true,
 }: LogoProps) {
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const width = Math.round(height * 3);
+
   if (variant === "icon-only") {
     return (
       <span className={cn("relative inline-flex items-center select-none shrink-0", className)}>
         <Image
-          src="/images/audiomorph-logo.png"
-          alt="AudioMorph"
-          width={height * 1.5}
+          src="/images/audify-icon.png"
+          alt="Audify Emblem"
+          width={height}
           height={height}
           priority={priority}
-          className="h-auto w-auto max-h-8 object-contain filter drop-shadow-[0_2px_8px_rgba(230,0,38,0.35)]"
+          className="h-auto w-auto max-h-8 object-contain transition-transform duration-300 group-hover:scale-105"
         />
       </span>
     );
   }
 
-  return (
-    <span className={cn("relative inline-flex items-center gap-2.5 select-none shrink-0 group", className)}>
-      {/* 3D Ruby Ribbon Emblem */}
-      <span className="relative flex items-center shrink-0">
+  if (variant === "light-only") {
+    return (
+      <span className={cn("relative inline-flex items-center select-none shrink-0 group", className)}>
         <Image
-          src="/images/audiomorph-logo.png"
-          alt="AudioMorph Emblem"
-          width={Math.round(height * 1.6)}
+          src="/images/audify-logo.png"
+          alt="Audify"
+          width={width}
           height={height}
           priority={priority}
-          className="h-auto max-h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-[0_2px_10px_rgba(230,0,38,0.4)]"
+          style={{ height: `${height}px`, width: "auto" }}
+          className="object-contain transition-transform duration-300 group-hover:scale-105"
         />
       </span>
+    );
+  }
 
-      {/* Brand Typography & Subtitle */}
-      <span className="flex flex-col">
-        <span className="flex items-center tracking-tight text-base sm:text-lg font-bold leading-none">
-          <span className="text-fg transition-colors">Audio</span>
-          <span className="bg-gradient-to-r from-primary via-accent-hover to-primary bg-clip-text text-transparent font-extrabold ml-[1px]">
-            Morph
-          </span>
-        </span>
-
-        {variant === "by-nyxen" && showSubtitle && (
-          <span className="hidden sm:inline-block text-[9px] font-mono tracking-tight text-faint group-hover:text-muted transition-colors mt-0.5 whitespace-nowrap">
-            Developed by Nyxen
-          </span>
-        )}
+  if (variant === "dark-only") {
+    return (
+      <span className={cn("relative inline-flex items-center select-none shrink-0 group", className)}>
+        <Image
+          src="/images/audify-logo-alt.png"
+          alt="Audify"
+          width={width}
+          height={height}
+          priority={priority}
+          style={{ height: `${height}px`, width: "auto" }}
+          className="object-contain transition-transform duration-300 group-hover:scale-105"
+        />
       </span>
+    );
+  }
+
+  // Determine if dark mode is active:
+  // On the client, document.documentElement having 'dark' is the live ground truth.
+  // During SSR or fallback, theme context is used.
+  const isDark =
+    typeof document !== "undefined"
+      ? document.documentElement.classList.contains("dark") || theme === "dark"
+      : theme === "dark";
+
+  // Strictly theme-specific:
+  // For variant "by-nyxen": audify-logo-by-nyxen-dark.png (dark) vs audify-logo-by-nyxen.png (light)
+  // For standard/adaptive: audify-logo-alt.png (dark) vs audify-logo.png (light)
+  const currentSrc =
+    variant === "by-nyxen"
+      ? isDark
+        ? "/images/audify-logo-by-nyxen-dark.png"
+        : "/images/audify-logo-by-nyxen.png"
+      : isDark
+      ? "/images/audify-logo-alt.png"
+      : "/images/audify-logo.png";
+
+  return (
+    <span className={cn("relative inline-flex items-center select-none shrink-0 group", className)}>
+      <Image
+        key={currentSrc}
+        src={currentSrc}
+        alt={variant === "by-nyxen" ? "Audify by Nyxen" : "Audify"}
+        width={width}
+        height={height}
+        priority={priority}
+        style={{ height: `${height}px`, width: "auto" }}
+        className="object-contain transition-transform duration-300 group-hover:scale-105"
+      />
     </span>
   );
 }

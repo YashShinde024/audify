@@ -237,7 +237,7 @@ export function SoundSelector() {
                 )}
               >
                 <Sparkle className="w-3 h-3 text-amber-400" weight="fill" />
-                ★ Standard Presets ({STANDARD_PRESET_IDS.size})
+                <span>Standard Presets ({STANDARD_PRESET_IDS.size})</span>
               </button>
 
               <button

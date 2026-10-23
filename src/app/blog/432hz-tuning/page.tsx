@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "432 Hz vs 440 Hz Tuning: Mathematical Truth & Acoustic Facts — AudioMorph",
+  title: "432 Hz vs 440 Hz Tuning: Mathematical Truth & Acoustic Facts — Audify",
   description:
     "An objective acoustic and mathematical analysis of 432 Hz pitch conversion. Learn the exact 432/440 ratio (0.981818), the -31.766 cents pitch shift, and Verdi's tuning history.",
   keywords: [
@@ -154,7 +154,7 @@ export default function FourThirtyTwoHzGuidePage() {
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-fg">Convert your track to 432 Hz</h3>
                 <p className="text-xs text-muted">
-                  AudioMorph Studio applies the exact mathematical 0.981818 resampling curve with full 32-bit float accuracy.
+                  Audify Studio applies the exact mathematical 0.981818 resampling curve with full 32-bit float accuracy.
                 </p>
               </div>
               <Button asChild size="md" className="rounded-full shrink-0">

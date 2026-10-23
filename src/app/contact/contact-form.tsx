@@ -35,11 +35,40 @@ export function ContactForm() {
     }
 
     setSubmitting(true);
-    // Simulate instantaneous local processing / transmission
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setSubmitting(false);
-    setSubmitted(true);
-    toast.success("Message dispatched successfully! The team will follow up within 24–48 hours.");
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          topic,
+          message: message.trim(),
+          audioFormat: audioFormat.trim() || undefined,
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          toast.error(data?.message || "Too many dispatches. Please wait before retrying.");
+        } else if (data?.issues && data.issues.length > 0) {
+          toast.error(data.issues[0].message || "Invalid input data.");
+        } else {
+          toast.error(data?.message || "Failed to dispatch message. Please try again.");
+        }
+        setSubmitting(false);
+        return;
+      }
+
+      setSubmitting(false);
+      setSubmitted(true);
+      toast.success("Message dispatched successfully! The Audify team will follow up within 24–48 hours.");
+    } catch {
+      setSubmitting(false);
+      toast.error("Network error. Please check your connection and try again.");
+    }
   };
 
   if (submitted) {
@@ -80,7 +109,7 @@ export function ContactForm() {
             Send a Direct Dispatch
           </h2>
           <p className="text-xs text-muted mt-0.5">
-            Directly routed to the AudioMorph engineering inbox (Nyxen).
+            Directly routed to the Audify engineering inbox (Nyxen).
           </p>
         </div>
         <span className="flex items-center gap-1.5 text-[11px] font-mono text-primary font-medium bg-primary/10 px-2.5 py-1 rounded-full border border-primary/25">

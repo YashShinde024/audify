@@ -432,7 +432,7 @@ export function HeroVisual() {
         for (let i = 0; i < idlePillars.length; i++) {
           const px = gap + i * (pWidth + gap);
           const pHeight = idlePillars[i] * height * 0.45;
-          ctx.fillStyle = "rgba(229, 72, 77, 0.18)";
+          ctx.fillStyle = "rgba(119, 43, 238, 0.25)";
           ctx.fillRect(px, (height - pHeight) / 2, pWidth, pHeight);
         }
       }
@@ -512,7 +512,7 @@ export function HeroVisual() {
                 "inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-white transition-all shadow-sm",
                 isPlaying
                   ? "bg-surface border border-line text-fg hover:bg-raised"
-                  : "bg-accent hover:bg-accent-hover shadow-[0_2px_12px_rgb(158_27_50_/_0.3)]"
+                  : "bg-primary hover:bg-primary-hover shadow-xs"
               )}
             >
               {isPlaying ? (

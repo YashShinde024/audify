@@ -4,7 +4,7 @@ import { Question, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "404 — Page Not Found · AudioMorph",
+  title: "404 — Page Not Found · Audify",
 };
 
 export default function NotFound() {

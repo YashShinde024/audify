@@ -129,15 +129,15 @@ export function WaveField({ className }: { className?: string }) {
       const isDark = document.documentElement.classList.contains("dark");
 
       if (isDark) {
-        // Dark theme: 2 balanced, elegant ruby waves
+        // Dark theme: balanced, sonic violet & pink ribbons
         renderRibbon(
           elapsed,
           0.002,
           46,
           height * 0.72,
-          "rgba(255, 42, 75, 0.4)",
-          "rgba(148, 0, 22, 0.01)",
-          0.35,
+          "rgba(119, 43, 238, 0.45)",
+          "rgba(37, 27, 55, 0.01)",
+          0.38,
           0.85
         );
         renderRibbon(
@@ -145,20 +145,20 @@ export function WaveField({ className }: { className?: string }) {
           0.0028,
           36,
           height * 0.82,
-          "rgba(230, 0, 38, 0.45)",
-          "rgba(20, 0, 5, 0.0)",
-          0.38,
+          "rgba(241, 45, 145, 0.4)",
+          "rgba(17, 16, 22, 0.0)",
+          0.36,
           -1.0
         );
       } else {
-        // Light theme: 2 radiant, airy wire-crimson waves
+        // Light theme: refined sonic violet & warm orange ribbons
         renderRibbon(
           elapsed,
           0.002,
           42,
           height * 0.74,
-          "rgba(230, 0, 38, 0.22)",
-          "rgba(255, 230, 235, 0.01)",
+          "rgba(119, 43, 238, 0.22)",
+          "rgba(240, 233, 255, 0.01)",
           0.4,
           0.85
         );
@@ -167,8 +167,8 @@ export function WaveField({ className }: { className?: string }) {
           0.0026,
           32,
           height * 0.84,
-          "rgba(255, 51, 79, 0.18)",
-          "rgba(255, 240, 242, 0.0)",
+          "rgba(255, 107, 69, 0.2)",
+          "rgba(248, 247, 245, 0.0)",
           0.35,
           -0.95
         );
@@ -200,7 +200,7 @@ export function WaveField({ className }: { className?: string }) {
         0.002,
         40,
         height * 0.75,
-        isDark ? "rgba(230, 0, 38, 0.25)" : "rgba(230, 0, 38, 0.15)",
+        isDark ? "rgba(119, 43, 238, 0.3)" : "rgba(119, 43, 238, 0.18)",
         "transparent",
         0.35
       );

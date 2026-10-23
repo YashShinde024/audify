@@ -9,7 +9,7 @@ import { SonicCanvas } from "./sonic-canvas";
  *
  * An always-dark hero: deep graphite canvas with the Living Sonic Canvas
  * mesh and traveling ruby-wire wave layers.
- * Branded for AudioMorph: Developed by Nyxen · Music Expertise by Xpert Melody.
+ * Branded for Audify: Audify by Nyxen × Xpert Melody.
  */
 export function Hero() {
   return (
@@ -26,21 +26,21 @@ export function Hero() {
       <div className="relative mx-auto grid max-w-7xl gap-14 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:py-28">
         {/* Left: editorial content */}
         <div className="max-w-xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            <span>Developed by Nyxen · 100% In-Browser Audio DSP</span>
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary shadow-xs">
+            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+            <span>Audify by Nyxen × Xpert Melody · 100% Client-Side DSP</span>
           </div>
 
           <h1 className="display-title mt-5 text-5xl leading-[0.95] tracking-tight text-fg sm:text-6xl lg:text-7xl">
             Sound,
             <br />
-            <span className="text-wire-gradient font-extrabold">reimagined.</span>
+            <span className="text-sonic-gradient font-extrabold">reimagined.</span>
           </h1>
 
           <div className="mt-6 flex items-center gap-3" aria-hidden="true">
             <span className="h-px w-10 bg-primary" />
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-faint">
-              AudioMorph · 32-bit float dsp · zero server uploads
+              Audify · 32-bit float dsp · zero server uploads
             </span>
           </div>
 
@@ -50,13 +50,13 @@ export function Hero() {
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Button asChild size="lg" className="bg-primary hover:bg-primary-hover text-white shadow-glow-wire">
-              <Link href="/studio" aria-label="Open the AudioMorph Studio">
-                Open AudioMorph Studio
+            <Button asChild size="lg" className="bg-primary hover:bg-primary-hover text-white shadow-sm">
+              <Link href="/studio" aria-label="Open Audify Studio">
+                Open Audify Studio
                 <ArrowRight aria-hidden="true" className="h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="secondary" className="border-line/70 hover:border-primary/40">
+            <Button asChild size="lg" variant="secondary" className="border-line-strong hover:border-primary/50">
               <Link href="/presets">
                 <Faders className="h-4 w-4 text-primary" />
                 Explore 36+ Presets

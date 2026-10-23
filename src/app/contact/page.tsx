@@ -10,19 +10,20 @@ import {
   Cpu,
   EnvelopeSimple,
   GlobeHemisphereWest,
+  ArrowUpRight,
 } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { siteConfig } from "@/config/site";
 import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
-  title: "Contact & Community Dispatch · AudioMorph Developed by Nyxen",
+  title: "Contact & Community Dispatch · Audify by Nyxen × Xpert Melody",
   description:
-    "Official contact channels for AudioMorph. Reach out to lead architect Nyxen (nyxen.in) for preset requests, DSP bugs, or audio production inquiries.",
+    "Official contact channels for Audify. Reach out to lead architect Nyxen (nyxen.in) and music partner Xpert Melody for preset requests, DSP bugs, or audio production inquiries.",
   openGraph: {
-    title: "Contact & Community Dispatch · AudioMorph",
+    title: "Contact & Community Dispatch · Audify",
     description:
-      "Direct inquiries, nyxen.in official emails, preset requests, and technical support for AudioMorph in-browser audio DSP studio.",
+      "Direct inquiries, nyxen.in official emails, preset requests, and technical support for Audify in-browser audio DSP platform.",
     url: `${siteConfig.url}/contact`,
   },
 };
@@ -34,7 +35,7 @@ export default function ContactPage() {
         <PageHeader
           eyebrow="Dispatch & Creator Contacts"
           title="Direct Contact & Channels"
-          lead="Direct communication channels with AudioMorph creators (Developed by Nyxen). Reach out for preset suggestions, DSP engine reports, sound collaborations, or platform licensing."
+          lead="Direct communication channels with Audify creators (Audify by Nyxen × Xpert Melody). Reach out for preset suggestions, DSP engine reports, sound collaborations, or platform licensing."
         />
 
         {/* Official nyxen.in Email Directory Banner */}
@@ -59,20 +60,21 @@ export default function ContactPage() {
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-hover font-mono"
             >
               <GlobeHemisphereWest size={14} />
-              <span>nyxen.in portal ↗</span>
+              <span>nyxen.in portal</span>
+              <ArrowUpRight size={12} weight="bold" />
             </a>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3 pt-2">
             <a
-              href="mailto:contact@nyxen.in"
+              href="mailto:hello@nyxen.in"
               className="rounded-xl border border-line/70 bg-surface/80 p-3.5 hover:border-primary/50 hover:bg-surface transition-all group"
             >
               <span className="text-[10px] uppercase font-mono tracking-wider text-faint group-hover:text-primary">
                 General Inquiries
               </span>
               <p className="mt-1 text-xs font-semibold text-fg group-hover:text-primary transition-colors font-mono">
-                contact@nyxen.in
+                hello@nyxen.in
               </p>
               <p className="mt-1 text-[11px] text-muted">Partnerships, ecosystem & press</p>
             </a>
@@ -91,16 +93,16 @@ export default function ContactPage() {
             </a>
 
             <a
-              href="mailto:yash@nyxen.in"
+              href="mailto:build@nyxen.in"
               className="rounded-xl border border-line/70 bg-surface/80 p-3.5 hover:border-primary/50 hover:bg-surface transition-all group"
             >
               <span className="text-[10px] uppercase font-mono tracking-wider text-faint group-hover:text-primary">
-                Lead Architect Direct
+                Partnership & Technical
               </span>
               <p className="mt-1 text-xs font-semibold text-fg group-hover:text-primary transition-colors font-mono">
-                yash@nyxen.in
+                build@nyxen.in
               </p>
-              <p className="mt-1 text-[11px] text-muted">Direct engineering inquiries</p>
+              <p className="mt-1 text-[11px] text-muted">Direct engineering inquiries & builds</p>
             </a>
           </div>
         </section>
@@ -183,7 +185,7 @@ export default function ContactPage() {
                 Zero Cloud Uploads
               </h3>
               <p className="mt-1 text-xs text-muted leading-relaxed">
-                AudioMorph never transmits your music to cloud storage. Your audio stays 100% inside your browser.
+                Audify never transmits your music to cloud storage. Your audio stays 100% inside your browser.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-line/60">
@@ -216,12 +218,12 @@ export default function ContactPage() {
 
           <div className="grid gap-6 sm:grid-cols-3 text-xs leading-relaxed text-muted">
             <div>
-              <p className="font-semibold text-fg mb-1">Do I need an account to use AudioMorph?</p>
+              <p className="font-semibold text-fg mb-1">Do I need an account to use Audify?</p>
               <p>No accounts, no logins, and no subscriptions. Every tool and preset is free to use immediately in your browser.</p>
             </div>
             <div>
               <p className="font-semibold text-fg mb-1">Are exported tracks free for commercial use?</p>
-              <p>Yes. AudioMorph claims zero copyright over your processed masters. What you render is 100% yours.</p>
+              <p>Yes. Audify claims zero copyright over your processed masters. What you render is 100% yours.</p>
             </div>
             <div>
               <p className="font-semibold text-fg mb-1">Why is my file limit 10 MB?</p>

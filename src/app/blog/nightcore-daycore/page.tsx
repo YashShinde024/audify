@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Nightcore vs Daycore: The Math of Pitch & Tempo Transposition — AudioMorph",
+  title: "Nightcore vs Daycore: The Math of Pitch & Tempo Transposition — Audify",
   description:
     "The definitive guide to Nightcore and Daycore audio processing. Learn the logarithmic pitch equation, speed ratios (1.25x vs 0.85x), and vocal formant shifts.",
   keywords: [
@@ -157,7 +157,7 @@ export default function NightcoreDaycoreGuidePage() {
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-fg">Create Nightcore or Daycore</h3>
                 <p className="text-xs text-muted">
-                  Use AudioMorph&apos;s 1-click Nightcore and Daycore presets with studio-grade 32-bit floating-point resampling.
+                  Use Audify&apos;s 1-click Nightcore and Daycore presets with studio-grade 32-bit floating-point resampling.
                 </p>
               </div>
               <Button asChild size="md" className="rounded-full shrink-0">

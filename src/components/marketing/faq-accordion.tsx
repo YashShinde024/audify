@@ -10,10 +10,10 @@ export interface FaqEntry {
 
 const defaultFaqs: FaqEntry[] = [
   {
-    question: "Is AudioMorph free to use?",
+    question: "Is Audify free to use?",
     answer: (
       <p>
-        Yes. AudioMorph is a completely free, browser-based audio tool with no subscriptions,
+        Yes. Audify is a completely free, browser-based audio platform with no subscriptions,
         no required accounts, and no paywalls.
       </p>
     ),
@@ -22,7 +22,7 @@ const defaultFaqs: FaqEntry[] = [
     question: "What file formats and sizes are supported?",
     answer: (
       <p>
-        AudioMorph accepts MP3, WAV, OGG, FLAC, and AAC files up to 10 MB in size. Files are
+        Audify accepts MP3, WAV, OGG, FLAC, and AAC files up to 10 MB in size. Files are
         validated immediately in your browser.
       </p>
     ),
@@ -70,7 +70,7 @@ const defaultFaqs: FaqEntry[] = [
     question: "What happens when I close the tab?",
     answer: (
       <p>
-        Because AudioMorph maintains zero server logs and zero remote session tracking, closing the tab
+        Because Audify maintains zero server logs and zero remote session tracking, closing the tab
         safely clears all in-memory buffers. Make sure to download your processed audio before navigating away.
       </p>
     ),

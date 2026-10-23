@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Bass Boost Engineering: Sub-Bass Sculpting Without Distortion — AudioMorph",
+  title: "Bass Boost Engineering: Sub-Bass Sculpting Without Distortion — Audify",
   description:
     "How to amplify sub-bass (30–80 Hz) without 0 dBFS clipping. Learn low-shelf biquad filters, Q-factor resonance, pre-gain headroom, and soft-limiting.",
   keywords: [
@@ -63,10 +63,10 @@ const JSON_LD = {
         },
         {
           "@type": "Question",
-          "name": "How does AudioMorph boost bass cleanly?",
+          "name": "How does Audify boost bass cleanly?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "AudioMorph applies dynamic headroom compensation: before boosting the sub-bass shelf (+4 dB to +16 dB at 60 Hz), the master input gain is proportionally attenuated by -3 to -8 dB. The rendered signal is then polished through a hyperbolic soft-clipping shaper to ensure zero digital overs.",
+            "text": "Audify applies dynamic headroom compensation: before boosting the sub-bass shelf (+4 dB to +16 dB at 60 Hz), the master input gain is proportionally attenuated by -3 to -8 dB. The rendered signal is then polished through a hyperbolic soft-clipping shaper to ensure zero digital overs.",
           },
         },
       ],
@@ -136,9 +136,9 @@ export default function BassBoostGuidePage() {
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-lg font-semibold text-fg">2. AudioMorph&apos;s 4-Tier Bass Architecture</h2>
+              <h2 className="text-lg font-semibold text-fg">2. Audify&apos;s 4-Tier Bass Architecture</h2>
               <p>
-                In AudioMorph Studio, we engineered four distinct presets suited for different acoustic needs:
+                In Audify Studio, we engineered four distinct presets suited for different acoustic needs:
               </p>
               <div className="grid gap-3 sm:grid-cols-2 pt-2">
                 <div className="rounded-xl border border-line bg-surface p-4">
@@ -165,7 +165,7 @@ export default function BassBoostGuidePage() {
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-fg">Boost your audio&apos;s bass</h3>
                 <p className="text-xs text-muted">
-                  Experience clean, resonant bass boosting with full floating-point headroom in AudioMorph Studio.
+                  Experience clean, resonant bass boosting with full floating-point headroom in Audify Studio.
                 </p>
               </div>
               <Button asChild size="md" className="rounded-full shrink-0">

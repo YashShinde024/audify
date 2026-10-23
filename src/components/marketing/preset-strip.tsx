@@ -1,4 +1,5 @@
 import { presets } from "@/config/presets";
+import { Sparkle } from "@phosphor-icons/react/dist/ssr";
 
 /**
  * Signal Strip — a continuous marquee of preset names.
@@ -30,8 +31,8 @@ export function PresetStrip() {
                 className="flex items-center gap-8 font-mono text-[11px] uppercase tracking-[0.18em] text-faint"
               >
                 <span>{name}</span>
-                <span aria-hidden="true" className="text-accent/70">
-                  ✳
+                <span aria-hidden="true" className="inline-flex items-center text-primary/70">
+                  <Sparkle size={10} weight="fill" />
                 </span>
               </li>
             ))}

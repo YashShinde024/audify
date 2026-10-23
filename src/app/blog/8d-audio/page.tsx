@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "8D Audio Explained: Binaural Panning, ITD, ILD & Psychoacoustics — AudioMorph",
+  title: "8D Audio Explained: Binaural Panning, ITD, ILD & Psychoacoustics — Audify",
   description:
     "How 8D audio actually works: Interaural Time Difference (ITD), sinusoidal azimuth panning, Head-Related Transfer Functions (HRTF), and reverb psychoacoustics.",
   keywords: [
@@ -156,12 +156,12 @@ export default function EightDAudioGuidePage() {
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-lg font-semibold text-fg">3. How AudioMorph Computes 8D Audio In-Tab</h2>
+              <h2 className="text-lg font-semibold text-fg">3. How Audify Computes 8D Audio In-Tab</h2>
               <p>
-                Inside AudioMorph&apos;s Web Audio DSP engine, 8D audio is computed using real-time parameter automation:
+                Inside Audify&apos;s Web Audio DSP engine, 8D audio is computed using real-time parameter automation:
               </p>
               <div className="rounded-xl border border-line bg-surface p-4 font-mono text-xs text-neutral-300 space-y-1">
-                <p className="text-blue-400 font-semibold">{"// AudioMorph 8D Panning Automation"}</p>
+                <p className="text-blue-400 font-semibold">{"// Audify 8D Panning Automation"}</p>
                 <p>const panner = offlineContext.createStereoPanner();</p>
                 <p>const orbitPeriod = 8.5; // seconds per 360° circle</p>
                 <p>for (let t = 0; t &lt; duration; t += 0.05) &#123;</p>
@@ -175,7 +175,7 @@ export default function EightDAudioGuidePage() {
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-fg">Convert any song to 8D Audio</h3>
                 <p className="text-xs text-muted">
-                  Put on your headphones, open AudioMorph Studio, and experience real-time 8D audio rendering with zero server latency.
+                  Put on your headphones, open Audify Studio, and experience real-time 8D audio rendering with zero server latency.
                 </p>
               </div>
               <Button asChild size="md" className="rounded-full shrink-0">

@@ -86,7 +86,7 @@ export function PresetArticle({ meta, body }: { meta: PresetArticleMeta; body: P
             How it works: the DSP pipeline
           </h2>
           <p className="text-muted leading-relaxed mb-4">
-            This is exactly what the render pipeline in AudioMorph does with your parameters —
+            This is exactly what the render pipeline in Audify does with your parameters —
             every step reflects the actual Web Audio graph, not marketing copy.
           </p>
           <ol className="space-y-3">
@@ -215,7 +215,7 @@ export function PresetArticle({ meta, body }: { meta: PresetArticleMeta; body: P
         {/* Footer note */}
         <footer className="mt-14 border-t border-line pt-6 text-xs text-muted">
           <p>
-            Part of the AudioMorph knowledge base ·{" "}
+            Part of the Audify knowledge base ·{" "}
             <Link href="/blog" className="hover:text-accent">all guides</Link> ·{" "}
             <Link href="/presets" className="hover:text-accent">all presets</Link>
           </p>
