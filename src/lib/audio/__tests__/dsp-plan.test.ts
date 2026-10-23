@@ -226,6 +226,54 @@ describe("presets → plan consistency", () => {
     expect(slowed.playbackRate).toBeCloseTo(0.8, 5);
   });
 
+  it("tape-warmth resolves mild saturation, warmth shelf, and top-end smoothing", () => {
+    const defaultTape = plan("tape-warmth");
+    expect(defaultTape.saturation).toBe(24);
+    expect(defaultTape.filters).toHaveLength(2);
+    expect(defaultTape.filters[0]).toMatchObject({ type: "lowshelf", frequency: 100, gain: 1.5 });
+    expect(defaultTape.filters[1]).toMatchObject({ type: "lowpass", frequency: 14000 });
+
+    const pushedTape = plan("tape-warmth", { warmth: 45, "sub-warmth": 3.5 });
+    expect(pushedTape.saturation).toBe(45);
+    expect(pushedTape.filters[0]).toMatchObject({ type: "lowshelf", frequency: 100, gain: 3.5 });
+  });
+
+  it("muffled-room creates steep 24 dB/oct lowpass cascade and boundary reverb", () => {
+    const muffled = plan("muffled-room");
+    // Two cascaded lowpasses at 320 Hz
+    expect(muffled.filters[0]).toMatchObject({ type: "lowpass", frequency: 320 });
+    expect(muffled.filters[1]).toMatchObject({ type: "lowpass", frequency: 320 });
+    // Low-shelf wall resonance
+    expect(muffled.filters[2]).toMatchObject({ type: "lowshelf", frequency: 120, gain: 4 });
+    expect(muffled.reverb?.wet).toBeCloseTo(0.32);
+    expect(muffled.reverb?.decaySeconds).toBe(1.8);
+
+    const customCutoff = plan("muffled-room", { cutoff: 240, bass: 6 });
+    expect(customCutoff.filters[0]).toMatchObject({ type: "lowpass", frequency: 240 });
+    expect(customCutoff.filters[1]).toMatchObject({ type: "lowpass", frequency: 240 });
+    expect(customCutoff.filters[2]).toMatchObject({ type: "lowshelf", frequency: 120, gain: 6 });
+  });
+
+  it("sub-rumble-cut cascades dual 30 Hz Butterworth highpass filters", () => {
+    const active = plan("sub-rumble-cut", { "rumble-cut": true });
+    expect(active.filters).toHaveLength(2);
+    expect(active.filters[0]).toMatchObject({ type: "highpass", frequency: 30, q: 0.707 });
+    expect(active.filters[1]).toMatchObject({ type: "highpass", frequency: 30, q: 0.707 });
+
+    const disabled = plan("sub-rumble-cut", { "rumble-cut": false });
+    expect(disabled.filters).toHaveLength(0);
+  });
+
+  it("vocal-air provides simultaneous 3.2 kHz presence boost and 11 kHz air shelf", () => {
+    const vocal = plan("vocal-air");
+    expect(vocal.filters).toHaveLength(2);
+    expect(vocal.filters[0]).toMatchObject({ type: "peaking", frequency: 3200, gain: 3 });
+    expect(vocal.filters[1]).toMatchObject({ type: "highshelf", frequency: 11000, gain: 4 });
+
+    const flat = plan("vocal-air", { presence: 0, air: 0 });
+    expect(flat.filters).toHaveLength(0);
+  });
+
   it("output gain is clamped and independent sliders cannot smuggle extra gain", () => {
     expect(plan("volume-changer", { "volume-db": 100 }).outputGainDb).toBe(18);
     expect(plan("volume-changer", { "volume-db": -100 }).outputGainDb).toBe(-24);

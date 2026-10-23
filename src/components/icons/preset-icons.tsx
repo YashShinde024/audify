@@ -122,12 +122,16 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "underwater": Waves,
   "telephone-voice": PhoneCall,
   "lofi-tape": CassetteTape,
+  "tape-warmth": CassetteTape,
+  "muffled-room": Buildings,
 
   // Cleanup
+  "sub-rumble-cut": ShieldCheck,
   "noise-reducer": ShieldCheck,
+  "vocal-air": Sparkle,
   "vocal-clarity": Sparkle,
   "de-harsh": WaveSine,
-"podcast-voice": MicrophoneStage,
+  "podcast-voice": MicrophoneStage,
 
   // Utilities & Export
   "volume-changer": SpeakerHigh,

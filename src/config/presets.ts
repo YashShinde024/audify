@@ -512,10 +512,52 @@ export const presets: Preset[] = [
     ],
     defaults: { saturation: 50, speed: 94, treble: -3 },
   },
+  {
+    id: "tape-warmth",
+    name: "Warm Analog Tape",
+    kind: "preset",
+    category: "creative",
+    description: "Gentle analog studio warmth: mild hyperbolic tangent saturation for second- and third-order harmonics, paired with a 100 Hz low-shelf warmth boost and gentle 14 kHz top-end smoothing.",
+    supportedOps: ["WaveShaperSaturation", "BiquadLowShelf", "BiquadLowPass"],
+    tags: ["analog", "tape", "warmth", "saturation", "vintage", "harmonics", "tube"],
+    params: [
+      slider("warmth", "Harmonic Drive", 5, 50, 1, "%", "Mild analog console saturation level."),
+      slider("sub-warmth", "Low Warmth (100 Hz)", 0, 4, 0.5, "dB", "Subtle analog low-end body."),
+    ],
+    defaults: { warmth: 24, "sub-warmth": 1.5 },
+  },
+  {
+    id: "muffled-room",
+    name: "Room Next Door (Muffled)",
+    kind: "preset",
+    category: "creative",
+    description: "Muffled audio with diffused room reflections, replicating the sensation of music playing in an adjacent room or down the hall.",
+    supportedOps: ["BiquadLowPassCascade", "BiquadLowShelf", "ImpulseConvolver"],
+    tags: ["muffled", "party next door", "another room", "wall", "aesthetic", "lofi"],
+    params: [
+      slider("cutoff", "Filter Cutoff", 200, 600, 10, "Hz", "Wall insulation frequency ceiling."),
+      slider("bass", "Muffled Low Body", 0, 8, 1, "dB", "Sub-surface low wall resonance at 120 Hz."),
+      slider("reverb", "Wall Diffusion", 0, 80, 1, "%", "Boundary reflections through the partition."),
+    ],
+    defaults: { cutoff: 320, bass: 4, reverb: 32 },
+  },
 
   /* ----------------------------------------------------
    * 7. Audio Cleanup
    * ---------------------------------------------------- */
+  {
+    id: "sub-rumble-cut",
+    name: "Infrasonic Rumble Cut (30 Hz)",
+    kind: "tool",
+    category: "cleanup",
+    description: "Steep 24 dB/oct cascaded high-pass filter clearing sub-audible DC offset and infrasonic rumble below 30 Hz without diminishing musical bass.",
+    supportedOps: ["BiquadHighPassCascade"],
+    tags: ["sub rumble", "infrasonic", "dc cut", "headroom", "clean", "mastering", "30hz"],
+    params: [
+      toggle("rumble-cut", "Engage 30 Hz Infrasonic Filter", "Cascaded 24 dB/oct high-pass filter at 30 Hz."),
+    ],
+    defaults: { "rumble-cut": true },
+  },
   {
     id: "noise-reducer",
     name: "Noise Reducer (Rumble Cut)",
@@ -528,6 +570,20 @@ export const presets: Preset[] = [
       toggle("mud-cut", "Engage 115 Hz High-Pass Filter", "Attenuates rumble and room vibration."),
     ],
     defaults: { "mud-cut": true },
+  },
+  {
+    id: "vocal-air",
+    name: "Vocal Air & Presence",
+    kind: "preset",
+    category: "cleanup",
+    description: "Silky vocal polishing curve: broad articulation bell at 3.2 kHz to bring vocals forward, paired with an 11 kHz high-shelf for breath and sparkle.",
+    supportedOps: ["BiquadHighShelf", "BiquadPeaking"],
+    tags: ["vocal", "air", "presence", "sparkle", "voice", "lead", "brilliance"],
+    params: [
+      slider("presence", "Vocal Articulation (3.2 kHz)", 0, 6, 0.5, "dB", "Intelligibility and lead vocal presence."),
+      slider("air", "Air Shelf (11 kHz)", 0, 8, 0.5, "dB", "High-frequency shimmer and breath lift."),
+    ],
+    defaults: { presence: 3, air: 4 },
   },
   {
     id: "vocal-clarity",

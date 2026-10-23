@@ -341,6 +341,37 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
       saturation = num("saturation", 50);
       break;
 
+    case "tape-warmth": {
+      saturation = clamp(num("warmth", 24), 0, 60);
+      const subWarmth = clamp(num("sub-warmth", 1.5), 0, 6);
+      if (subWarmth > 0) {
+        filters.push({ type: "lowshelf", frequency: 100, gain: subWarmth });
+      }
+      filters.push({ type: "lowpass", frequency: 14000, q: 0.6 });
+      break;
+    }
+
+    case "muffled-room": {
+      const cutoff = clamp(num("cutoff", 320), 150, 800);
+      // Two cascaded 12 dB/oct low-passes = steep 24 dB/oct acoustic wall attenuation
+      filters.push({ type: "lowpass", frequency: cutoff, q: 0.707 });
+      filters.push({ type: "lowpass", frequency: cutoff, q: 0.707 });
+      const bass = clamp(num("bass", 4), 0, 12);
+      if (bass > 0) {
+        filters.push({ type: "lowshelf", frequency: 120, gain: bass });
+      }
+      reverbSpec = reverb(wet, 1.8, 0.65, 0.012);
+      break;
+    }
+
+    case "sub-rumble-cut":
+      // Steep 24 dB/oct Butterworth high-pass at 30 Hz for infrasonic DC cleanup
+      if (bool("rumble-cut", true)) {
+        filters.push({ type: "highpass", frequency: 30, q: 0.707 });
+        filters.push({ type: "highpass", frequency: 30, q: 0.707 });
+      }
+      break;
+
     case "podcast-voice": {
       // Static EQ shaping only — no compressor stage, no spectral noise reduction.
       if (bool("mud-cut", true)) filters.push({ type: "highpass", frequency: 95, q: 0.707 });
@@ -354,6 +385,13 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
       // This is a rumble filter, not spectral noise reduction. Labelled as such.
       if (bool("mud-cut", true)) filters.push({ type: "highpass", frequency: 115, q: 0.707 });
       break;
+    case "vocal-air": {
+      const presence = clamp(num("presence", 3), 0, 8);
+      const air = clamp(num("air", 4), 0, 10);
+      if (presence !== 0) filters.push({ type: "peaking", frequency: 3200, q: 1.0, gain: presence });
+      if (air !== 0) filters.push({ type: "highshelf", frequency: 11000, gain: air });
+      break;
+    }
     case "vocal-clarity": {
       if (bool("mud-cut", true)) filters.push({ type: "highpass", frequency: 110, q: 0.707 });
       const presence = num("presence", 3.5);

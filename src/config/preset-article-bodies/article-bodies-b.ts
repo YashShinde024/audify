@@ -441,4 +441,92 @@ export const articleBodiesB: PresetArticleBody[] = [
     useCases: ["Mix-bus de-muddying", "Guitar layer separation", "Laptop-speaker readability"],
     related: ["equalizer", "vocal-clarity", "treble-air"],
   },
+  {
+    presetId: "tape-warmth",
+    slug: "tape-warmth",
+    what:
+      "Warm Analog Tape emulates the gentle harmonic compression and frequency coloration of classic magnetic tape decks and analog mixing consoles. Rather than heavy distortion or lo-fi destruction, this preset introduces subtle second- and third-order harmonics through a normalized hyperbolic tangent waveshaper, paired with a 100 Hz low-shelf warmth lift and a smooth 14 kHz high-cut ceiling.",
+    sound:
+      "Rich, cohesive low-end weight with rounded high-frequency transients and subtle harmonic warmth that glues digital elements together naturally.",
+    dsp: [
+      "Waveshaper saturation curve built from normalized tanh drive, mapping +/-1 inputs cleanly to prevent clipping.",
+      "Biquad low-shelf filter at 100 Hz adding gentle analog console warmth and body.",
+      "Biquad low-pass filter at 14 kHz (Q 0.6) for smooth top-end roll-off matching magnetic tape playback heads.",
+      "Look-ahead sliding-minimum sample-peak limiter at -0.3 dBFS ceiling catching transient overshoots.",
+    ],
+    tips: [
+      "Set harmonic drive between 15% and 30% for transparent mix-bus cohesion without audible distortion.",
+      "Use on sterile digital synthesizers or clean DI bass tracks to introduce organic harmonic complexity.",
+      "Combine with subtle room reverb for vintage production aesthetics.",
+      "Keep export format at 24-bit WAV or AIFF to preserve high-resolution harmonic overtones.",
+    ],
+    useCases: ["Mix bus glue", "Digital synth warming", "Bass guitar rounding"],
+    related: ["lofi-tape", "mastering-polish", "equalizer"],
+  },
+  {
+    presetId: "muffled-room",
+    slug: "muffled-room",
+    what:
+      "Room Next Door simulates the viral acoustic aesthetic of hearing music playing through an insulated wall, down the hallway, or in an adjacent club room. Built using two cascaded 12 dB/octave low-pass filters at 320 Hz for a steep 24 dB/octave physical partition barrier, coupled with a 120 Hz boundary resonance shelf and a 1.8-second diffused room convolution reverb.",
+    sound:
+      "Warm, muffled low-end thumps with completely muted highs and atmospheric boundary reflections that place the listener outside the main room.",
+    dsp: [
+      "Cascaded dual Biquad low-pass filters at 320 Hz providing steep 24 dB/octave acoustic isolation.",
+      "Biquad low-shelf filter boosting 120 Hz resonance by +4 dB to simulate low-frequency wall vibration.",
+      "Procedural stereo convolution reverb with 1.8 s decay and 0.65 damping for diffused room reflections.",
+      "Signal stays strictly band-limited while preserving transients within the surviving low frequencies.",
+    ],
+    tips: [
+      "Adjust the cutoff slider higher (400-500 Hz) to simulate thin drywall or cracked doorways.",
+      "Lower the cutoff slider to 220 Hz for thick concrete or underground bunker acoustics.",
+      "Audition on headphones for an immersive spatial illusion of being in an adjacent room.",
+      "Export with peak protection active to catch sudden bass transients.",
+    ],
+    useCases: ["Viral cinematic edits", "Ambient background textures", "Intro/outro storytelling"],
+    related: ["underwater", "small-room-reverb", "lofi-tape"],
+  },
+  {
+    presetId: "sub-rumble-cut",
+    slug: "sub-rumble-cut",
+    what:
+      "Infrasonic Rumble Cut is a precision utility filter designed to eliminate inaudible DC offset, sub-audible microphone thumps, stage vibration, and turntable rumble below 30 Hz. Using a steep 24 dB/octave cascaded high-pass Butterworth filter, it purges energy that consumer speakers cannot reproduce, restoring valuable dynamic range and amplifier headroom without thinning out musical bass.",
+    sound:
+      "Tighter, punchier kick drums and bass lines with cleaner headroom and zero perceived loss of audible musical bass notes.",
+    dsp: [
+      "Two cascaded 12 dB/octave Butterworth high-pass filters at 30 Hz (Q 0.707) producing a clean 24 dB/octave slope.",
+      "Attenuates DC offset (0 Hz) and sub-20 Hz infrasonics by more than 36 dB.",
+      "Completely transparent above 45 Hz with zero phase or frequency attenuation in the audible sub-bass range.",
+      "Recovers peak headroom across the offline render bus prior to the final export stage.",
+    ],
+    tips: [
+      "Apply as the first cleanup step on live recordings, podcast microphones, and vinyl rips.",
+      "Enable before heavy bass boosters to prevent sub-audible energy from triggering the peak limiter prematurely.",
+      "Musical bass instruments (low E on a standard bass is 41.2 Hz) remain completely untouched.",
+      "Export to 32-bit float WAV if performing further post-production or mastering downstream.",
+    ],
+    useCases: ["Vinyl rip restoration", "Mastering headroom cleanup", "Live stage mic filtering"],
+    related: ["noise-reducer", "equalizer", "mastering-polish"],
+  },
+  {
+    presetId: "vocal-air",
+    slug: "vocal-air",
+    what:
+      "Vocal Air & Presence applies a refined two-stage studio finishing curve tailored to bring vocal tracks forward in a dense arrangement. It combines a wide articulation peaking bell centered at 3.2 kHz to enhance consonant intelligibility and vocal body with an ultra-smooth high shelf at 11 kHz for silky breath, modern sheen, and three-dimensional air without harsh sibilance.",
+    sound:
+      "Crisp, forward, and expensive-sounding vocal presentation with silky breath details and pronounced consonant clarity.",
+    dsp: [
+      "Peaking Biquad filter at 3.2 kHz (Q 1.0) providing calibrated +3 dB articulation boost.",
+      "High-shelf Biquad filter at 11 kHz adding silky +4 dB high-frequency air and breath shimmer.",
+      "Avoids the 6-8 kHz sibilance danger zone to prevent harsh 's' and 't' consonants from whistling.",
+      "Protected by look-ahead sliding-minimum peak limiting at -0.3 dBFS sample ceiling.",
+    ],
+    tips: [
+      "Pair with De-Harsh upstream if working with budget condenser microphones with peaky sibilance.",
+      "Keep presence below +4.5 dB on already bright female vocals to prevent aggressive ear fatigue.",
+      "Works wonders on acoustic guitars, hi-hats, and synth leads that need to cut through a busy mix.",
+      "Combine with Vocal Reverb for a polished, commercial lead vocal chain.",
+    ],
+    useCases: ["Lead vocal polish", "Podcast voice enhancement", "Acoustic instrument sheen"],
+    related: ["vocal-clarity", "podcast-voice", "vocal-reverb"],
+  },
 ];

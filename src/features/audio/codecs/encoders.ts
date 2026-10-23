@@ -7,4 +7,5 @@ export {
   encodeWav,
   encodeAiff,
   encodeMp3,
-} from "@/lib/audio-engine";
+  estimateExportFileSize,
+} from "@/lib/audio/encoders";
