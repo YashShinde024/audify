@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useRef } from "react";
 import { AudioUploader } from "./audio-uploader";
 import { AudioPlayer } from "./audio-player";
 import { SoundSelector } from "./sound-selector";
@@ -12,432 +12,277 @@ import { AdPlaceholder } from "@/components/advertising/ad-placeholder";
 import { useEditorStore } from "@/stores/editor-store";
 import { getPresetById } from "@/config/presets";
 import {
-  UploadSimple,
-  Faders,
-  Play,
-  Cpu,
-  Lock,
-  Check,
-  ArrowRight,
-  ArrowLeft,
+  FileAudio,
   ArrowsClockwise,
+  Trash,
+  CheckCircle,
+  CircleNotch,
+  Sparkle,
+  SlidersHorizontal,
+  Waveform,
+  ShieldCheck,
+  Cpu,
 } from "@phosphor-icons/react";
-import { cn, formatTime } from "@/lib/utils";
+import { cn, formatBytes, formatTime } from "@/lib/utils";
+import { supportedExtensions, validateAudioFile, fileSizeError } from "@/lib/audio-file";
 
 export function EditorShell() {
+  const replaceInputRef = useRef<HTMLInputElement>(null);
+
   const file = useEditorStore((s) => s.file);
+  const duration = useEditorStore((s) => s.duration);
   const isDecoding = useEditorStore((s) => s.isDecoding);
+  const isProcessing = useEditorStore((s) => s.isProcessing);
+  const processingProgress = useEditorStore((s) => s.processingProgress);
+  const processingStatus = useEditorStore((s) => s.processingStatus);
   const processedResult = useEditorStore((s) => s.processedResult);
   const selectedPresetId = useEditorStore((s) => s.selectedPresetId);
+  const selectFile = useEditorStore((s) => s.selectFile);
+  const clearFile = useEditorStore((s) => s.clearFile);
+
   const selectedPreset = getPresetById(selectedPresetId ?? "slowed-reverb");
+  const percent = Math.round(Math.min(1, Math.max(0, processingProgress)) * 100);
 
-  // Track user-selected active step
-  const [activeStep, setActiveStep] = useState<number>(1);
-
-  // Maximum step unlocked based on data completeness
-  let maxUnlockedStep = 1;
-  if (file && !isDecoding) maxUnlockedStep = 2;
-  if (file && !isDecoding && selectedPresetId) maxUnlockedStep = 3;
-  if (file && !isDecoding && processedResult) maxUnlockedStep = 4;
-
-  // Auto-advance asynchronously when file is uploaded or processing finishes
-  useEffect(() => {
-    if (!file) {
-      const timer = setTimeout(() => setActiveStep(1), 0);
-      return () => clearTimeout(timer);
-    } else if (!isDecoding) {
-      const timer = setTimeout(() => {
-        setActiveStep((prev) => (prev === 1 ? 2 : prev));
-      }, 0);
-      return () => clearTimeout(timer);
+  const handleReplacementFile = (files: FileList | null) => {
+    const selected = files?.[0];
+    if (!selected) return;
+    const validation = validateAudioFile(selected);
+    if (!validation.ok) {
+      alert(fileSizeError(validation.reason));
+      return;
     }
-  }, [file, isDecoding]);
-
-  useEffect(() => {
-    if (processedResult) {
-      const timer = setTimeout(() => {
-        setActiveStep((prev) => (prev < 4 ? 4 : prev));
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [processedResult]);
-
-  const steps = [
-    {
-      num: 1,
-      title: "Audio Ingest",
-      shortLabel: "Upload",
-      desc: "Import local source audio file",
-      icon: UploadSimple,
-      summary: file ? `${file.name} (${formatTime(file.duration || 0)})` : "No file loaded",
-    },
-    {
-      num: 2,
-      title: "Acoustic Preset & DSP",
-      shortLabel: "Sound",
-      desc: "Choose preset or fine-tune knobs",
-      icon: Faders,
-      summary: selectedPreset ? selectedPreset.name : "Choose preset",
-    },
-    {
-      num: 3,
-      title: "Audition & Waveform",
-      shortLabel: "Preview",
-      desc: "A/B dry/wet audition & scrubber",
-      icon: Play,
-      summary: "Waveform scrub & tone check",
-    },
-    {
-      num: 4,
-      title: "Process & Export Master",
-      shortLabel: "Export",
-      desc: "Offline DSP render & lossless download",
-      icon: Cpu,
-      summary: processedResult ? "Master rendered" : "Format options & render",
-    },
-  ];
+    void selectFile(selected);
+  };
 
   return (
-    <div id="editor" className="py-8 sm:py-12">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        {/* Studio Editorial Intro */}
-        <header className="mb-8 text-center sm:text-left">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3.5 py-1 text-xs font-medium text-primary">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            <span>Interactive DSP Workspace · Developed by Nyxen</span>
+    <div id="editor" className="py-6 sm:py-8 lg:py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+        {/* Compact Studio Header with Live Contextual Status */}
+        <header className="rounded-2xl border border-line bg-surface/80 p-4 sm:p-5 shadow-xs backdrop-blur-sm">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            {/* Title & Brand Attribution */}
+            <div>
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-fg">
+                  Audify Studio
+                </h1>
+                <span className="rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 text-[10px] font-mono font-medium text-primary">
+                  DSP Workstation v1.0
+                </span>
+              </div>
+              <p className="mt-0.5 text-xs text-muted">
+                100% in-browser audio sculpting · Developed by Nyxen × Xpert Melody
+              </p>
+            </div>
+
+            {/* Contextual Status Badge & File Quick Actions */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              {/* Contextual Status Pill */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-line bg-raised/70 px-3 py-1.5 text-xs font-medium">
+                {isProcessing ? (
+                  <>
+                    <CircleNotch size={14} className="animate-spin text-primary" />
+                    <span className="text-fg font-semibold font-mono">
+                      Rendering DSP ({percent}%)
+                    </span>
+                  </>
+                ) : isDecoding ? (
+                  <>
+                    <CircleNotch size={14} className="animate-spin text-amber-500" />
+                    <span className="text-amber-500 font-medium">Decoding Audio PCM…</span>
+                  </>
+                ) : processedResult ? (
+                  <>
+                    <CheckCircle size={14} weight="fill" className="text-emerald-500" />
+                    <span className="text-emerald-500 font-semibold">Master Render Ready</span>
+                  </>
+                ) : file ? (
+                  <>
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-sm" />
+                    <span className="text-fg font-medium">Workspace Active</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="h-2 w-2 rounded-full bg-muted/60" />
+                    <span className="text-muted">Awaiting Audio Track</span>
+                  </>
+                )}
+              </div>
+
+              {/* Active File Quick Bar */}
+              {file && !isDecoding && (
+                <div className="flex items-center gap-1.5 rounded-lg border border-line bg-deep/50 p-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => replaceInputRef.current?.click()}
+                    aria-label="Change current audio track"
+                    title="Change track"
+                    className="text-xs h-7 px-2.5"
+                  >
+                    <ArrowsClockwise size={13} />
+                    <span>Change</span>
+                  </Button>
+                  <Button
+                    size="icon-sm"
+                    variant="ghost"
+                    onClick={clearFile}
+                    aria-label="Remove audio track and return to upload"
+                    title="Remove track"
+                    className="h-7 w-7 text-faint hover:text-error hover:bg-error/10"
+                  >
+                    <Trash size={14} />
+                  </Button>
+
+                  <input
+                    ref={replaceInputRef}
+                    type="file"
+                    accept={supportedExtensions.map((e) => `.${e}`).join(",") + ",audio/*"}
+                    className="sr-only"
+                    onChange={(e) => handleReplacementFile(e.target.files)}
+                    aria-label="Select replacement audio file"
+                  />
+                </div>
+              )}
+            </div>
           </div>
-          <h1 className="mt-3 text-2xl font-bold tracking-tight text-fg sm:text-3xl">
-            Audify Studio
-          </h1>
-          <p className="mt-1.5 max-w-2xl text-xs sm:text-sm leading-relaxed text-muted">
-            Guided 4-step workflow: Ingest your track, dial in signature acoustic DSP, audition in real-time,
-            and export pristine 32-bit float WAV or 320kbps MP3 masters entirely in-browser.
-          </p>
         </header>
 
-        {/* 4-Step Progressive Workflow Bar */}
-        <div className="mb-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
-            {steps.map((step) => {
-              const isPast = maxUnlockedStep > step.num;
-              const isCurrent = activeStep === step.num;
-              const isLocked = step.num > maxUnlockedStep;
-              const Icon = step.icon;
+        {/* STATE A: EMPTY STATE (No File Uploaded Yet) */}
+        {!file && (
+          <div className="space-y-6">
+            <AudioUploader />
 
-              return (
-                <button
-                  key={step.num}
-                  type="button"
-                  disabled={isLocked}
-                  onClick={() => setActiveStep(step.num)}
-                  className={cn(
-                    "relative flex flex-col items-start p-3 sm:p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer",
-                    isCurrent
-                      ? "border-accent bg-surface/90 shadow-sm ring-1 ring-accent/30"
-                      : isPast
-                      ? "border-line bg-surface/60 hover:bg-surface hover:border-line-strong"
-                      : "border-line/60 bg-raised/40 opacity-60 cursor-not-allowed"
-                  )}
-                >
-                  <div className="flex items-center justify-between w-full mb-1.5">
-                    <span
-                      className={cn(
-                        "flex h-6 w-6 items-center justify-center rounded-lg text-xs font-mono font-bold",
-                        isCurrent
-                          ? "bg-accent text-white"
-                          : isPast
-                          ? "bg-accent/15 text-accent"
-                          : "bg-line text-muted"
-                      )}
-                    >
-                      {isPast ? <Check size={12} weight="bold" /> : `0${step.num}`}
-                    </span>
+            {/* Studio Capabilities Overview Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+              <div className="rounded-xl border border-line bg-surface/70 p-4 space-y-1.5 shadow-xs">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <SlidersHorizontal size={18} weight="duotone" />
+                </div>
+                <h4 className="text-xs font-semibold text-fg">36 Acoustic DSP Presets</h4>
+                <p className="text-[11px] text-muted leading-relaxed">
+                  Slowed+reverb, nightcore, 432 Hz tuning, cathedral space, and 8D audio spatial orbits.
+                </p>
+              </div>
 
-                    {isLocked ? (
-                      <Lock size={12} className="text-muted" />
-                    ) : isCurrent ? (
-                      <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
-                    ) : (
-                      <Icon size={14} className="text-muted/70" />
-                    )}
-                  </div>
+              <div className="rounded-xl border border-line bg-surface/70 p-4 space-y-1.5 shadow-xs">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Waveform size={18} weight="duotone" />
+                </div>
+                <h4 className="text-xs font-semibold text-fg">Authentic PCM Waveform</h4>
+                <p className="text-[11px] text-muted leading-relaxed">
+                  Sample-accurate peak calculation with smooth scrubbing, timecodes, and dry/wet A/B auditioning.
+                </p>
+              </div>
 
-                  <p className="text-xs font-semibold text-fg truncate w-full">{step.title}</p>
-                  <p className="text-[11px] text-muted truncate w-full mt-0.5">{step.summary}</p>
-                </button>
-              );
-            })}
+              <div className="rounded-xl border border-line bg-surface/70 p-4 space-y-1.5 shadow-xs">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Cpu size={18} weight="duotone" />
+                </div>
+                <h4 className="text-xs font-semibold text-fg">Pro Mastering Engine</h4>
+                <p className="text-[11px] text-muted leading-relaxed">
+                  Look-ahead limiter (−0.3 dBFS ceiling) and peak normalization ensure distortion-free masters.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-line bg-surface/70 p-4 space-y-1.5 shadow-xs">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <ShieldCheck size={18} weight="duotone" />
+                </div>
+                <h4 className="text-xs font-semibold text-fg">Zero-Cloud Privacy</h4>
+                <p className="text-[11px] text-muted leading-relaxed">
+                  All signal processing executes 100% inside your browser thread. No files ever leave your device.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Dynamic Progressive Step Workspace */}
-        <div className="space-y-6">
-          {/* STEP 1: Audio File Ingest */}
-          <div
-            className={cn(
-              "rounded-2xl border transition-all duration-300 overflow-hidden",
-              activeStep === 1
-                ? "border-line-strong bg-surface/90 shadow-md p-6"
-                : "border-line bg-surface/40 p-4"
-            )}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-mono font-bold">
-                  01
+        {/* STATE B: DECODING FEEDBACK SKELETON */}
+        {file && isDecoding && (
+          <div className="space-y-4 rounded-2xl border border-line bg-surface p-6 shadow-sm">
+            <AudioUploader />
+
+            <div className="rounded-xl border border-line/70 bg-deep/40 p-5 space-y-3">
+              <div className="flex items-center justify-between text-xs text-muted">
+                <span className="flex items-center gap-2 text-primary font-medium">
+                  <CircleNotch size={14} className="animate-spin" />
+                  Generating PCM waveform &amp; extracting spectral peaks…
                 </span>
-                <div>
-                  <h2 className="text-sm font-semibold text-fg">Step 1: Audio File Ingest</h2>
-                  <p className="text-xs text-muted">Upload any WAV, MP3, FLAC, OGG, or AAC track</p>
-                </div>
+                <span className="font-mono">Analyzing buffer</span>
               </div>
 
-              {file && activeStep !== 1 && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setActiveStep(1)}
-                  className="text-xs"
-                >
-                  <ArrowsClockwise size={13} />
-                  <span>Change File</span>
-                </Button>
-              )}
+              {/* Waveform skeleton bars */}
+              <div className="flex items-end justify-between gap-1 h-20">
+                {Array.from({ length: 48 }).map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    className="w-1 rounded-full bg-primary/20 animate-pulse"
+                    style={{
+                      height: `${Math.max(15, Math.sin(i * 0.25) * 60 + 35)}%`,
+                      animationDelay: `${(i % 10) * 80}ms`,
+                    }}
+                  />
+                ))}
+              </div>
             </div>
 
-            {/* Ingest Uploader Body */}
-            {activeStep === 1 ? (
-              <div className="space-y-4">
-                <AudioUploader />
-
-                {file && !isDecoding && (
-                  <div className="flex justify-end pt-2">
-                    <Button
-                      size="md"
-                      onClick={() => setActiveStep(2)}
-                      className="rounded-full shadow-glow-wire"
-                    >
-                      <span>Continue to Sound Sculpting</span>
-                      <ArrowRight size={14} weight="bold" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            ) : file ? (
-              <div className="flex items-center justify-between rounded-xl bg-surface/60 border border-line p-3 text-xs">
-                <span className="font-medium text-fg truncate max-w-md">{file.name}</span>
-                <span className="font-mono text-muted">{formatTime(file.duration || 0)}</span>
-              </div>
-            ) : null}
+            <MusicEditFacts />
           </div>
+        )}
 
-          {/* DECODING SPINNER / FACTS SKELETON */}
-          {isDecoding && (
-            <div className="space-y-4 rounded-2xl border border-line bg-surface p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-40" />
-                    <Skeleton className="h-4 w-14 rounded" />
-                  </div>
-                  <Skeleton className="h-3 w-64" />
+        {/* STATE C: LOADED-AUDIO WORKSTATION (Focused 2-Column Workstation Layout) */}
+        {file && !isDecoding && (
+          <div className="space-y-6">
+            {/* Active Track Metadata Bar */}
+            <div className="rounded-xl border border-line bg-surface/60 px-4 py-3 text-xs flex flex-wrap items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                  <FileAudio size={16} weight="duotone" />
                 </div>
-                <Skeleton className="h-8 w-24 rounded-lg" />
-              </div>
-
-              <div className="rounded-xl border border-line/70 bg-deep/40 p-4">
-                <div className="flex items-end justify-between gap-1 h-20">
-                  {Array.from({ length: 42 }).map((_, i) => (
-                    <Skeleton
-                      key={i}
-                      className="w-1 rounded-full bg-primary/20"
-                      style={{
-                        height: `${Math.max(18, Math.sin(i * 0.28) * 65 + 30)}%`,
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <MusicEditFacts />
-            </div>
-          )}
-
-          {/* STEP 2: Acoustic Preset & DSP Parameters */}
-          {!isDecoding && (
-            <div
-              className={cn(
-                "rounded-2xl border transition-all duration-300 overflow-hidden",
-                activeStep === 2
-                  ? "border-line-strong bg-surface/90 shadow-md p-6"
-                  : "border-line bg-surface/40 p-4",
-                maxUnlockedStep < 2 && "opacity-50 pointer-events-none"
-              )}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-mono font-bold">
-                    02
+                <div className="truncate">
+                  <span className="font-semibold text-fg truncate">{file.name}</span>
+                  <span className="ml-2 font-mono text-[11px] text-muted">
+                    {formatBytes(file.size)} · {formatTime(duration)}
                   </span>
-                  <div>
-                    <h2 className="text-sm font-semibold text-fg">Step 2: Choose Acoustic Preset &amp; Sculpt DSP</h2>
-                    <p className="text-xs text-muted">Pick from 36 standard presets or dial custom parameters</p>
-                  </div>
                 </div>
+              </div>
 
-                {maxUnlockedStep >= 2 && activeStep !== 2 && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setActiveStep(2)}
-                    className="text-xs"
-                  >
-                    <span>Edit Preset ({selectedPreset?.name})</span>
-                  </Button>
+              <div className="flex items-center gap-2 font-mono text-[11px] text-muted">
+                {file.sampleRate && <span>{(file.sampleRate / 1000).toFixed(1)} kHz</span>}
+                {file.channels && (
+                  <>
+                    <span aria-hidden="true" className="text-line-strong">·</span>
+                    <span>{file.channels === 1 ? "Mono" : "Stereo"}</span>
+                  </>
+                )}
+                {file.detectedBpm && (
+                  <>
+                    <span aria-hidden="true" className="text-line-strong">·</span>
+                    <span className="text-primary font-semibold">{file.detectedBpm} BPM</span>
+                  </>
                 )}
               </div>
-
-              {maxUnlockedStep < 2 ? (
-                <div className="rounded-xl border border-line/60 bg-raised/30 p-6 text-center text-xs text-muted flex items-center justify-center gap-2">
-                  <Lock size={15} />
-                  <span>Upload an audio file in Step 1 to unlock acoustic presets &amp; DSP knobs.</span>
-                </div>
-              ) : activeStep === 2 ? (
-                <div className="space-y-5">
-                  <SoundSelector />
-
-                  <div className="flex items-center justify-between border-t border-line pt-4">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setActiveStep(1)}
-                      className="gap-1.5"
-                    >
-                      <ArrowLeft size={13} weight="bold" />
-                      <span>Back to Audio</span>
-                    </Button>
-
-                    <Button
-                      size="md"
-                      onClick={() => setActiveStep(3)}
-                      className="rounded-full shadow-glow-wire"
-                    >
-                      <span>Next: Audition Waveform</span>
-                      <ArrowRight size={14} weight="bold" />
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between rounded-xl bg-surface/60 border border-line p-3 text-xs">
-                  <span className="font-semibold text-fg">Selected: {selectedPreset?.name}</span>
-                  <span className="text-muted font-mono text-[11px]">{selectedPreset?.category}</span>
-                </div>
-              )}
             </div>
-          )}
 
-          {/* STEP 3: Preview Source Track & Waveform Audition */}
-          {!isDecoding && (
-            <div
-              className={cn(
-                "rounded-2xl border transition-all duration-300 overflow-hidden",
-                activeStep === 3
-                  ? "border-line-strong bg-surface/90 shadow-md p-6"
-                  : "border-line bg-surface/40 p-4",
-                maxUnlockedStep < 3 && "opacity-50 pointer-events-none"
-              )}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-mono font-bold">
-                    03
-                  </span>
-                  <div>
-                    <h2 className="text-sm font-semibold text-fg">Step 3: Audition &amp; Waveform Inspection</h2>
-                    <p className="text-xs text-muted">Audition decoded PCM peaks and scrub dry/wet audio</p>
-                  </div>
-                </div>
+            {/* 2-Column Desktop Studio Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* PRIMARY LEFT WORKSPACE (Col 1-7 on desktop): Waveform, Transport, & Export Console */}
+              <div className="lg:col-span-7 space-y-6">
+                {/* 1. Track Waveform & Transport Deck */}
+                <AudioPlayer />
 
-                {maxUnlockedStep >= 3 && activeStep !== 3 && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setActiveStep(3)}
-                    className="text-xs"
-                  >
-                    <span>Inspect Player</span>
-                  </Button>
-                )}
-              </div>
-
-              {maxUnlockedStep < 3 ? (
-                <div className="rounded-xl border border-line/60 bg-raised/30 p-6 text-center text-xs text-muted flex items-center justify-center gap-2">
-                  <Lock size={15} />
-                  <span>Select a sound preset in Step 2 to preview waveform playback.</span>
-                </div>
-              ) : activeStep === 3 ? (
-                <div className="space-y-5">
-                  <AudioPlayer />
-
-                  <div className="flex items-center justify-between border-t border-line pt-4">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setActiveStep(2)}
-                      className="gap-1.5"
-                    >
-                      <ArrowLeft size={13} weight="bold" />
-                      <span>Back to Presets</span>
-                    </Button>
-
-                    <Button
-                      size="md"
-                      onClick={() => setActiveStep(4)}
-                      className="rounded-full shadow-glow-wire"
-                    >
-                      <span>Next: Process &amp; Export</span>
-                      <ArrowRight size={14} weight="bold" />
-                    </Button>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          )}
-
-          {/* STEP 4: Render DSP & Lossless Export */}
-          {!isDecoding && (
-            <div
-              className={cn(
-                "rounded-2xl border transition-all duration-300 overflow-hidden",
-                activeStep === 4
-                  ? "border-line-strong bg-surface/90 shadow-md p-6"
-                  : "border-line bg-surface/40 p-4",
-                maxUnlockedStep < 3 && "opacity-50 pointer-events-none"
-              )}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-mono font-bold">
-                    04
-                  </span>
-                  <div>
-                    <h2 className="text-sm font-semibold text-fg">Step 4: Process Audio &amp; Export Master</h2>
-                    <p className="text-xs text-muted">OfflineAudioContext DSP engine with rate-limited CPU protection</p>
-                  </div>
-                </div>
-              </div>
-
-              {maxUnlockedStep < 3 ? (
-                <div className="rounded-xl border border-line/60 bg-raised/30 p-6 text-center text-xs text-muted flex items-center justify-center gap-2">
-                  <Lock size={15} />
-                  <span>Complete previous steps to unlock processing and master export.</span>
-                </div>
-              ) : (
+                {/* 2. Mastering & Export Console */}
                 <ProcessAndOutput />
-              )}
+              </div>
+
+              {/* SECONDARY RIGHT RACK (Col 8-12 on desktop): Presets Catalog & DSP Knobs */}
+              <div className="lg:col-span-5 space-y-6">
+                <SoundSelector />
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Respectful Ad Slot placed cleanly below the entire editing experience */}
         <div className="mt-14 border-t border-line pt-8">

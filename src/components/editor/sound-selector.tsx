@@ -52,6 +52,7 @@ export function SoundSelector() {
   const resetEffects = useEditorStore((s) => s.resetEffects);
   const decodedAudio = useEditorStore((s) => s.decodedAudio);
 
+  const isProcessing = useEditorStore((s) => s.isProcessing);
   const naturalPrompt = useEditorStore((s) => s.naturalPrompt);
   const setNaturalPrompt = useEditorStore((s) => s.setNaturalPrompt);
   const applyNaturalPrompt = useEditorStore((s) => s.applyNaturalPrompt);
@@ -92,14 +93,21 @@ export function SoundSelector() {
             <h3 id="sound-selection-heading" className="text-base font-semibold text-fg">
               Choose Sound or Tool
             </h3>
-            {isCustomized && (
-              <span className="rounded bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[10px] font-semibold text-amber-400 uppercase tracking-wide">
+            {isCustomized && !isProcessing && (
+              <span className="rounded bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[10px] font-semibold text-amber-500 uppercase tracking-wide">
                 Custom Parameters
+              </span>
+            )}
+            {isProcessing && (
+              <span className="rounded bg-primary/10 border border-primary/25 px-2 py-0.5 text-[10px] font-semibold text-primary uppercase tracking-wide animate-pulse">
+                DSP Render in Progress (Locked)
               </span>
             )}
           </div>
           <p className="text-xs text-muted mt-0.5">
-            Select an aesthetic preset, or engage dedicated audio utilities like Equalizer, Trimmer, or 432 Hz tuning.
+            {isProcessing
+              ? "Parameter adjustments are locked while offline DSP rendering completes."
+              : "Select an aesthetic preset, or engage dedicated audio utilities like Equalizer, Trimmer, or 432 Hz tuning."}
           </p>
         </div>
 
@@ -220,7 +228,7 @@ export function SoundSelector() {
 
       {/* Tab A: Catalog (Presets & Tools) */}
       {activeTab === "presets" && (
-        <div className="space-y-4">
+        <div className={cn("space-y-4 transition-opacity duration-200", isProcessing && "pointer-events-none opacity-50")}>
           {/* Sub-Filters: Standards vs All vs Presets vs Tools */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-line/70 pb-3">
             <div className="flex flex-wrap items-center gap-2">
@@ -410,7 +418,7 @@ export function SoundSelector() {
 
       {/* Tab B: Customize Active Parameters */}
       {activeTab === "customize" && (
-        <div className="space-y-4">
+        <div className={cn("space-y-4 transition-opacity duration-200", isProcessing && "pointer-events-none opacity-50")}>
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
             <div>
               <span className="text-xs font-medium text-muted">
