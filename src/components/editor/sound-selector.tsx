@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   MagnifyingGlass,
   Sparkle,
@@ -14,6 +14,12 @@ import {
   Wrench,
   MusicNotes,
   Scissors,
+  BookmarkSimple,
+  FloppyDisk,
+  Trash,
+  Export,
+  UploadSimple,
+  PencilSimple,
 } from "@phosphor-icons/react";
 import { presetCategories, presets, getPresetById } from "@/config/presets";
 import { PresetIcon } from "@/components/icons/preset-icons";
@@ -23,6 +29,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import type { PresetParam } from "@/types/preset";
 import { cn, formatTime } from "@/lib/utils";
+import { exportPresetsToJson } from "@/lib/audio/custom-presets";
 
 export const STANDARD_PRESET_IDS = new Set([
   "slowed-reverb",
@@ -37,8 +44,11 @@ export const STANDARD_PRESET_IDS = new Set([
 ]);
 
 export function SoundSelector() {
-  const [activeTab, setActiveTab] = useState<"presets" | "customize" | "chain">("presets");
+  const [activeTab, setActiveTab] = useState<"presets" | "customize" | "saved" | "chain">("presets");
   const [onlyStandards, setOnlyStandards] = useState(false);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [newPresetName, setNewPresetName] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedPresetId = useEditorStore((s) => s.selectedPresetId);
   const selectPreset = useEditorStore((s) => s.selectPreset);
@@ -51,6 +61,48 @@ export function SoundSelector() {
   const effectValues = useEditorStore((s) => s.effectValues);
   const resetEffects = useEditorStore((s) => s.resetEffects);
   const decodedAudio = useEditorStore((s) => s.decodedAudio);
+
+  const customPresets = useEditorStore((s) => s.customPresets);
+  const saveCustomPreset = useEditorStore((s) => s.saveCustomPreset);
+  const applyCustomPreset = useEditorStore((s) => s.applyCustomPreset);
+  const deleteCustomPreset = useEditorStore((s) => s.deleteCustomPreset);
+  const renameCustomPreset = useEditorStore((s) => s.renameCustomPreset);
+  const importCustomPresets = useEditorStore((s) => s.importCustomPresets);
+
+  const handleExportCustomPresets = () => {
+    if (customPresets.length === 0) return;
+    const json = exportPresetsToJson(customPresets);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `audify-custom-presets-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result;
+      if (typeof text === "string") {
+        importCustomPresets(text);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  const handleSaveCurrentPreset = (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = newPresetName.trim() || `${selectedPreset?.name || "Custom"} Signature`;
+    saveCustomPreset(name);
+    setNewPresetName("");
+    setSaveDialogOpen(false);
+    setActiveTab("saved");
+  };
 
   const isProcessing = useEditorStore((s) => s.isProcessing);
   const naturalPrompt = useEditorStore((s) => s.naturalPrompt);
@@ -111,8 +163,8 @@ export function SoundSelector() {
           </p>
         </div>
 
-        {/* 3-Way Segmented Tab Toggle */}
-        <div className="flex items-center rounded-lg border border-line bg-deep/60 p-1 self-start sm:self-auto shrink-0">
+        {/* 4-Way Segmented Tab Toggle */}
+        <div className="flex flex-wrap items-center rounded-lg border border-line bg-deep/60 p-1 self-start sm:self-auto shrink-0 gap-0.5">
           <button
             type="button"
             onClick={() => setActiveTab("presets")}
@@ -138,6 +190,19 @@ export function SoundSelector() {
             <Faders className="h-3 w-3" />
             <span>Sliders</span>
             {isCustomized && <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("saved")}
+            className={cn(
+              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer",
+              activeTab === "saved"
+                ? "bg-surface text-fg font-semibold shadow-xs"
+                : "text-muted hover:text-fg",
+            )}
+          >
+            <BookmarkSimple className="h-3 w-3" />
+            <span>Saved ({customPresets.length})</span>
           </button>
           <button
             type="button"
@@ -449,15 +514,30 @@ export function SoundSelector() {
               </p>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={resetEffects}
-              className="text-xs h-7 px-2.5 cursor-pointer"
-            >
-              <ArrowsClockwise className="h-3 w-3" />
-              Reset to defaults
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  setSaveDialogOpen(true);
+                  setActiveTab("saved");
+                }}
+                className="text-xs h-7 px-2.5 cursor-pointer shadow-xs"
+                title="Save current parameter sliders as a named custom preset"
+              >
+                <FloppyDisk className="h-3 w-3" />
+                <span>Save Preset</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetEffects}
+                className="text-xs h-7 px-2.5 cursor-pointer"
+              >
+                <ArrowsClockwise className="h-3 w-3" />
+                <span>Reset to defaults</span>
+              </Button>
+            </div>
           </div>
 
           {/* Special Custom Controls for Specific Tools */}
@@ -515,7 +595,171 @@ export function SoundSelector() {
         </div>
       )}
 
-      {/* TAB 3: DSP Signal Chain Architecture */}
+      {/* TAB 3: Saved Custom Presets */}
+      {activeTab === "saved" && (
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
+            <div>
+              <span className="text-xs font-semibold text-fg flex items-center gap-1.5">
+                <BookmarkSimple className="w-3.5 h-3.5 text-primary" />
+                Saved Custom Presets ({customPresets.length})
+              </span>
+              <p className="text-[11px] text-muted mt-0.5">
+                Local DSP presets stored in browser memory. Export or import backups anytime.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSaveDialogOpen(true)}
+                className="text-xs h-7 px-2.5 cursor-pointer"
+              >
+                <FloppyDisk className="h-3 w-3 text-primary" />
+                <span>Save Current</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={customPresets.length === 0}
+                onClick={handleExportCustomPresets}
+                className="text-xs h-7 px-2.5 cursor-pointer"
+                title="Export custom presets to JSON file"
+              >
+                <Export className="h-3 w-3" />
+                <span>Export</span>
+              </Button>
+
+              <label className="inline-flex items-center gap-1 rounded-md border border-line bg-surface hover:bg-raised text-xs text-muted hover:text-fg h-7 px-2.5 font-medium cursor-pointer transition-colors shadow-xs">
+                <UploadSimple className="h-3 w-3" />
+                <span>Import</span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json,application/json"
+                  onChange={handleImportFile}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* Save Preset Dialog Modal / Box */}
+          {saveDialogOpen && (
+            <form onSubmit={handleSaveCurrentPreset} className="p-3.5 rounded-xl border border-primary/30 bg-primary/5 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-primary flex items-center gap-1.5">
+                  <FloppyDisk className="w-3.5 h-3.5" />
+                  Save Current DSP Parameters
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSaveDialogOpen(false)}
+                  className="text-muted hover:text-fg text-xs font-mono cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newPresetName}
+                  onChange={(e) => setNewPresetName(e.target.value)}
+                  placeholder={`Name (e.g. ${selectedPreset?.name || "Custom"} Signature)`}
+                  autoFocus
+                  className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-line bg-surface text-fg focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <Button type="submit" variant="primary" size="sm" className="h-auto text-xs px-3 cursor-pointer">
+                  Save
+                </Button>
+              </div>
+            </form>
+          )}
+
+          {/* List of Saved Presets */}
+          {customPresets.length === 0 ? (
+            <div className="p-8 text-center rounded-xl border border-line bg-deep/40 space-y-2">
+              <BookmarkSimple className="w-8 h-8 text-muted mx-auto" />
+              <p className="text-xs font-medium text-fg">No custom presets saved yet</p>
+              <p className="text-[11px] text-muted max-w-sm mx-auto">
+                Customize any preset sliders or tone sculpting faders in the Sliders tab, then click &quot;Save Current&quot; to preserve your signature sound locally.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {customPresets.map((preset) => (
+                <div
+                  key={preset.id}
+                  className="p-3.5 rounded-xl border border-line bg-deep/30 hover:border-line-strong transition-all space-y-2.5"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <h5 className="font-semibold text-xs text-fg truncate">{preset.name}</h5>
+                      <span className="text-[10px] text-muted font-mono block">
+                        Base: {preset.basePresetId || "Custom"} · {new Date(preset.updatedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newName = prompt("Rename preset:", preset.name);
+                          if (newName && newName.trim()) {
+                            renameCustomPreset(preset.id, newName.trim());
+                          }
+                        }}
+                        className="p-1 text-muted hover:text-fg rounded transition-colors cursor-pointer"
+                        title="Rename preset"
+                      >
+                        <PencilSimple className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm(`Delete custom preset "${preset.name}"?`)) {
+                            deleteCustomPreset(preset.id);
+                          }
+                        }}
+                        className="p-1 text-muted hover:text-red-500 rounded transition-colors cursor-pointer"
+                        title="Delete preset"
+                      >
+                        <Trash className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1 text-[10px] font-mono text-muted">
+                    {Object.entries(preset.effectValues).slice(0, 4).map(([k, v]) => (
+                      <span key={k} className="px-1.5 py-0.5 rounded bg-surface border border-line">
+                        {k}: {typeof v === "number" ? (Number.isInteger(v) ? v : v.toFixed(2)) : String(v)}
+                      </span>
+                    ))}
+                    {Object.keys(preset.effectValues).length > 4 && (
+                      <span className="px-1.5 py-0.5 rounded bg-surface border border-line text-faint">
+                        +{Object.keys(preset.effectValues).length - 4} more
+                      </span>
+                    )}
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => applyCustomPreset(preset)}
+                    className="w-full text-xs h-7 cursor-pointer hover:border-primary hover:text-primary transition-colors"
+                  >
+                    <span>Apply Custom Preset</span>
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 4: DSP Signal Chain Architecture */}
       {activeTab === "chain" && (
         <div className="space-y-4">
           <div className="border-b border-line pb-2.5">

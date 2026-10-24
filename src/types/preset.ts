@@ -67,3 +67,13 @@ export interface Preset {
 export type EffectValue = number | boolean | string;
 
 export type EffectValues = Record<string, EffectValue>;
+
+export interface SavedCustomPreset {
+  id: string;
+  name: string;
+  basePresetId?: string;
+  description?: string;
+  effectValues: EffectValues;
+  createdAt: number;
+  updatedAt: number;
+}

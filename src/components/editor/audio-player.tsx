@@ -20,7 +20,8 @@ export function AudioPlayer() {
   const waveformRef = useRef<HTMLDivElement | null>(null);
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [hoverPosition, setHoverPosition] = useState<number | null>(null);
-  const [isLooping, setIsLooping] = useState<boolean>(false);
+  const isLooping = useEditorStore((s) => s.isLooping);
+  const toggleLoop = useEditorStore((s) => s.toggleLoop);
 
   const decodedAudio = useEditorStore((s) => s.decodedAudio);
   const originalAudioUrl = useEditorStore((s) => s.originalAudioUrl);
@@ -64,21 +65,34 @@ export function AudioPlayer() {
     }
   }, [volume, isLooping]);
 
-  // Handle source switch. Read the live playback state from the element so this
-  // effect does not re-run (and reset the playhead) when play/pause toggles.
+  // Handle source switch. Preserve playhead position across A/B dry/wet auditioning
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !activeUrl) return;
 
     const wasPlaying = !audio.paused;
+    const previousTime = audio.currentTime;
     audio.src = activeUrl;
-    audio.currentTime = 0;
-    setCurrentTime(0);
 
-    if (wasPlaying) {
-      audio.play().catch(() => togglePlay(false));
-    }
-  }, [activeUrl, setCurrentTime, togglePlay]);
+    const handleLoadedMetadata = () => {
+      if (Number.isFinite(audio.duration) && audio.duration > 0) {
+        setDuration(audio.duration);
+        const clamped = Math.min(previousTime, audio.duration);
+        audio.currentTime = clamped;
+        setCurrentTime(clamped);
+      }
+      if (wasPlaying) {
+        audio.play().catch(() => togglePlay(false));
+      }
+    };
+
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata, { once: true });
+    audio.load();
+
+    return () => {
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+    };
+  }, [activeUrl, setCurrentTime, togglePlay, setDuration]);
 
   const handleTimeUpdate = useCallback(() => {
     if (audioRef.current) {
@@ -289,11 +303,11 @@ export function AudioPlayer() {
           <Button
             variant="ghost"
             size="icon-sm"
-            onClick={() => setIsLooping(!isLooping)}
+            onClick={() => toggleLoop()}
             aria-label={isLooping ? "Disable loop" : "Enable continuous loop"}
             title={isLooping ? "Continuous loop active" : "Enable continuous loop"}
             className={cn(
-              "h-8 w-8 transition-colors",
+              "h-8 w-8 transition-colors cursor-pointer",
               isLooping
                 ? "text-primary bg-primary/10 border border-primary/20"
                 : "text-muted hover:text-fg hover:bg-raised",

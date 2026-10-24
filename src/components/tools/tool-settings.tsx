@@ -231,6 +231,43 @@ export function ToolSettings({
                   </div>
                 </div>
 
+                {/* Quick Range Presets */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[11px] text-muted mr-1">Quick Range:</span>
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => onChange(setting.id, { start: 0, end: Math.min(15, audioDuration) })}
+                    className="px-2 py-0.5 rounded text-[11px] font-mono border border-line bg-raised hover:bg-surface text-fg transition-colors cursor-pointer disabled:opacity-40"
+                  >
+                    0–15s
+                  </button>
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => onChange(setting.id, { start: 0, end: Math.min(30, audioDuration) })}
+                    className="px-2 py-0.5 rounded text-[11px] font-mono border border-line bg-raised hover:bg-surface text-fg transition-colors cursor-pointer disabled:opacity-40"
+                  >
+                    0–30s
+                  </button>
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => onChange(setting.id, { start: 0, end: Math.min(60, audioDuration) })}
+                    className="px-2 py-0.5 rounded text-[11px] font-mono border border-line bg-raised hover:bg-surface text-fg transition-colors cursor-pointer disabled:opacity-40"
+                  >
+                    0–60s
+                  </button>
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => onChange(setting.id, { start: 0, end: audioDuration })}
+                    className="px-2 py-0.5 rounded text-[11px] font-mono border border-line bg-raised hover:bg-surface text-fg transition-colors cursor-pointer disabled:opacity-40"
+                  >
+                    Full Track ({audioDuration.toFixed(1)}s)
+                  </button>
+                </div>
+
                 {setting.description && (
                   <p className="text-xs text-muted">{setting.description}</p>
                 )}

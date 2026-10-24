@@ -9,10 +9,15 @@ import {
   type DecodedAudio,
   type ProcessedAudioResult,
 } from "@/lib/audio-engine";
-import type { EffectValue, EffectValues, Preset, PresetCategoryId } from "@/types/preset";
+import type { EffectValue, EffectValues, Preset, PresetCategoryId, SavedCustomPreset } from "@/types/preset";
 import { DEFAULT_EXPORT_CONFIG, type ExportConfig, type ExportProfile } from "@/types/export";
 import { computeRenderSignature } from "@/lib/audio/dsp-plan";
 import { studioDspLimiter } from "@/lib/rate-limiter";
+import {
+  loadSavedCustomPresets,
+  persistCustomPresets,
+  importPresetsFromJson,
+} from "@/lib/audio/custom-presets";
 
 /**
  * Monotonic run id. Every new render (or explicit cancel / file change) bumps it,
@@ -51,6 +56,9 @@ interface EditorState {
   naturalPrompt: string;
   matchedPromptLabel: string | null;
 
+  /* Saved Custom Presets */
+  customPresets: SavedCustomPreset[];
+
   /* Effect values for currently selected preset or custom controls */
   effectValues: EffectValues;
 
@@ -66,6 +74,7 @@ interface EditorState {
 
   /* Real Playback & Comparison State */
   isPlaying: boolean;
+  isLooping: boolean;
   currentTime: number;
   duration: number;
   volume: number; // 0..100
@@ -84,6 +93,14 @@ interface EditorState {
   setEffectValue: (paramId: string, value: EffectValue) => void;
   resetEffects: () => void;
 
+  /* Custom Preset Actions */
+  loadCustomPresetsFromStorage: () => void;
+  saveCustomPreset: (name: string, description?: string) => SavedCustomPreset;
+  applyCustomPreset: (preset: SavedCustomPreset | string) => void;
+  deleteCustomPreset: (id: string) => void;
+  renameCustomPreset: (id: string, name: string) => void;
+  importCustomPresets: (jsonStr: string) => { imported: number; error?: string };
+
   /* Export Actions */
   setExportConfig: (partial: Partial<ExportConfig>) => void;
   applyExportProfile: (profile: ExportProfile) => void;
@@ -93,6 +110,7 @@ interface EditorState {
   clearProcessedResult: () => void;
 
   togglePlay: (playing?: boolean) => void;
+  toggleLoop: () => void;
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
   setVolume: (volume: number) => void;
@@ -167,6 +185,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   searchQuery: "",
   naturalPrompt: "",
   matchedPromptLabel: null,
+  customPresets: [],
   effectValues: defaultValuesFor("slowed-reverb"),
 
   exportConfig: { ...DEFAULT_EXPORT_CONFIG },
@@ -178,6 +197,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   processedResult: null,
 
   isPlaying: false,
+  isLooping: false,
   currentTime: 0,
   duration: 0,
   volume: 85,
@@ -497,8 +517,82 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     });
   },
 
+  /* Custom Preset Actions */
+  loadCustomPresetsFromStorage: () => {
+    const loaded = loadSavedCustomPresets();
+    set({ customPresets: loaded });
+  },
+
+  saveCustomPreset: (name, description) => {
+    const state = get();
+    const newPreset: SavedCustomPreset = {
+      id: `custom_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      name: name.trim().slice(0, 50) || "My Preset",
+      basePresetId: state.selectedPresetId || undefined,
+      description: description?.trim().slice(0, 160),
+      effectValues: { ...state.effectValues },
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    const updated = [newPreset, ...state.customPresets];
+    persistCustomPresets(updated);
+    set({ customPresets: updated });
+    return newPreset;
+  },
+
+  applyCustomPreset: (presetOrId) => {
+    const state = get();
+    const preset =
+      typeof presetOrId === "string"
+        ? state.customPresets.find((p) => p.id === presetOrId)
+        : presetOrId;
+    if (!preset) return;
+    set({
+      selectedPresetId: preset.basePresetId || null,
+      effectValues: { ...preset.effectValues },
+      matchedPromptLabel: `Custom Preset: ${preset.name}`,
+    });
+  },
+
+  deleteCustomPreset: (id) => {
+    const state = get();
+    const updated = state.customPresets.filter((p) => p.id !== id);
+    persistCustomPresets(updated);
+    set({ customPresets: updated });
+  },
+
+  renameCustomPreset: (id, name) => {
+    const state = get();
+    const updated = state.customPresets.map((p) =>
+      p.id === id ? { ...p, name: name.trim().slice(0, 50), updatedAt: Date.now() } : p
+    );
+    persistCustomPresets(updated);
+    set({ customPresets: updated });
+  },
+
+  importCustomPresets: (jsonStr) => {
+    const res = importPresetsFromJson(jsonStr);
+    if (res.error) {
+      return { imported: 0, error: res.error };
+    }
+    const state = get();
+    const merged = [...res.validPresets, ...state.customPresets];
+    // Deduplicate by ID
+    const uniqueMap = new Map<string, SavedCustomPreset>();
+    for (const p of merged) {
+      if (!uniqueMap.has(p.id)) uniqueMap.set(p.id, p);
+    }
+    const unique = Array.from(uniqueMap.values());
+    persistCustomPresets(unique);
+    set({ customPresets: unique });
+    return { imported: res.importedCount };
+  },
+
   togglePlay: (playing) =>
     set((state) => ({ isPlaying: playing ?? !state.isPlaying })),
+
+  toggleLoop: () =>
+    set((state) => ({ isLooping: !state.isLooping })),
 
   setCurrentTime: (time) =>
     set({ currentTime: Math.max(0, Number.isFinite(time) ? time : 0) }),
@@ -516,11 +610,11 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         nextShowAfter && state.processedResult
           ? state.processedResult.duration
           : state.decodedAudio?.duration || 0;
+      const nextTime = targetDuration > 0 ? Math.min(state.currentTime, targetDuration) : 0;
       return {
         showAfter: nextShowAfter,
         duration: targetDuration,
-        currentTime: 0,
-        isPlaying: false,
+        currentTime: nextTime,
       };
     }),
 
@@ -530,11 +624,11 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         show && state.processedResult
           ? state.processedResult.duration
           : state.decodedAudio?.duration || 0;
+      const nextTime = targetDuration > 0 ? Math.min(state.currentTime, targetDuration) : 0;
       return {
         showAfter: show,
         duration: targetDuration,
-        currentTime: 0,
-        isPlaying: false,
+        currentTime: nextTime,
       };
     }),
 }));

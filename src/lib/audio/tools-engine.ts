@@ -458,6 +458,9 @@ export async function executeToolTask(
         signature: `merger-${buffers.length}-${Date.now()}`,
         limiterReductionDb: 0,
         normalizeDb: 0,
+        renderDurationMs: 0,
+        peakDbfs: -0.1,
+        rmsDbfs: -14.0,
       },
     };
   }

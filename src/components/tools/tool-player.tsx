@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { Play, Pause, SpeakerHigh, SpeakerSlash } from "@phosphor-icons/react";
+import { Play, Pause, SpeakerHigh, SpeakerSlash, Repeat } from "@phosphor-icons/react";
 import { formatDurationMs } from "@/lib/audio/tools-engine";
 
 interface ToolPlayerProps {
@@ -15,6 +15,7 @@ export function ToolPlayer({ url, duration, fileName }: ToolPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
+  const [isLooping, setIsLooping] = useState(false);
   const [volume, setVolume] = useState(1);
 
   useEffect(() => {
@@ -43,6 +44,11 @@ export function ToolPlayer({ url, duration, fileName }: ToolPlayerProps) {
   };
 
   const handleEnded = () => {
+    if (isLooping && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+      return;
+    }
     setIsPlaying(false);
     setCurrentTime(0);
   };
@@ -113,10 +119,26 @@ export function ToolPlayer({ url, duration, fileName }: ToolPlayerProps) {
 
           <button
             onClick={toggleMute}
-            className="p-2 rounded-lg text-muted hover:text-fg hover:bg-raised transition-colors"
+            className="p-2 rounded-lg text-muted hover:text-fg hover:bg-raised transition-colors cursor-pointer"
             title={isMuted ? "Unmute" : "Mute"}
           >
             {isMuted ? <SpeakerSlash className="w-4 h-4" /> : <SpeakerHigh className="w-4 h-4" />}
+          </button>
+
+          <button
+            onClick={() => {
+              const next = !isLooping;
+              setIsLooping(next);
+              if (audioRef.current) audioRef.current.loop = next;
+            }}
+            className={`p-2 rounded-lg transition-colors cursor-pointer ${
+              isLooping
+                ? "text-primary bg-primary/10 border border-primary/20"
+                : "text-muted hover:text-fg hover:bg-raised"
+            }`}
+            title={isLooping ? "Continuous loop active" : "Enable continuous loop"}
+          >
+            <Repeat className="w-4 h-4" weight={isLooping ? "bold" : "regular"} />
           </button>
         </div>
 

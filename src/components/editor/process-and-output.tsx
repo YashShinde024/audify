@@ -146,6 +146,35 @@ export function ProcessAndOutput() {
           </div>
         </div>
 
+        {/* Acoustic Diagnostics & Signal Telemetry */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-0.5 text-[11px] font-mono">
+          <div className="rounded-lg border border-line bg-deep/40 p-2.5">
+            <span className="text-muted block text-[10px] uppercase font-sans font-semibold">Render Time</span>
+            <span className="text-fg font-medium">
+              {processedResult.renderDurationMs !== undefined ? `${processedResult.renderDurationMs}ms` : "< 1s"}
+            </span>
+          </div>
+          <div className="rounded-lg border border-line bg-deep/40 p-2.5">
+            <span className="text-muted block text-[10px] uppercase font-sans font-semibold">True Peak</span>
+            <span className={cn(
+              "font-medium",
+              processedResult.peakDbfs > -0.5 ? "text-amber-500" : "text-fg"
+            )}>
+              {processedResult.peakDbfs !== undefined ? `${processedResult.peakDbfs.toFixed(1)} dBFS` : "--"}
+            </span>
+          </div>
+          <div className="rounded-lg border border-line bg-deep/40 p-2.5">
+            <span className="text-muted block text-[10px] uppercase font-sans font-semibold">RMS Loudness</span>
+            <span className="text-fg font-medium">
+              {processedResult.rmsDbfs !== undefined ? `${processedResult.rmsDbfs.toFixed(1)} dBFS` : "--"}
+            </span>
+          </div>
+          <div className="rounded-lg border border-line bg-deep/40 p-2.5">
+            <span className="text-muted block text-[10px] uppercase font-sans font-semibold">Signal Path</span>
+            <span className="text-primary font-medium text-[10px] font-sans">100% In-Memory DSP</span>
+          </div>
+        </div>
+
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3.5 text-xs">
           <span className="text-muted">
             The audition deck above is now playing your rendered master with A/B comparison enabled.

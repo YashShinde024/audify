@@ -33,6 +33,8 @@ import {
   applyLookaheadLimiter,
   applyPeakNormalize,
   downmixChannels,
+  measurePeak,
+  measureRms,
   removeDcOffset,
   resampleChannels,
   sanitizeChannels,
@@ -57,6 +59,12 @@ export interface ProcessedAudioResult {
   limiterReductionDb: number;
   /** Peak-normalisation make-up gain, in dB (0 = none applied). */
   normalizeDb: number;
+  /** Measured offline DSP and encoding time in milliseconds. */
+  renderDurationMs: number;
+  /** True peak level across all rendered channels in dBFS. */
+  peakDbfs: number;
+  /** RMS loudness level across all rendered channels in dBFS. */
+  rmsDbfs: number;
 }
 
 /** Thrown when the caller asks to discard an in-flight render. */
@@ -655,6 +663,7 @@ export async function renderProcessedAudio(
     throw new Error("Opus export is not available yet. Choose WAV, AIFF, or MP3.");
   }
 
+  const startTime = typeof performance !== "undefined" ? performance.now() : Date.now();
   report(0.02, "Reading source audio…");
   assertActive();
 
@@ -900,6 +909,14 @@ export async function renderProcessedAudio(
     : `audify-${presetId ?? "custom"}-${baseName}.${extension}`;
 
   const url = URL.createObjectURL(blob);
+  const endTime = typeof performance !== "undefined" ? performance.now() : Date.now();
+  const renderDurationMs = Math.round(endTime - startTime);
+
+  const finalPeakLinear = measurePeak(resampled);
+  const finalRmsLinear = measureRms(resampled);
+  const peakDbfs = finalPeakLinear > 0 ? 20 * Math.log10(finalPeakLinear) : -100;
+  const rmsDbfs = finalRmsLinear > 0 ? 20 * Math.log10(finalRmsLinear) : -100;
+
   report(1, "Complete");
 
   return {
@@ -917,5 +934,8 @@ export async function renderProcessedAudio(
     signature: computeRenderSignature(presetId, effectValues, config),
     limiterReductionDb,
     normalizeDb,
+    renderDurationMs,
+    peakDbfs: Number(peakDbfs.toFixed(1)),
+    rmsDbfs: Number(rmsDbfs.toFixed(1)),
   };
 }
