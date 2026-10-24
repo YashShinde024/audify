@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "Audio Presets & DSP Tools Matrix — Audify",
   description:
     "Explore Audify's full acoustic matrix: 8D Audio, Slowed + Reverb, 432 Hz Sacred Pitch Tuning, Bass Boosters, Room Reverbs, Trimmer, Equalizer, and Audio Utilities by Nyxen × Xpert Melody.",
+  alternates: {
+    canonical: `${siteConfig.url}/presets`,
+  },
   openGraph: {
     title: "Audio Presets & DSP Tools Matrix — Audify",
     description:

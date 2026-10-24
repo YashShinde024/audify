@@ -29,6 +29,9 @@ export const metadata: Metadata = {
   title: "About Audify & The Nyxen Ecosystem — Independent Digital Studio",
   description:
     "Discover the story behind Audify: engineered by Nyxen in creative partnership with Xpert Melody. Privacy-first, zero-cloud browser audio DSP built for modern creators.",
+  alternates: {
+    canonical: `${siteConfig.url}/about`,
+  },
   openGraph: {
     title: "About Audify & The Nyxen Ecosystem",
     description:

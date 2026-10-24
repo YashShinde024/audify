@@ -17,6 +17,9 @@ export const metadata: Metadata = {
     "browser audio processing",
     "convolver reverb acoustics",
   ],
+  alternates: {
+    canonical: `${siteConfig.url}/how-it-works`,
+  },
   openGraph: {
     title: "How Audify Works — Interactive Web Audio DSP Lab",
     description:

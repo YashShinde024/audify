@@ -17,6 +17,7 @@ import {
   Lightning,
   Sparkle,
 } from "@phosphor-icons/react/dist/ssr";
+import { siteConfig } from "@/config/site";
 
 interface ToolPageProps {
   params: Promise<{
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: ToolPageProps): Promise<Metad
   const tool = getToolBySlug(slug);
   if (!tool) return {};
 
-  const canonicalUrl = `https://audify.live/tools/${tool.slug}`;
+  const canonicalUrl = `${siteConfig.url}/tools/${tool.slug}`;
 
   return {
     title: tool.seo.title,
@@ -46,14 +47,14 @@ export async function generateMetadata({ params }: ToolPageProps): Promise<Metad
       title: tool.seo.title,
       description: tool.seo.description,
       url: canonicalUrl,
-      siteName: "Audify",
+      siteName: siteConfig.name,
       type: "website",
       locale: "en_US",
       images: [
         {
-          url: "https://audify.live/og-image.png",
-          width: 1200,
-          height: 630,
+          url: `${siteConfig.url}/web-app-manifest-512x512.png`,
+          width: 512,
+          height: 512,
           alt: `${tool.name} — Free In-Browser Audio Tool · Audify`,
         },
       ],
@@ -62,7 +63,7 @@ export async function generateMetadata({ params }: ToolPageProps): Promise<Metad
       card: "summary_large_image",
       title: tool.seo.title,
       description: tool.seo.description,
-      creator: "@AudifyApp",
+      creator: "@buildnyxen",
     },
   };
 }
@@ -97,7 +98,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     description: tool.description,
     applicationCategory: "AudioApplication",
     operatingSystem: "Web Browser (Chrome, Firefox, Safari, Edge)",
-    url: `https://audify.live/tools/${tool.slug}`,
+    url: `${siteConfig.url}/tools/${tool.slug}`,
     offers: {
       "@type": "Offer",
       price: "0",

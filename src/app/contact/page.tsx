@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: "Contact Audify — Let’s Talk Sound",
   description:
     "Have a question, found an issue, or want to work together? Send a direct message to the Audify engineering team (Nyxen × Xpert Melody).",
+  alternates: {
+    canonical: `${siteConfig.url}/contact`,
+  },
   openGraph: {
     title: "Contact Audify — Let’s Talk Sound",
     description:

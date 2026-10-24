@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: "Frequently Asked Questions — Audify",
   description:
     "Find answers about Audify: 100% local browser DSP processing, supported formats, 10 MB limits, 8D audio requirements, lossless WAV and MP3 exports, and zero-telemetry privacy.",
+  alternates: {
+    canonical: `${siteConfig.url}/faq`,
+  },
   openGraph: {
     title: "Frequently Asked Questions — Audify",
     description:

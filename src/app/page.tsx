@@ -10,11 +10,38 @@ import { FAQAccordion } from "@/components/marketing/faq-accordion";
 import { AdPlaceholder } from "@/components/advertising/ad-placeholder";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Audify — Sound, reimagined · In-Browser Audio DSP & Utilities Toolkit",
   description:
     "Audify by Nyxen × Xpert Melody. Comprehensive browser-native audio workstation: creative presets (slowed + reverb, 8D audio, nightcore) and precision audio tools (compressor, trimmer, vocal remover, converter). 100% client-side memory processing.",
+  alternates: {
+    canonical: siteConfig.url,
+  },
+  openGraph: {
+    title: "Audify — Sound, reimagined · In-Browser Audio DSP & Utilities Toolkit",
+    description:
+      "Audify by Nyxen × Xpert Melody. Comprehensive browser-native audio workstation: creative presets and precision audio tools. 100% client-side memory processing.",
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    type: "website",
+    images: [
+      {
+        url: `${siteConfig.url}/web-app-manifest-512x512.png`,
+        width: 512,
+        height: 512,
+        alt: "Audify — Sound, reimagined",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Audify — Sound, reimagined",
+    description:
+      "Comprehensive browser-native audio workstation by Nyxen × Xpert Melody. 100% in-browser processing.",
+    creator: "@buildnyxen",
+  },
 };
 
 /**

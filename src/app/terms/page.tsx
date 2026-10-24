@@ -30,6 +30,9 @@ export const metadata: Metadata = {
     "free audio editor commercial rights",
     "client-side DSP terms",
   ],
+  alternates: {
+    canonical: `${siteConfig.url}/terms`,
+  },
   openGraph: {
     title: "Terms of Service — Audify Audio Processing",
     description: "Terms governing access to Audify by Nyxen × Xpert Melody. Transparent, creator-first legal terms.",

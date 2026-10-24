@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     "reverse audio online",
     "audio peak limiter",
   ],
+  alternates: {
+    canonical: `${siteConfig.url}/tools`,
+  },
   openGraph: {
     title: "Audio Tools & Processing Utilities — Audify",
     description:

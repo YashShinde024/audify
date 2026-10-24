@@ -30,11 +30,21 @@ export const footerProductNav: NavItem[] = [
   { href: "/blog", label: "Blog & Articles" },
 ];
 
-/** Company and support navigation */
+/** Company, knowledge and discovery navigation */
 export const footerCompanyNav: NavItem[] = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
   { href: "/faq", label: "FAQ" },
+  { href: "/seo", label: "Audio Tool Index" },
+  { href: "/aeo", label: "Answer Engine FAQ" },
+  { href: "/geo", label: "Architecture Spec" },
+];
+
+/** Technical and search architecture discovery links */
+export const discoveryNav: NavItem[] = [
+  { href: "/seo", label: "Audio Tool Index" },
+  { href: "/aeo", label: "Answer Engine Guide" },
+  { href: "/geo", label: "Generative Engine Spec" },
 ];
 
 /** Legal and policy links. */

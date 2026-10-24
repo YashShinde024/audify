@@ -27,6 +27,9 @@ export const metadata: Metadata = {
     "browser audio security",
     "local audio editor privacy",
   ],
+  alternates: {
+    canonical: `${siteConfig.url}/privacy`,
+  },
   openGraph: {
     title: "Privacy Policy — Audify Audio Workstation",
     description: "Detailed legal disclosure of local-first audio processing, client storage, and privacy guarantees.",

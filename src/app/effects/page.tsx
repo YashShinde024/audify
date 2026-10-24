@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "Audio Effects & DSP Controls — Audify",
   description:
     "Direct parameter control over browser-native Web Audio nodes. Adjust, audition, and process your audio client-side with 32-bit float accuracy.",
+  alternates: {
+    canonical: `${siteConfig.url}/effects`,
+  },
   openGraph: {
     title: "Audio Effects & DSP Controls — Audify",
     description:

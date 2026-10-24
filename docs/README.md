@@ -31,6 +31,7 @@ docs/
 │   ├── responsive-design.md        # Mobile-first strategy, tested viewports (320px–1440px)
 │   └── accessibility.md            # WCAG AA/AAA compliance, ARIA attributes & reduced motion
 ├── deployment.md                   # Vercel deployment, edge runtime, canonical domain & headers
+├── search-performance-and-indexing.md # Search Console, Bing Webmaster Tools & indexing guide
 ├── privacy-and-security.md         # Local-first privacy model, RAM sandbox & endpoint hardening
 └── decisions/
     └── README.md                   # Architectural Decision Records (ADRs) index
@@ -49,4 +50,5 @@ docs/
 | Inspect supported audio output formats and encoders | [Encoders & Export](./features/audio-encoders-and-export.md) |
 | Review environment variables and configuration | [Configuration](./configuration.md) |
 | Understand our zero-server privacy contract | [Privacy & Security](./privacy-and-security.md) |
+| Monitor search indexing, sitemap submission & Search Console | [Search & Indexing](./search-performance-and-indexing.md) |
 | Deploy to production or configure custom domains | [Deployment](./deployment.md) |

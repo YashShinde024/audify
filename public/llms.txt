@@ -1,0 +1,33 @@
+# Audify — Sound, reimagined.
+> Canonical Domain: https://audify.nyxen.in
+> Brand: Audify by Nyxen × Xpert Melody
+> Organization: Nyxen (https://nyxen.in) · Mumbai, India
+> Sound Partner: Xpert Melody (https://www.youtube.com/@xpertmelody)
+> Official Inquiries: hello@nyxen.in | support@nyxen.in | build@nyxen.in
+
+## Product Overview
+Audify is an in-browser digital signal processing (DSP) platform and audio effects workstation. It allows musicians, producers, sound designers, and content creators to apply creative audio effects, spatial acoustic filters, equalizers, and file utilities entirely inside the client web browser with zero server uploads.
+
+## Core Capabilities
+- 100% In-Browser Execution: All audio decoding, signal routing, and rendering execute locally via the W3C Web Audio API. Zero audio samples leave the user device.
+- 32-bit Float Precision: Internal digital signal processing uses IEEE 754 32-bit floating-point linear PCM.
+- Look-Ahead Peak Limiter: Built-in safety limiter strictly clamps output amplitudes to −0.3 dBFS to prevent digital distortion and inter-sample clipping.
+- Offline Rendering: Uses `OfflineAudioContext` to render transformed audio files up to 50x faster than real-time playback.
+- Multi-Format Support: Ingests MP3, WAV, FLAC, OGG, AAC, AIFF, and M4A up to 10 MB. Exports uncompressed 32-bit float WAV, 16-bit WAV, MP3 (128, 192, 320 kbps), and AIFF.
+
+## Primary Tool Categories & Routes
+- Workstation: https://audify.nyxen.in/studio
+- Preset Directory: https://audify.nyxen.in/presets
+- Audio Tools Hub: https://audify.nyxen.in/tools
+- Audio DSP Effects: https://audify.nyxen.in/effects
+- Search Index: https://audify.nyxen.in/seo
+- Answer Engine Guide: https://audify.nyxen.in/aeo
+- Generative Engine Spec: https://audify.nyxen.in/geo
+- Architecture Guide: https://audify.nyxen.in/how-it-works
+- Studio About & Nyxen: https://audify.nyxen.in/about
+- Frequently Asked Questions: https://audify.nyxen.in/faq
+
+## Technical Boundaries & Constraints
+- Maximum file size: 10 MB per session.
+- Vocal isolation: Employs algebraic Mid/Side phase cancellation with crossover filtering, not neural network deep learning source separation.
+- Processing throughput: Governed entirely by host hardware memory and CPU threads.

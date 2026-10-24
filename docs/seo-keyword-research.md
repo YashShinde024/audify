@@ -1,7 +1,7 @@
 # Audify — SEO & Public Keyword Discovery Research Report
 
 **Date of Research:** October 2026  
-**Product:** Audify (`https://audify.vercel.app`)  
+**Product:** Audify (`https://audify.nyxen.in`)  
 **Tagline:** Sound, refined. In-browser audio DSP workstation.  
 **Attribution:** Audify by Nyxen × Xpert Melody (Music Partner: Xpert Melody · Developer: Nyxen)  
 **Primary Standards & Guidelines:** Google Search Central Documentation, Webmaster Quality Guidelines, Schema.org WebApplication standards.
