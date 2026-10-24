@@ -56,13 +56,13 @@ export function FloatingAudioController() {
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="fixed bottom-5 right-5 z-40 select-none">
+    <div className="fixed bottom-3 right-3 sm:bottom-5 sm:right-5 z-40 select-none max-w-[calc(100vw-1.5rem)]">
       {/* ── Expanded Volume & Control Popover ────────────────────────── */}
       {expanded ? (
         <div
           role="region"
           aria-label="Floating audio player controls"
-          className="surface-card glass-panel w-72 sm:w-80 rounded-2xl border border-line-strong p-4 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 space-y-3.5"
+          className="surface-card glass-panel w-[calc(100vw-1.5rem)] max-w-[320px] sm:max-w-none sm:w-80 rounded-2xl border border-line-strong p-3.5 sm:p-4 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 space-y-3.5"
         >
           {/* Header with track name and minimize button */}
           <div className="flex items-center justify-between gap-2 border-b border-line pb-2.5">

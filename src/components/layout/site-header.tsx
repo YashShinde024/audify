@@ -258,9 +258,9 @@ export function SiteHeader() {
               onClick={() => setDrawerOpen((prev) => !prev)}
               aria-expanded={drawerOpen}
               aria-label={drawerOpen ? "Close menu" : "Open navigation menu"}
-              className="flex md:hidden h-9 w-9 items-center justify-center rounded-full border border-line bg-surface text-muted hover:text-fg hover:border-primary/40 transition-colors cursor-pointer"
+              className="flex md:hidden h-10 w-10 sm:h-9 sm:w-9 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-line bg-surface text-muted hover:text-fg hover:border-primary/40 transition-colors cursor-pointer touch-manipulation"
             >
-              {drawerOpen ? <X size={18} weight="bold" /> : <List size={18} weight="bold" />}
+              {drawerOpen ? <X size={20} weight="bold" /> : <List size={20} weight="bold" />}
             </button>
           </div>
         </div>
@@ -290,7 +290,7 @@ export function SiteHeader() {
               role="dialog"
               aria-modal="true"
               aria-label="Mobile Navigation Menu"
-              className="relative border-b border-line bg-surface/95 dark:bg-surface/95 px-5 py-6 shadow-xl backdrop-blur-md"
+              className="relative border-b border-line bg-surface/95 dark:bg-surface/95 px-4 sm:px-5 py-5 sm:py-6 shadow-xl backdrop-blur-md max-h-[calc(100vh-4.5rem)] overflow-y-auto overscroll-contain pb-8"
             >
 
 

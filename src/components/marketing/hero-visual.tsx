@@ -344,18 +344,18 @@ export function HeroVisual() {
           </div>
 
           {/* Center: Sleek Address Omnibar */}
-          <div className="flex items-center justify-center max-w-[200px] sm:max-w-xs md:max-w-sm w-full mx-2">
-            <div className="flex h-6 w-full items-center justify-center gap-1.5 rounded-full border border-line/70 bg-canvas/70 px-3 text-[11px] font-mono shadow-xs">
+          <div className="flex min-w-0 items-center justify-center max-w-[150px] xs:max-w-[200px] sm:max-w-xs md:max-w-sm w-full mx-1 sm:mx-2">
+            <div className="flex h-6 w-full items-center justify-center gap-1 sm:gap-1.5 rounded-full border border-line/70 bg-canvas/70 px-2 sm:px-3 text-[10px] sm:text-[11px] font-mono shadow-xs min-w-0">
               <Lock size={10} className="text-emerald-500 shrink-0" weight="fill" />
               <span className="text-fg font-medium truncate">https://audify.nyxen.in/studio</span>
             </div>
           </div>
 
           {/* Right: Studio Quick Launch CTA */}
-          <div className="flex items-center">
+          <div className="flex items-center shrink-0">
             <Link
               href="/studio"
-              className="inline-flex items-center gap-1 rounded-md border border-line/70 bg-surface px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-fg hover:border-primary/50 hover:text-primary transition-colors whitespace-nowrap"
+              className="inline-flex items-center gap-1 rounded-md border border-line/70 bg-surface px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-fg hover:border-primary/50 hover:text-primary transition-colors whitespace-nowrap"
             >
               <span>Open Studio</span>
               <ArrowRight size={10} aria-hidden="true" />

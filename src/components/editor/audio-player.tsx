@@ -270,15 +270,15 @@ export function AudioPlayer() {
       </div>
 
       {/* Transport Controls Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
-        <div className="flex items-center gap-2.5">
+      <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 sm:gap-4 pt-1">
+        <div className="flex items-center gap-2 sm:gap-2.5">
           {/* Main Play / Pause Button with Primary Glow */}
           <Button
             variant="primary"
             size="icon"
             onClick={() => togglePlay()}
             aria-label={isPlaying ? "Pause audio playback" : "Play audio playback"}
-            className="h-10 w-10 rounded-full shadow-glow-wire cursor-pointer transition-transform active:scale-95"
+            className="h-10 w-10 min-h-[40px] min-w-[40px] rounded-full shadow-glow-wire cursor-pointer transition-transform active:scale-95 touch-manipulation"
           >
             {isPlaying ? (
               <Pause size={17} weight="fill" />
@@ -294,7 +294,7 @@ export function AudioPlayer() {
             onClick={() => handleSeek(0)}
             aria-label="Restart playback from beginning"
             title="Restart from beginning"
-            className="h-8 w-8 text-muted hover:text-fg"
+            className="h-8 w-8 min-h-[32px] min-w-[32px] text-muted hover:text-fg touch-manipulation"
           >
             <ArrowsClockwise size={14} />
           </Button>
@@ -307,7 +307,7 @@ export function AudioPlayer() {
             aria-label={isLooping ? "Disable loop" : "Enable continuous loop"}
             title={isLooping ? "Continuous loop active" : "Enable continuous loop"}
             className={cn(
-              "h-8 w-8 transition-colors cursor-pointer",
+              "h-8 w-8 min-h-[32px] min-w-[32px] transition-colors cursor-pointer touch-manipulation",
               isLooping
                 ? "text-primary bg-primary/10 border border-primary/20"
                 : "text-muted hover:text-fg hover:bg-raised",
@@ -317,7 +317,7 @@ export function AudioPlayer() {
           </Button>
 
           {/* Time Readout */}
-          <div className="ml-1 font-mono text-xs text-muted">
+          <div className="ml-1 font-mono text-xs text-muted whitespace-nowrap">
             <span className="font-semibold text-fg">{formatTime(currentTime)}</span>
             <span className="mx-1 text-line-strong">/</span>
             <span>{formatTime(duration)}</span>
@@ -325,11 +325,11 @@ export function AudioPlayer() {
         </div>
 
         {/* Volume Fader */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between xs:justify-end gap-2 w-full xs:w-auto pt-1 xs:pt-0 border-t border-line/40 xs:border-t-0">
           <button
             type="button"
             onClick={() => setVolume(volume === 0 ? 85 : 0)}
-            className="text-muted hover:text-fg transition-colors cursor-pointer"
+            className="text-muted hover:text-fg transition-colors cursor-pointer p-1 min-h-[32px] min-w-[32px] flex items-center justify-center touch-manipulation"
             aria-label={volume === 0 ? "Unmute" : "Mute"}
           >
             {volume === 0 ? (
@@ -345,7 +345,7 @@ export function AudioPlayer() {
             step={1}
             onValueChange={([v]) => setVolume(v ?? volume)}
             aria-label="Audition volume"
-            className="w-20 sm:w-24"
+            className="flex-1 xs:w-20 sm:w-24 max-w-[140px] xs:max-w-none"
           />
           <span className="w-8 text-right font-mono text-[11px] text-muted">
             {volume}%

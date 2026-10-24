@@ -247,7 +247,7 @@ export function ToolsClient() {
       {/* Category Pills & Search Bar */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Category Pills */}
-        <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Tool Categories">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar max-w-full sm:flex-wrap pb-1" role="tablist" aria-label="Tool Categories">
           {TOOL_CATEGORIES.map((cat) => {
             const isSelected = activeCategory === cat.id;
             return (
@@ -257,7 +257,7 @@ export function ToolsClient() {
                 aria-selected={isSelected}
                 onClick={() => setActiveCategory(cat.id)}
                 className={cn(
-                  "rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-150",
+                  "shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-150 cursor-pointer",
                   isSelected
                     ? "bg-primary text-white shadow-sm"
                     : "bg-surface/80 text-muted hover:bg-surface hover:text-fg border border-line/60"
@@ -281,7 +281,7 @@ export function ToolsClient() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search audio tools..."
             aria-label="Search audio tools"
-            className="w-full rounded-xl border border-line/80 bg-surface/80 py-2 pl-9 pr-8 text-xs text-fg placeholder:text-muted/60 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full rounded-xl border border-line/80 bg-surface/80 py-2 pl-9 pr-8 text-[16px] sm:text-xs text-fg placeholder:text-muted/60 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
           {searchQuery && (
             <button

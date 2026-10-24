@@ -360,11 +360,11 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <audio src={seg.url} controls className="h-8 max-w-[200px]" />
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                      <audio src={seg.url} controls className="h-8 w-full max-w-[200px] xs:w-auto" />
                       <button
                         onClick={() => downloadFile(seg.url, seg.name)}
-                        className="px-3.5 py-1.5 rounded-lg bg-surface hover:bg-raised border border-line text-xs font-semibold text-fg inline-flex items-center gap-1.5 transition-colors"
+                        className="px-3.5 py-1.5 rounded-lg bg-surface hover:bg-raised border border-line text-xs font-semibold text-fg inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <DownloadSimple className="w-3.5 h-3.5" />
                         <span>Save</span>
@@ -377,7 +377,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
               <div className="pt-4 border-t border-line">
                 <button
                   onClick={handleStartOver}
-                  className="inline-flex items-center gap-2 text-xs font-medium text-muted hover:text-fg px-4 py-2 rounded-xl hover:bg-raised border border-line transition-colors"
+                  className="inline-flex items-center gap-2 text-xs font-medium text-muted hover:text-fg px-4 py-2 rounded-xl hover:bg-raised border border-line transition-colors cursor-pointer"
                 >
                   <ArrowCounterClockwise className="w-4 h-4" />
                   <span>Split Another File</span>
@@ -388,8 +388,8 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
 
           {/* 3. METADATA DIAGNOSTIC RESULT */}
           {result.kind === "metadata" && (
-            <div className="space-y-6 p-6 rounded-2xl border border-line bg-surface/60 backdrop-blur-sm">
-              <div className="flex items-center justify-between pb-3 border-b border-line">
+            <div className="space-y-6 p-4 sm:p-6 rounded-2xl border border-line bg-surface/60 backdrop-blur-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-line">
                 <div>
                   <h4 className="text-base font-semibold text-fg">Technical File Diagnostics</h4>
                   <p className="text-xs text-muted font-mono truncate max-w-md">
@@ -399,7 +399,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleCopyJson(result.rawJson)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-line bg-surface hover:bg-raised text-xs font-medium text-fg transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-line bg-surface hover:bg-raised text-xs font-medium text-fg transition-colors cursor-pointer"
                   >
                     <Copy className="w-3.5 h-3.5" />
                     <span>{copiedJson ? "Copied!" : "Copy JSON"}</span>
@@ -410,7 +410,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
                       const url = URL.createObjectURL(blob);
                       downloadFile(url, `${result.report.fileName}-metadata.json`);
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-line bg-surface hover:bg-raised text-xs font-medium text-fg transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-line bg-surface hover:bg-raised text-xs font-medium text-fg transition-colors cursor-pointer"
                   >
                     <FileCode className="w-3.5 h-3.5" />
                     <span>Export JSON</span>
@@ -419,7 +419,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
               </div>
 
               {/* Diagnostics Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3">
                 <div className="p-3.5 rounded-xl border border-line bg-raised/40 space-y-1">
                   <span className="text-xs text-muted">Sample Rate</span>
                   <p className="text-sm font-mono font-semibold text-fg">{result.report.sampleRateFormatted}</p>

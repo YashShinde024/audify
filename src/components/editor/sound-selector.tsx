@@ -164,12 +164,12 @@ export function SoundSelector() {
         </div>
 
         {/* 4-Way Segmented Tab Toggle */}
-        <div className="flex flex-wrap items-center rounded-lg border border-line bg-deep/60 p-1 self-start sm:self-auto shrink-0 gap-0.5">
+        <div className="flex items-center overflow-x-auto no-scrollbar max-w-full rounded-lg border border-line bg-deep/60 p-1 self-stretch sm:self-auto shrink-0 gap-0.5 whitespace-nowrap">
           <button
             type="button"
             onClick={() => setActiveTab("presets")}
             className={cn(
-              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer",
+              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer shrink-0",
               activeTab === "presets"
                 ? "bg-surface text-fg font-semibold shadow-xs"
                 : "text-muted hover:text-fg",
@@ -181,7 +181,7 @@ export function SoundSelector() {
             type="button"
             onClick={() => setActiveTab("customize")}
             className={cn(
-              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer",
+              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer shrink-0",
               activeTab === "customize"
                 ? "bg-surface text-fg font-semibold shadow-xs"
                 : "text-muted hover:text-fg",
@@ -195,7 +195,7 @@ export function SoundSelector() {
             type="button"
             onClick={() => setActiveTab("saved")}
             className={cn(
-              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer",
+              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer shrink-0",
               activeTab === "saved"
                 ? "bg-surface text-fg font-semibold shadow-xs"
                 : "text-muted hover:text-fg",
@@ -208,7 +208,7 @@ export function SoundSelector() {
             type="button"
             onClick={() => setActiveTab("chain")}
             className={cn(
-              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer",
+              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer shrink-0",
               activeTab === "chain"
                 ? "bg-surface text-fg font-semibold shadow-xs"
                 : "text-muted hover:text-fg",
@@ -229,7 +229,7 @@ export function SoundSelector() {
             value={naturalPrompt}
             onChange={(e) => setNaturalPrompt(e.target.value)}
             placeholder="Search sound or tool (e.g. slowed reverb, 432 hz, heavy bass boost, 8d audio)"
-            className="h-9 w-full rounded-lg border border-line bg-surface pl-9 pr-24 text-xs text-fg placeholder:text-faint focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary font-sans transition-all"
+            className="h-9 w-full rounded-lg border border-line bg-surface pl-9 pr-24 text-[16px] sm:text-xs text-fg placeholder:text-faint focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary font-sans transition-all"
           />
           <button
             type="submit"
@@ -383,13 +383,13 @@ export function SoundSelector() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Filter catalog…"
-                className="h-7 w-full rounded-md border border-line bg-surface pl-7 pr-2 text-xs text-fg placeholder:text-faint focus:border-primary focus:outline-none font-sans"
+                className="h-8 sm:h-7 w-full rounded-md border border-line bg-surface pl-7 pr-2 text-[16px] sm:text-xs text-fg placeholder:text-faint focus:border-primary focus:outline-none font-sans"
               />
             </div>
           </div>
 
           {/* 9 Categories Pills in Horizontal Scroll Rail */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
             <button
               type="button"
               onClick={() => setActiveCategory("all")}

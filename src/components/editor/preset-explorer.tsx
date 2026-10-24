@@ -406,7 +406,7 @@ export function PresetExplorer() {
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by preset name, audio effect, or DSP node…"
               aria-label="Search presets by name, effect, or DSP node"
-              className="h-9.5 w-full rounded-xl border border-line bg-surface pl-9 pr-9 text-xs text-fg placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary font-sans transition-colors"
+              className="h-10 sm:h-9.5 w-full rounded-xl border border-line bg-surface pl-9 pr-9 text-[16px] sm:text-xs text-fg placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary font-sans transition-colors"
             />
             {search && (
               <button
@@ -443,7 +443,7 @@ export function PresetExplorer() {
         </div>
 
         {/* Acoustic Category Pills Navigation */}
-        <nav aria-label="Preset acoustic categories" className="flex flex-wrap items-center gap-1.5 pt-1">
+        <nav aria-label="Preset acoustic categories" className="flex items-center gap-1.5 pt-1 overflow-x-auto no-scrollbar max-w-full sm:flex-wrap pb-1">
           {ACOUSTIC_CATEGORIES.map((cat) => {
             const isSelected = selectedCategoryId === cat.id;
             const count =
@@ -458,7 +458,7 @@ export function PresetExplorer() {
                 onClick={() => setSelectedCategoryId(cat.id)}
                 aria-pressed={isSelected}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all border cursor-pointer select-none",
+                  "inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all border cursor-pointer select-none",
                   isSelected
                     ? "btn-gradient-primary text-white shadow-glow-wire font-semibold"
                     : "border-line bg-surface/80 text-muted hover:text-fg hover:border-line-strong hover:bg-surface"
