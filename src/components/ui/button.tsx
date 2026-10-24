@@ -9,7 +9,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "btn-gradient-rainbow text-white font-semibold shadow-[0_2px_10px_rgba(107,0,245,0.32),0_1px_2px_rgba(230,0,103,0.2)] active:brightness-95 border border-white/15 focus-visible:ring-[#8518f8]",
+          "btn-gradient-primary text-white font-semibold active:brightness-95 border border-white/20 focus-visible:ring-[#8518f8]",
         secondary:
           "border border-line-strong bg-surface text-fg font-medium shadow-xs hover:bg-raised hover:border-pink/40 hover:text-fg active:translate-y-[0.5px]",
         outline:
@@ -77,11 +77,15 @@ export function Button({
           aria-hidden="true"
         />
       ) : (
-        leftIcon
+        leftIcon && (
+          <span className="relative z-10 inline-flex shrink-0 transition-transform duration-200">
+            {leftIcon}
+          </span>
+        )
       )}
-      {children}
+      <span className="relative z-10 inline-flex items-center gap-1.5">{children}</span>
       {!loading && rightIcon && (
-        <span className="inline-flex shrink-0 transition-transform duration-200 group-hover:translate-x-1">
+        <span className="btn-arrow relative z-10 inline-flex shrink-0 transition-transform duration-200">
           {rightIcon}
         </span>
       )}

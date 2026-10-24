@@ -451,7 +451,7 @@ export function PresetExplorer() {
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all border cursor-pointer select-none",
                   isSelected
-                    ? "border-primary bg-primary text-white shadow-xs font-semibold"
+                    ? "btn-gradient-primary text-white shadow-xs font-semibold"
                     : "border-line bg-surface/80 text-muted hover:text-fg hover:border-line-strong"
                 )}
               >

@@ -192,10 +192,10 @@ export function PresetArticle({ meta, body }: { meta: PresetArticleMeta; body: P
           </p>
           <Link
             href="/studio"
-            className="mt-5 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-hover"
+            className="btn-gradient-primary mt-5 inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold text-white shadow-md active:scale-95 transition-all"
           >
-            Open in Studio
-            <ArrowRight size={16} weight="bold" />
+            <span>Open in Studio</span>
+            <ArrowRight size={16} weight="bold" className="btn-arrow transition-transform duration-200" />
           </Link>
         </section>
 

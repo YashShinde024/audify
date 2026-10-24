@@ -218,7 +218,7 @@ export function StudioSidebar() {
                   className={cn(
                     "flex items-center justify-between rounded-xl px-3 py-2 text-xs font-medium transition-colors",
                     isActive("/studio")
-                      ? "bg-primary text-white font-semibold shadow-xs"
+                      ? "btn-gradient-primary text-white font-semibold shadow-xs"
                       : "text-fg bg-raised/70 hover:bg-raised border border-line/60"
                   )}
                 >

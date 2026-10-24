@@ -1219,7 +1219,7 @@ export function InteractiveAudioGuide() {
           </Link>
           <Link
             href="/studio"
-            className="rounded-xl bg-violet px-6 py-3 text-xs font-semibold text-white hover:bg-violet-dark transition-colors shadow-sm inline-flex items-center gap-2"
+            className="btn-gradient-primary rounded-xl px-6 py-3 text-xs font-semibold text-white shadow-sm inline-flex items-center gap-2"
           >
             <Waveform size={16} weight="bold" />
             <span>Open Audify Studio</span>

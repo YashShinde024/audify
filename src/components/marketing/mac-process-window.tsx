@@ -185,10 +185,10 @@ export function MacProcessWindow() {
                   <div className="pt-4">
                     <Link
                       href="/studio"
-                      className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-rose-600 px-5 py-2.5 text-xs font-semibold text-white shadow-md hover:scale-105 active:scale-95 transition-all"
+                      className="btn-gradient-primary inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-semibold text-white shadow-md active:scale-95 transition-all"
                     >
                       <span>Try in Live Studio</span>
-                      <ArrowRight size={13} weight="bold" />
+                      <ArrowRight size={13} weight="bold" className="btn-arrow transition-transform duration-200" />
                     </Link>
                   </div>
                 </div>

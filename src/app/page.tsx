@@ -158,11 +158,11 @@ export default function HomePage() {
             <Button
               asChild
               size="lg"
-              className="h-12 px-7 rounded-xl btn-gradient-rainbow text-white font-medium group"
+              className="h-12 px-7 rounded-xl btn-gradient-primary text-white font-medium group"
             >
               <Link href="/studio">
-                Open Audify Studio
-                <ArrowRight aria-hidden="true" className="ml-1.5 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+                <span>Open Audify Studio</span>
+                <ArrowRight aria-hidden="true" className="ml-1.5 h-4 w-4 btn-arrow transition-transform duration-200" />
               </Link>
             </Button>
             <Button

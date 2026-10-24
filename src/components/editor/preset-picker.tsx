@@ -41,7 +41,7 @@ export function PresetCategoryTabs() {
             }}
             className={cn(
               "shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition-colors sm:text-sm",
-              selected ? "bg-faint text-canvas" : "text-muted hover:bg-raised hover:text-fg",
+              selected ? "btn-gradient-primary text-white font-semibold" : "text-muted hover:bg-raised hover:text-fg",
             )}
           >
             {label}

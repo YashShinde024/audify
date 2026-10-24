@@ -157,7 +157,7 @@ export function SiteHeader() {
                   {active && (
                     <motion.span
                       layoutId="island-active-pill"
-                      className="absolute inset-0 rounded-full bg-wire-gradient shadow-xs z-0"
+                      className="absolute inset-0 rounded-full nav-pill-active-rotating z-0"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -237,8 +237,7 @@ export function SiteHeader() {
             <Link
               href="/studio"
               className={cn(
-                "group relative inline-flex items-center gap-1.5 rounded-full px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold text-white",
-                "btn-gradient-rainbow shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(230,0,38,0.2)]",
+                "btn-gradient-primary group relative inline-flex items-center gap-1.5 rounded-full px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold text-white",
                 "cursor-pointer select-none"
               )}
             >
@@ -247,7 +246,7 @@ export function SiteHeader() {
               <ArrowRight
                 size={13}
                 weight="bold"
-                className="transition-transform group-hover:translate-x-1 duration-200"
+                className="btn-arrow transition-transform duration-200"
               />
             </Link>
 
@@ -307,7 +306,7 @@ export function SiteHeader() {
                       className={cn(
                         "flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-xs font-semibold transition-all",
                         active
-                          ? "bg-primary text-white shadow-xs"
+                          ? "btn-gradient-primary text-white shadow-xs"
                           : "bg-surface hover:bg-raised text-fg border border-line hover:border-primary/40"
                       )}
                     >

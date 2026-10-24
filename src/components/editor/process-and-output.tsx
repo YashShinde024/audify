@@ -78,7 +78,7 @@ export function ProcessAndOutput() {
             href={processedResult.url}
             download={processedResult.filename}
             aria-label={`Download ${processedResult.filename}`}
-            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-wire-gradient px-5 py-2 text-xs font-semibold text-white transition-all shadow-glow-wire hover:opacity-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary cursor-pointer active:scale-95"
+            className="btn-gradient-primary inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-2 text-xs font-semibold text-white transition-all shadow-glow-wire hover:opacity-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary cursor-pointer active:scale-95"
           >
             <DownloadSimple size={15} weight="bold" />
             <span>Download Master</span>
