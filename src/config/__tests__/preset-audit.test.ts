@@ -215,6 +215,50 @@ describe("Preset System Audit (Phase 2)", () => {
       }
     }
   });
+
+  it("Criterion 11: Every declared parameter modifies the resolved DSP plan or export configuration", () => {
+    for (const preset of allPresets) {
+      if (preset.params.length === 0) continue;
+
+      const basePlan = resolveProcessing(preset.id, { ...preset.defaults });
+
+      for (const param of preset.params) {
+        let testVal: number | string | boolean;
+        if (param.kind === "slider") {
+          const def = (preset.defaults[param.id] as number) ?? param.min;
+          testVal = def === param.max ? param.min : param.max;
+        } else if (param.kind === "toggle") {
+          testVal = !(preset.defaults[param.id] as boolean);
+        } else if (param.kind === "select") {
+          const other = param.options.find((o) => o.value !== preset.defaults[param.id]);
+          testVal = other ? other.value : param.options[0].value;
+        } else {
+          continue;
+        }
+
+        const altPlan = resolveProcessing(preset.id, {
+          ...preset.defaults,
+          [param.id]: testVal,
+        });
+
+        // Some parameters affect export config (sampleRate, bitDepth, mp3Bitrate, channels)
+        const isExportParam = [
+          "sampleRate",
+          "bitDepth",
+          "mp3Bitrate",
+          "channels",
+          "format",
+          "quality",
+        ].includes(param.id);
+
+        const differs = JSON.stringify(basePlan) !== JSON.stringify(altPlan);
+        expect(
+          differs || isExportParam,
+          `Preset '${preset.id}' parameter '${param.id}' does not alter the DSP plan or export config!`
+        ).toBe(true);
+      }
+    }
+  });
 });
 
 function keyInDefaults(key: string, defaults: Record<string, unknown>): boolean {

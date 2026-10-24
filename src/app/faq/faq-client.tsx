@@ -17,9 +17,10 @@ const CATEGORIES: { id: FaqCategory; label: string; icon: React.ComponentType<{ 
   { id: "getting-started", label: "Getting started", icon: Waveform },
   { id: "audio-processing", label: "Audio processing", icon: Sliders },
   { id: "presets-effects", label: "Presets & effects", icon: Faders },
-  { id: "formats-exports", label: "Formats & exports", icon: Wrench },
+  { id: "audio-tools", label: "Audio tools & utilities", icon: Wrench },
+  { id: "formats-exports", label: "Formats & exports", icon: Waveform },
   { id: "privacy-files", label: "Privacy & files", icon: ShieldCheck },
-  { id: "troubleshooting", label: "Troubleshooting", icon: Wrench },
+  { id: "troubleshooting", label: "Troubleshooting", icon: Question },
 ];
 
 export function FaqClient() {

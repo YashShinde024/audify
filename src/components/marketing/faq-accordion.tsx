@@ -61,6 +61,27 @@ const defaultFaqs: FaqEntry[] = [
     ),
   },
   {
+    question: "What audio utilities are available beyond creative presets?",
+    answer: (
+      <p>
+        In addition to creative presets, Audify provides precision engineering utilities: a
+        <strong> Dynamic Compressor</strong> with threshold and ratio controls, an <strong>Audio Trimmer &amp; Cutter</strong>, a
+        <strong> Multi-Format Audio Converter</strong> (WAV, MP3, AIFF), a <strong>Vocal Remover</strong> with Mid/Side center extraction, a
+        <strong> DC Offset Remover</strong>, an interactive <strong>3-Band Parametric EQ</strong>, and <strong>Fade In/Out</strong> tools.
+      </p>
+    ),
+  },
+  {
+    question: "What is the difference between audio compression and normalization?",
+    answer: (
+      <p>
+        <strong>Peak normalization</strong> multiplies the entire waveform by a single fixed gain factor so the highest transient reaches
+        a ceiling (−0.3 dBFS) without changing the internal dynamics. <strong>Dynamic compression</strong> selectively attenuates loud peaks
+        above a threshold to reduce the dynamic range, allowing makeup gain to increase perceived punch and leveling out quiet and loud passages.
+      </p>
+    ),
+  },
+  {
     question: "Why is there a 10 MB file-size limitation?",
     answer: (
       <p>

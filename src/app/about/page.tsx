@@ -161,9 +161,9 @@ const TELEMETRY_BENCHMARKS = [
     icon: LockKey,
   },
   {
-    value: "36+",
-    label: "Acoustic DSP Presets",
-    detail: "Slowed+reverb, binaural 8D, nightcore, 432 Hz, lowpass warmth, and tone shaping.",
+    value: "44+",
+    label: "Acoustic Presets & Tools",
+    detail: "Slowed+reverb, dynamic compressor, vocal remover, 8D audio, bitcrusher, format conversion, and tone shaping.",
     icon: Sliders,
   },
   {

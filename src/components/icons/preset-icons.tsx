@@ -92,6 +92,7 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "stereo-widening": ArrowsOutCardinal,
   "haas-spatializer": ArrowsOutCardinal,
   "ping-pong": ArrowArcRight,
+  "chorus-flanger": Waves,
 
   // Bass & Equalizer
   "bass-boost-light": SpeakerLow,
@@ -100,7 +101,7 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "bass-boost-extreme": WaveSawtooth,
   "equalizer": Equalizer,
   "treble-air": Wind,
-"mid-scoop": Equalizer,
+  "mid-scoop": Equalizer,
 
   // Reverb & Echo
   "bathroom-reverb": Drop,
@@ -111,8 +112,8 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "cathedral-reverb": Church,
   "vocal-reverb": MicrophoneStage,
   "plate-reverb": Sparkle,
-"slapback-echo": Pulse,
-"echo-chamber": Columns,
+  "slapback-echo": Pulse,
+  "echo-chamber": Columns,
 
   // Pitch & Tempo
   "pitch-432hz": PianoKeys,
@@ -128,6 +129,7 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "tube-warmth": Lightning,
   "am-radio": Radioactive,
   "muffled-room": Buildings,
+  "bitcrusher": WaveSawtooth,
 
   // Cleanup
   "sub-rumble-cut": ShieldCheck,
@@ -136,6 +138,9 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "vocal-clarity": Sparkle,
   "de-harsh": WaveSine,
   "podcast-voice": MicrophoneStage,
+  "gentle-compression": Pulse,
+  "vocal-leveling": MicrophoneStage,
+  "dc-offset-remover": ShieldCheck,
 
   // Utilities & Export
   "volume-changer": SpeakerHigh,
@@ -143,8 +148,11 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "fade-in-out": SlidersHorizontal,
   "downmixer": ArrowsMerge,
   "bpm-detector": Metronome,
+  "compressor": SlidersHorizontal,
+  "vocal-remover": ArrowsMerge,
   "format-converter": FileAudio,
   "mastering-polish": MagicWand,
+  "music-bus-glue": SpeakerHifi,
 };
 
 /** Legacy/friendly aliases kept for backwards compatibility with older routes. */

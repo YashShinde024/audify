@@ -9,6 +9,7 @@ import {
   Sparkle,
 } from "@phosphor-icons/react";
 import { PresetIcon } from "@/components/icons/preset-icons";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface FeaturedPresetData {
@@ -330,38 +331,50 @@ export function PresetSignatures({ className }: { className?: string }) {
               </div>
 
               {/* Card Footer: Live Audition + Studio Destination */}
-              <div className="mt-6 pt-4 border-t border-line flex items-center justify-between gap-3">
+              <div className="mt-6 pt-4 border-t border-line/70 flex items-center justify-between gap-2.5">
                 <button
                   type="button"
                   onClick={() => playAudition(preset)}
                   aria-label={isAuditioning ? `Stop ${preset.name} demo` : `Audition ${preset.name} sound`}
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
+                    "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer active:scale-95",
                     isAuditioning
-                      ? "border-primary bg-primary text-white shadow-xs"
-                      : "border-line bg-canvas text-fg hover:border-primary/50 hover:bg-raised"
+                      ? "btn-gradient-primary text-white shadow-glow-wire"
+                      : "border border-line-strong bg-surface hover:bg-raised text-fg hover:border-pink/40 shadow-xs"
                   )}
                 >
                   {isAuditioning ? (
                     <>
-                      <Pause size={12} weight="fill" />
+                      <span className="flex items-end gap-0.5 h-3" aria-hidden="true">
+                        <span className="w-0.5 bg-white rounded-full animate-[bounce_0.8s_infinite_100ms] h-full" />
+                        <span className="w-0.5 bg-white rounded-full animate-[bounce_0.8s_infinite_300ms] h-2" />
+                        <span className="w-0.5 bg-white rounded-full animate-[bounce_0.8s_infinite_200ms] h-2.5" />
+                      </span>
                       <span>Playing</span>
                     </>
                   ) : (
                     <>
-                      <Play size={12} weight="fill" />
+                      <Play size={12} weight="fill" className="text-primary" />
                       <span>Audition</span>
                     </>
                   )}
                 </button>
 
-                <Link
-                  href={`/studio?preset=${preset.id}`}
-                  className="inline-flex items-center gap-1 text-xs font-medium text-muted hover:text-primary transition-colors"
+                <Button
+                  asChild
+                  size="sm"
+                  className={cn(
+                    "h-8 px-3 rounded-lg text-xs font-medium transition-all group/btn",
+                    isAuditioning
+                      ? "border border-line-strong bg-surface hover:bg-raised text-fg shadow-xs hover:border-pink/40"
+                      : "btn-gradient-primary text-white shadow-xs"
+                  )}
                 >
-                  <span>Open in Studio</span>
-                  <ArrowRight size={13} weight="bold" />
-                </Link>
+                  <Link href={`/studio?preset=${preset.id}`}>
+                    <span>Use in Studio</span>
+                    <ArrowRight className="ml-1 h-3 w-3 btn-arrow transition-transform duration-200" />
+                  </Link>
+                </Button>
               </div>
             </div>
           );

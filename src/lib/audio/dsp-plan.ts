@@ -74,6 +74,35 @@ export interface HaasSpec {
   mix: number;
 }
 
+export interface CompressorSpec {
+  thresholdDb: number;
+  ratio: number;
+  attackSeconds: number;
+  releaseSeconds: number;
+  kneeDb: number;
+  makeupGainDb: number;
+  mix: number;
+}
+
+export interface CenterExtractorSpec {
+  mode: "remove-center" | "isolate-center";
+  bassPreserveHz: number;
+  reductionAmount: number;
+}
+
+export interface BitcrusherSpec {
+  bitDepth: number;
+  downsampleFactor: number;
+  mix: number;
+}
+
+export interface ChorusSpec {
+  rateHz: number;
+  depthMs: number;
+  feedback: number;
+  mix: number;
+}
+
 export interface ProcessingPlan {
   presetId: string | null;
   playbackRate: number;
@@ -91,6 +120,11 @@ export interface ProcessingPlan {
   echo: EchoSpec | null;
   width: number | null;
   pan: PanSpec | null;
+  compressor: CompressorSpec | null;
+  centerExtractor: CenterExtractorSpec | null;
+  bitcrusher: BitcrusherSpec | null;
+  chorus: ChorusSpec | null;
+  removeDc: boolean;
   /** Downmix the render bus to a single channel. */
   mono: boolean;
   /** The effect needs two channels even when the source is mono. */
@@ -192,6 +226,11 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
   let pan: PanSpec | null = null;
   let fadeSpec: FadeSpec | null = null;
   let haasSpec: HaasSpec | null = null;
+  let compressorSpec: CompressorSpec | null = null;
+  let centerExtractorSpec: CenterExtractorSpec | null = null;
+  let bitcrusherSpec: BitcrusherSpec | null = null;
+  let chorusSpec: ChorusSpec | null = null;
+  let removeDc = false;
 
   const wet = num("reverb", 0);
 
@@ -496,6 +535,104 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
       break;
     }
 
+    case "compressor": {
+      const threshold = clamp(num("threshold", -20), -60, 0);
+      const ratio = clamp(num("ratio", 4), 1, 20);
+      const attack = clamp(num("attack", 15) / 1000, 0.001, 1);
+      const release = clamp(num("release", 180) / 1000, 0.01, 1);
+      const knee = clamp(num("knee", 12), 0, 40);
+      const makeup = clamp(num("makeup", 4), 0, 24);
+      const mix = clamp(num("mix", 100) / 100, 0, 1);
+      compressorSpec = {
+        thresholdDb: threshold,
+        ratio,
+        attackSeconds: attack,
+        releaseSeconds: release,
+        kneeDb: knee,
+        makeupGainDb: makeup,
+        mix,
+      };
+      break;
+    }
+
+    case "gentle-compression": {
+      compressorSpec = {
+        thresholdDb: clamp(num("threshold", -18), -40, 0),
+        ratio: clamp(num("ratio", 2.5), 1, 10),
+        attackSeconds: clamp(num("attack", 30) / 1000, 0.005, 0.5),
+        releaseSeconds: clamp(num("release", 220) / 1000, 0.05, 0.8),
+        kneeDb: 10,
+        makeupGainDb: clamp(num("makeup", 2), 0, 12),
+        mix: 1.0,
+      };
+      break;
+    }
+
+    case "vocal-leveling": {
+      filters.push({ type: "highpass", frequency: 80, q: 0.707 });
+      compressorSpec = {
+        thresholdDb: clamp(num("threshold", -24), -50, 0),
+        ratio: clamp(num("ratio", 4.5), 1.5, 12),
+        attackSeconds: clamp(num("attack", 8) / 1000, 0.001, 0.2),
+        releaseSeconds: clamp(num("release", 140) / 1000, 0.02, 0.6),
+        kneeDb: 6,
+        makeupGainDb: clamp(num("makeup", 5), 0, 16),
+        mix: 1.0,
+      };
+      break;
+    }
+
+    case "music-bus-glue": {
+      compressorSpec = {
+        thresholdDb: clamp(num("threshold", -14), -30, 0),
+        ratio: clamp(num("ratio", 2.0), 1.2, 6),
+        attackSeconds: clamp(num("attack", 25) / 1000, 0.005, 0.2),
+        releaseSeconds: clamp(num("release", 200) / 1000, 0.05, 0.6),
+        kneeDb: 12,
+        makeupGainDb: clamp(num("makeup", 1.5), 0, 8),
+        mix: 1.0,
+      };
+      break;
+    }
+
+    case "vocal-remover": {
+      const modeRaw = values["mode"];
+      const mode = modeRaw === "isolate-center" ? "isolate-center" : "remove-center";
+      centerExtractorSpec = {
+        mode,
+        bassPreserveHz: clamp(num("bass-retention", 120), 40, 300),
+        reductionAmount: clamp(num("reduction", 90) / 100, 0.1, 1),
+      };
+      break;
+    }
+
+    case "bitcrusher": {
+      bitcrusherSpec = {
+        bitDepth: clamp(num("bit-depth", 8), 2, 16),
+        downsampleFactor: clamp(num("downsample", 4), 1, 32),
+        mix: clamp(num("mix", 100) / 100, 0, 1),
+      };
+      break;
+    }
+
+    case "chorus-flanger": {
+      chorusSpec = {
+        rateHz: clamp(num("rate", 1.2), 0.1, 8.0),
+        depthMs: clamp(num("depth", 7), 1, 25),
+        feedback: clamp(num("feedback", 25) / 100, 0, 0.75),
+        mix: clamp(num("mix", 50) / 100, 0, 1),
+      };
+      break;
+    }
+
+    case "dc-offset-remover": {
+      removeDc = bool("remove-dc", true);
+      if (bool("sub-hpf", true)) {
+        filters.push({ type: "highpass", frequency: 20, q: 0.707 });
+      }
+      break;
+    }
+
     // Speed / tuning / trim / reverse utilities need no timbre filters.
     case "slowed":
     case "sped-up":
@@ -531,8 +668,20 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
     echo: echoSpec,
     width,
     pan,
+    compressor: compressorSpec,
+    centerExtractor: centerExtractorSpec,
+    bitcrusher: bitcrusherSpec,
+    chorus: chorusSpec,
+    removeDc,
     mono: presetId === "downmixer",
-    needsStereo: Boolean(pan || width != null || echoSpec?.pingPong || haasSpec != null),
+    needsStereo: Boolean(
+      pan ||
+        width != null ||
+        echoSpec?.pingPong ||
+        haasSpec != null ||
+        centerExtractorSpec != null ||
+        chorusSpec != null
+    ),
     tailSeconds,
   };
 }

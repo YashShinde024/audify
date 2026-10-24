@@ -368,3 +368,67 @@ describe("render signatures", () => {
     expect(getPresetById("does-not-exist")).toBeUndefined();
   });
 });
+
+describe("DSP Plan Resolution for Dynamics and Advanced Tools", () => {
+  it("resolves dynamics compressor with custom and preset parameters", () => {
+    const customComp = plan("compressor", {
+      threshold: -18,
+      ratio: 4,
+      attack: 20, // 20ms -> 0.02s
+      release: 150, // 150ms -> 0.15s
+      makeup: 3,
+      mix: 80,
+    });
+    expect(customComp.compressor).toMatchObject({
+      thresholdDb: -18,
+      ratio: 4,
+      attackSeconds: 0.02,
+      releaseSeconds: 0.15,
+      makeupGainDb: 3,
+      mix: 0.8,
+    });
+
+    const gentle = plan("gentle-compression");
+    expect(gentle.compressor).not.toBeNull();
+    expect(gentle.compressor?.thresholdDb).toBe(-18);
+    expect(gentle.compressor?.ratio).toBe(2.5);
+
+    const busGlue = plan("music-bus-glue");
+    expect(busGlue.compressor).not.toBeNull();
+    expect(busGlue.compressor?.thresholdDb).toBe(-14);
+    expect(busGlue.compressor?.ratio).toBe(2.0);
+  });
+
+  it("resolves vocal remover center extractor with cutoff retention", () => {
+    const vrPlan = plan("vocal-remover", { "bass-retention": 200, reduction: 80 });
+    expect(vrPlan.centerExtractor).toMatchObject({
+      mode: "remove-center",
+      bassPreserveHz: 200,
+      reductionAmount: 0.8,
+    });
+  });
+
+  it("resolves bitcrusher parameters correctly", () => {
+    const bcPlan = plan("bitcrusher", { "bit-depth": 6, downsample: 4, mix: 75 });
+    expect(bcPlan.bitcrusher).toMatchObject({
+      bitDepth: 6,
+      downsampleFactor: 4,
+      mix: 0.75,
+    });
+  });
+
+  it("resolves chorus-flanger modulation correctly", () => {
+    const cfPlan = plan("chorus-flanger", { rate: 2.0, depth: 4.5, feedback: 30, mix: 60 });
+    expect(cfPlan.chorus).toMatchObject({
+      rateHz: 2.0,
+      depthMs: 4.5,
+      feedback: 0.3,
+      mix: 0.6,
+    });
+  });
+
+  it("resolves DC offset removal flag", () => {
+    const dcPlan = plan("dc-offset-remover");
+    expect(dcPlan.removeDc).toBe(true);
+  });
+});

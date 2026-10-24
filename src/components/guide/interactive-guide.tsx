@@ -96,8 +96,21 @@ const PIPELINE_NODES: PipelineNode[] = [
     parameterExamples: ["Cutoff Frequency: 200 Hz – 16 kHz", "Filter Resonance (Q): 0.707 (critically damped)", "Modes: Lowpass, Highpass, Bandpass"],
   },
   {
-    id: "convolver",
+    id: "compressor",
     number: "05",
+    name: "Dynamic Range Compressor",
+    subname: "DynamicsCompressorNode",
+    badge: "Dynamics & Leveling",
+    formula: "y[n] = T + (x[n] - T) / R   (for x[n] > T)",
+    summary:
+      "Controls dynamic variance, levels erratic vocals, and glues full mix buses with adjustable threshold, ratio, attack, release, and makeup gain.",
+    details:
+      "Operates with a soft knee transition to transparently attenuate transients exceeding threshold without audible distortion. Features parallel dry/wet crossfading for modern bus glue.",
+    parameterExamples: ["Threshold: -60 dB to 0 dB", "Ratio: 1:1 to 20:1", "Attack: 1 ms – 200 ms", "Release: 10 ms – 1000 ms", "Makeup: 0 to +24 dB"],
+  },
+  {
+    id: "convolver",
+    number: "06",
     name: "Convolution Reverb",
     subname: "ConvolverNode",
     badge: "Acoustic Impulse",
@@ -110,7 +123,7 @@ const PIPELINE_NODES: PipelineNode[] = [
   },
   {
     id: "spatial",
-    number: "06",
+    number: "07",
     name: "8D Spatial Panner",
     subname: "StereoPanner + LFO",
     badge: "Binaural Motion",
@@ -123,7 +136,7 @@ const PIPELINE_NODES: PipelineNode[] = [
   },
   {
     id: "limiter",
-    number: "07",
+    number: "08",
     name: "Look-Ahead Peak Limiter",
     subname: "Master Headroom Guard",
     badge: "-0.3 dBFS True-Peak",
@@ -1212,10 +1225,16 @@ export function InteractiveAudioGuide() {
         </div>
         <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
           <Link
-            href="/presets"
-            className="rounded-xl border border-line bg-canvas px-5 py-3 text-xs font-semibold text-fg hover:border-violet transition-colors"
+            href="/tools"
+            className="rounded-xl border border-line bg-canvas px-5 py-3 text-xs font-semibold text-fg hover:border-primary transition-colors"
           >
-            Browse 36 Presets
+            Explore Audio Tools
+          </Link>
+          <Link
+            href="/presets"
+            className="rounded-xl border border-line bg-canvas px-5 py-3 text-xs font-semibold text-fg hover:border-primary transition-colors"
+          >
+            Browse Presets
           </Link>
           <Link
             href="/studio"

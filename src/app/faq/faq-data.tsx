@@ -6,6 +6,7 @@ export type FaqCategory =
   | "getting-started"
   | "audio-processing"
   | "presets-effects"
+  | "audio-tools"
   | "formats-exports"
   | "privacy-files"
   | "troubleshooting";
@@ -163,7 +164,91 @@ export const FAQ_DATA: FaqItem[] = [
     ),
   },
 
-  // 4. Formats and exports
+  // 4. Audio tools & utilities
+  {
+    id: "faq-utilities-overview",
+    category: "audio-tools",
+    categoryLabel: "Audio tools & utilities",
+    question: "What audio processing utilities does Audify include beyond creative presets?",
+    answerText:
+      "Audify includes a full suite of professional engineering utilities: Dynamic Compressor with parallel wet/dry blending, Audio Trimmer & Cutter, Multi-Format Audio Converter (WAV, MP3, AIFF), Vocal Remover with Mid/Side center extraction, Stereo to Mono Downmixer, DC Offset Remover, 3-Band Parametric Equalizer, Sub Rumble Cut, Noise Gate, Fade In/Out, Bitcrusher, and BPM Detector.",
+    answerNode: (
+      <p>
+        Audify includes a full suite of professional engineering utilities: <strong>Dynamic Compressor</strong> with parallel wet/dry blending, <strong>Audio Trimmer &amp; Cutter</strong>, <strong>Multi-Format Audio Converter</strong> (WAV, MP3, AIFF), <strong>Vocal Remover</strong> with Mid/Side center extraction, <strong>Stereo to Mono Downmixer</strong>, <strong>DC Offset Remover</strong>, <strong>3-Band Parametric Equalizer</strong>, <strong>Sub Rumble Cut</strong>, <strong>Noise Gate</strong>, <strong>Fade In/Out</strong>, <strong>Bitcrusher</strong>, and <strong>BPM Detector</strong>. Explore all tools in our{" "}
+        <Link href="/tools" className="font-medium text-violet hover:underline">
+          Audio Tools Directory
+        </Link>
+        .
+      </p>
+    ),
+  },
+  {
+    id: "faq-compression-vs-normalization",
+    category: "audio-tools",
+    categoryLabel: "Audio tools & utilities",
+    question: "What is the difference between dynamic compression and peak normalization?",
+    answerText:
+      "Peak normalization applies a single fixed mathematical multiplier across your entire track so the single loudest transient sample reaches a target ceiling (e.g., -0.3 dBFS). It does not alter the relative dynamic range between quiet and loud passages. Dynamic compression, by contrast, dynamically attenuates loud peaks that exceed a threshold based on a configured ratio, attack time, and release time, narrowing the overall dynamic range and allowing makeup gain to increase perceived punch and presence.",
+    answerNode: (
+      <p>
+        <strong>Peak normalization</strong> applies a single fixed mathematical multiplier across your entire track so the single loudest transient sample reaches a target ceiling (e.g., −0.3 dBFS). It does not alter the relative dynamic range between quiet and loud passages. <strong>Dynamic compression</strong>, by contrast, dynamically attenuates loud peaks that exceed a threshold based on a configured ratio, attack time, and release time, narrowing the overall dynamic range and allowing makeup gain to increase perceived punch and presence.
+      </p>
+    ),
+  },
+  {
+    id: "faq-audio-trimmer",
+    category: "audio-tools",
+    categoryLabel: "Audio tools & utilities",
+    question: "How does the Audio Trimmer and Cutter work?",
+    answerText:
+      "The Audio Trimmer allows you to set precise start and end time boundaries with millisecond accuracy. Because slicing operates directly on the decoded 32-bit float PCM sample arrays in memory, trimming is instantaneous and completely free of generational transcoding quality loss.",
+    answerNode: (
+      <p>
+        The Audio Trimmer allows you to set precise start and end time boundaries with millisecond accuracy. Because slicing operates directly on the decoded 32-bit float PCM sample arrays in memory, trimming is instantaneous and completely free of generational transcoding quality loss.
+      </p>
+    ),
+  },
+  {
+    id: "faq-format-conversion",
+    category: "audio-tools",
+    categoryLabel: "Audio tools & utilities",
+    question: "How does Audify convert audio formats without a server?",
+    answerText:
+      "When you choose format conversion, Audify decodes the input container into raw 32-bit floating point audio in browser memory, processes any active DSP filters or gain stages, and directly synthesizes valid bitstreams using Web Audio PCM encoders (for 16-bit, 24-bit, or 32-bit float WAV and big-endian AIFF) or our client-side WebAssembly LAME engine for MP3 at up to 320 kbps CBR.",
+    answerNode: (
+      <p>
+        When you choose format conversion, Audify decodes the input container into raw 32-bit floating point audio in browser memory, processes any active DSP filters or gain stages, and directly synthesizes valid bitstreams using Web Audio PCM encoders (for 16-bit, 24-bit, or 32-bit float WAV and big-endian AIFF) or our client-side LAME engine for MP3 at up to 320 kbps CBR.
+      </p>
+    ),
+  },
+  {
+    id: "faq-vocal-remover",
+    category: "audio-tools",
+    categoryLabel: "Audio tools & utilities",
+    question: "How does the Vocal Remover and Center Extractor work?",
+    answerText:
+      "In modern commercial stereo recordings, lead vocals are typically mixed dead-center with equal amplitude and phase in both left and right channels, whereas instruments like guitars, synthesizers, and reverbs are panned wide. The Vocal Remover creates an acoustic difference signal (L - R) that cancels out the center-panned vocal frequencies. A low-frequency crossover filter preserves the sub-bass and kick drum below your selected cutoff frequency so low-end punch is not lost.",
+    answerNode: (
+      <p>
+        In modern commercial stereo recordings, lead vocals are typically mixed dead-center with equal amplitude and phase in both left and right channels, whereas instruments like guitars, synthesizers, and reverbs are panned wide. The Vocal Remover creates an acoustic difference signal (L − R) that cancels out the center-panned vocal frequencies. A low-frequency crossover filter preserves the sub-bass and kick drum below your selected cutoff frequency so low-end punch is not lost.
+      </p>
+    ),
+  },
+  {
+    id: "faq-dc-offset",
+    category: "audio-tools",
+    categoryLabel: "Audio tools & utilities",
+    question: "What is DC offset and why should I remove it?",
+    answerText:
+      "DC offset is an asymmetrical electrical bias introduced by flawed audio interfaces, budget microphones, or analog circuitry that causes the entire audio waveform to drift above or below the 0.0 V center line. This offset robs valuable dynamic headroom, causes low-frequency 'thump' clicks during edits, and reduces maximum loudness. Audify's DC Offset Remover measures the channel mean displacement and subtracts the bias, recentering the waveform on 0.0 V.",
+    answerNode: (
+      <p>
+        DC offset is an asymmetrical electrical bias introduced by flawed audio interfaces, budget microphones, or analog circuitry that causes the entire audio waveform to drift above or below the 0.0 V center line. This offset robs valuable dynamic headroom, causes low-frequency &quot;thump&quot; clicks during edits, and reduces maximum loudness. Audify&apos;s DC Offset Remover measures the channel mean displacement and subtracts the bias, recentering the waveform on 0.0 V.
+      </p>
+    ),
+  },
+
+  // 5. Formats and exports
   {
     id: "faq-supported-formats",
     category: "formats-exports",

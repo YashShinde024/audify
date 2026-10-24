@@ -659,4 +659,213 @@ export const articleBodiesB: PresetArticleBody[] = [
     ],
     related: ["trimmer-cutter", "volume-changer", "mastering-polish"],
   },
+  {
+    presetId: "chorus-flanger",
+    slug: "chorus-flanger",
+    what:
+      "Stereo Chorus & Flanger creates lush, three-dimensional acoustic motion by splitting audio, passing a copy through a continuously modulated micro-delay line, and recombining it with the dry source. A low-frequency oscillator (LFO) gently sweeps the delay time between 1 and 20 milliseconds, creating microscopic pitch fluctuations and shifting comb-filter notches that mimic multiple musicians playing in unison. With adjustable feedback resonance, the effect transitions from silky 80s chorus shimmer into dramatic, jet-plane flanging sweeps.",
+    sound:
+      "Lush, shimmering, and spacious stereo texture with continuous microscopic comb-filtering movement, warm pitch fluctuation, and wide acoustic depth that elevates sterile sounds into immersive panoramas.",
+    dsp: [
+      "Precision delay line modulated by a sinusoidal Low-Frequency Oscillator (LFO) sweeping between 1 ms and 20 ms.",
+      "Configurable feedback attenuation loop routing delayed audio back to the input to generate resonant comb-filter sweeps.",
+      "Calibrated dry/wet mixing bus preserving punchy transient attack while blending modulated side-information smoothly.",
+      "Look-ahead peak protection ensuring resonant feedback peaks never exceed safe digital output ceilings.",
+    ],
+    tips: [
+      "Use slow LFO rates (0.5 to 1.5 Hz) with moderate depth for classic analog chorus on guitars and electric pianos.",
+      "Increase feedback to 40% or higher and shorten delay depth under 5 ms to produce dramatic jet-engine flanging sweeps.",
+      "Keep wet mix around 40–50% to maintain upfront rhythmic clarity while enveloping the sound in stereo width.",
+      "Combine with Studio Plate Reverb for the signature sprawling dream-pop and synthwave ambient production aesthetic.",
+    ],
+    useCases: [
+      "Electric guitar and bass widening for spacious indie and shoegaze tracks",
+      "Synthesizer pad thickening and 80s vintage analog character",
+      "Vocal doubling and background harmony stereo spreading",
+    ],
+    related: ["stereo-widening", "haas-spatializer", "auto-panner"],
+  },
+  {
+    presetId: "bitcrusher",
+    slug: "bitcrusher",
+    what:
+      "8-Bit Digital Bitcrusher delivers authentic digital degradation by deliberately reducing digital word length and decimating effective sampling rate. By quantizing high-resolution floating-point samples into coarse 2-bit to 16-bit steps and applying sample-and-hold downsampling, it recreates the gritty, crunchy crunch of 1980s 8-bit gaming soundchips, vintage hardware samplers, and telephone audio converters. Unlike analog harmonic saturation, bitcrushing introduces digital quantization distortion and aliasing harmonics that give drums, synths, and basslines unmistakable retro character.",
+    sound:
+      "Crunchy, gritty, and intentionally degraded lo-fi digital texture with biting high-frequency aliasing, aggressive quantization steps, and nostalgic chiptune arcade grit.",
+    dsp: [
+      "Uniform linear quantization reducing PCM word resolution to discrete bit depths between 2 and 16 bits.",
+      "Sample-and-hold decimation holding amplitude values across integer sample intervals to simulate reduced sample clock rates.",
+      "Floating-point zero-crossing alignment preventing severe DC offsets during aggressive bit-depth truncation.",
+      "Parallel dry/crushed blending bus allowing surgical layering of raw acoustic punch beneath crunchy digital artifacts.",
+    ],
+    tips: [
+      "Set bit depth to 8-bit and downsample to 4x for the definitive 1980s arcade gaming and vintage E-mu sampler sound.",
+      "Push bit depth down to 4-bit on drum loops and blend 30% wet for aggressive modern industrial breakbeat textures.",
+      "Apply to digital synthesizers and melodic leads to transform clean sterile waveforms into gritty chiptune leads.",
+      "Follow with Low Mud Cut or Low-Pass filter if high-frequency aliasing noise becomes overly piercing in your mix.",
+    ],
+    useCases: [
+      "Chiptune and video game soundtrack production with authentic retro tone",
+      "Lo-fi hip-hop drum loop crunch and vintage sampler grit",
+      "Aggressive industrial and glitch electro bass sound design",
+    ],
+    related: ["lofi-tape", "am-radio", "telephone-voice"],
+  },
+  {
+    presetId: "gentle-compression",
+    slug: "gentle-compression",
+    what:
+      "Gentle Leveling Compressor provides transparent, musical dynamic control designed to tame volume spikes and lift quiet passages without audible pumping or distortion. Utilizing a gentle 2.5:1 ratio, moderate 30 ms attack, smooth 220 ms release, and a soft 10 dB knee curve, it acts like an automated studio engineer riding the volume fader. Perfect for podcast dialogues, acoustic guitars, and master bus polish, gentle compression brings professional cohesion and consistent perceived volume to any recording without squashing natural dynamics.",
+    sound:
+      "Cohesive, polished, and balanced audio with smooth dynamic transitions, elevated subtle details, and zero audible pumping or transient suppression.",
+    dsp: [
+      "Native Web Audio DynamicsCompressorNode executing mathematically precise dynamic gain reduction with a soft knee transition.",
+      "Calibrated 30 ms attack time letting natural acoustic transients punch through cleanly before gain reduction takes effect.",
+      "Musical 220 ms logarithmic release envelope preventing pumping and breathing artifacts during speech pauses or musical rests.",
+      "Precision linear makeup gain (+2.0 dB) restoring average RMS loudness to commercial listening standards.",
+    ],
+    tips: [
+      "The perfect starting compressor for acoustic instruments, classical tracks, and spoken word recordings.",
+      "Adjust threshold so the gain reduction meter registers between −2 dB and −4 dB on the loudest track peaks.",
+      "If the recording feels sluggish or choked, raise the threshold or increase attack time to preserve upfront punch.",
+      "Combine with Infrasonic Rumble Cut or Low Mud Cut to prevent sub-audible low end from triggering compression prematurely.",
+    ],
+    useCases: [
+      "Podcast dialogue and voiceover volume leveling for consistent mobile listening",
+      "Acoustic guitar and piano dynamic smoothing for balanced accompaniment",
+      "Subtle mix bus compression to glue multitrack recordings together gracefully",
+    ],
+    related: ["vocal-leveling", "music-bus-glue", "podcast-voice"],
+  },
+  {
+    presetId: "vocal-leveling",
+    slug: "vocal-leveling",
+    what:
+      "Vocal Dynamics Leveler is a dedicated speech and vocal processing chain engineered to deliver consistent, up-front vocal presence across wildly fluctuating performance levels. By combining an 80 Hz high-pass rumble filter to eliminate mic handling noise with a fast-acting 4.5:1 compressor (8 ms attack, 140 ms release, +5 dB makeup gain), it catches explosive consonants, tames shouted phrases, and effortlessly lifts whispered words. The result is radio-ready vocal intimacy that cuts through dense musical arrangements and remains crystal-clear on phone speakers and earbuds.",
+    sound:
+      "Upfront, intimate, and consistently intelligible vocal delivery with controlled transient peaks, elevated vocal nuances, and clean, rumble-free low-end clarity.",
+    dsp: [
+      "First-stage high-pass filter at 80 Hz stripping away plosive pops, desk thumps, and mechanical microphone stand rumble.",
+      "High-speed dynamic compression with an 8 ms attack catching fast consonant spikes before digital converters or listeners' ears are fatigued.",
+      "Logarithmic 140 ms release curve tailored specifically to speech phoneme duration and vocal cadence.",
+      "High-headroom makeup gain stage (+5.0 dB) bringing subdued vocal phrases up to commercial broadcast levels.",
+    ],
+    tips: [
+      "Always apply after removing background noise or DC offset so the compressor responds to the actual voice rather than rumble.",
+      "If plosives like 'P' and 'B' still cause sudden dips in volume, engage the Low-End Mud Cut toggle for extra protection.",
+      "Pair with Vocal Air & Presence after compression to give leveled vocals sparkling top-end commercial sheen.",
+      "Leave peak protection enabled in export settings to ensure that post-compression peaks never clip digital outputs.",
+    ],
+    useCases: [
+      "Spoken word podcasts, audiobook narration, and voiceover polishing",
+      "Lead vocal leveling in pop, hip-hop, and rock musical mixes",
+      "Interview and video dialogue consistency across multiple speakers",
+    ],
+    related: ["gentle-compression", "podcast-voice", "vocal-clarity"],
+  },
+  {
+    presetId: "dc-offset-remover",
+    slug: "dc-offset-remover",
+    what:
+      "DC Offset Removal & Calibration restores true waveform symmetry by measuring and subtracting mathematical direct-current bias from audio channels. Cheap audio interfaces, asymmetric analog preamps, and ground loops often introduce a constant positive or negative electrical bias, causing waveforms to oscillate around an off-center axis rather than true digital zero. This defect steals valuable digital headroom, causes harsh pops during editing cuts, and distorts downstream compressors. Audify analyzes each channel independently, recenters the audio, and filters infrasonic air movement below 20 Hz.",
+    sound:
+      "Cleaner, distortion-free audio with restored dynamic headroom, click-free edit points, and zero speaker cone displacement during playback.",
+    dsp: [
+      "Channel-by-channel PCM analysis computing the precise arithmetic mean offset across all audio sample buffers.",
+      "Linear subtractive offset calibration restoring zero-crossing symmetry to positive and negative waveform amplitudes.",
+      "Cascaded 24 dB/octave Butterworth high-pass filter at 20 Hz eliminating sub-audible infrasonic mechanical drift.",
+      "Dynamic range recalculation ensuring peak and RMS measurements reflect pure musical energy rather than static voltage bias.",
+    ],
+    tips: [
+      "Run DC offset removal as the mandatory first step before applying compression, saturation, or peak limiting.",
+      "Look at your waveform: if peaks reach further toward the ceiling than the floor, DC offset is present and stealing headroom.",
+      "Engage the Sub-Sonic 20 Hz filter to prevent turntable rumble or HVAC thumps from wasting amplifier power.",
+      "Always re-export to lossless WAV or 32-bit float to preserve full 24-bit dynamic range without re-compression loss.",
+    ],
+    useCases: [
+      "Pre-mastering audio cleanup and interface calibration",
+      "Vinyl rip restoration and turntable rumble elimination",
+      "Stem preparation before mixing, editing, and pitch manipulation",
+    ],
+    related: ["sub-rumble-cut", "mastering-polish", "volume-changer"],
+  },
+  {
+    presetId: "compressor",
+    slug: "studio-compressor",
+    what:
+      "The Studio Dynamics Compressor provides complete surgical dynamic control with parameters modeled after world-class hardware studio compressors. Control threshold from −60 dB to 0 dB, ratio from gentle 1:1 to limiting 20:1, attack down to 1 millisecond, release up to 1 second, soft knee curvature up to 40 dB, and dedicated makeup gain. Furthermore, Audify integrates a parallel dry/wet blend slider, enabling New York-style parallel compression that crushes audio for explosive thickness while retaining the delicate, uncompressed transients of the original performance.",
+    sound:
+      "Total dynamic control ranging from imperceptible leveling to aggressive punch, sustained decay tails, and explosive parallel dynamic thickness.",
+    dsp: [
+      "Web Audio API DynamicsCompressorNode providing professional logarithmic dynamic gain attenuation.",
+      "Continuous threshold and variable ratio mapping allowing surgical tailoring between gentle leveling and brickwall control.",
+      "Custom soft-knee curvature (0 to 40 dB) preventing sudden gain changes at the threshold boundary.",
+      "Parallel dry/wet crossfade routing blending clean uncompressed punch with heavily compressed sustained energy.",
+      "Integrated look-ahead limiter catching potential overshoots caused by heavy makeup gain boost.",
+    ],
+    tips: [
+      "For punchy drum buses, use a slower attack (20–40 ms) so drum stick hits pass through before compression slams the body.",
+      "For parallel compression, set ratio to 10:1, threshold to −30 dB, and blend the mix slider around 30–40% wet.",
+      "Soft knee settings (10–20 dB) provide a smooth, transparent transition ideal for vocals and mastering buses.",
+      "Check the make-up gain so the compressed audio matches the perceived volume of the dry signal for fair A/B comparison.",
+    ],
+    useCases: [
+      "Drum bus and percussion punch enhancement and sustain extension",
+      "Lead vocal and bass guitar dynamic containment in commercial mixes",
+      "New York parallel compression for rich, modern rock and electronic productions",
+    ],
+    related: ["gentle-compression", "music-bus-glue", "vocal-leveling"],
+  },
+  {
+    presetId: "vocal-remover",
+    slug: "vocal-remover",
+    what:
+      "Vocal Remover & Center Isolator leverages the algebraic properties of Mid/Side stereo processing to isolate or cancel centered elements in a mix. In conventional stereo mixes, lead vocals, kick drums, and bass lines are panned dead-center, meaning their signals are identical in both left and right channels. By calculating the difference channel S = (L - R), centered vocals are cancelled while panned instruments like guitars, synths, and stereo reverbs remain intact. Crucially, Audify incorporates a low-frequency crossover filter that preserves the mono sub-bass and kick foundation, preventing thin, hollow karaoke tracks.",
+    sound:
+      "Karaoke-ready instrumental accompaniment with vocals suppressed while stereo instruments and sub-bass remain full, or soloed center channel acapellas.",
+    dsp: [
+      "High-precision ChannelSplitter separating stereo tracks into discrete Left and Right Float32Array channel buffers.",
+      "Mid/Side matrix subtraction S = (L - R) * 0.7071 canceling identical in-phase centered audio components.",
+      "Low-frequency Butterworth crossover filter routing sub-bass below the configurable cutoff frequency around the cancellation matrix.",
+      "Dual-mode phase reconstruction supporting both Center Vocal Removal (Karaoke) and Center Channel Solo (Acapella / Lead).",
+    ],
+    tips: [
+      "Works best on commercial stereo mixes where vocals are centered and accompaniment is panned across the stereo field.",
+      "Adjust the Bass Retention slider (typically 100–140 Hz) so kick drum and bass guitar punch remain loud and solid.",
+      "Stereo vocal reverbs and stereo backing harmonies will naturally remain audible because they exist in the side channels.",
+      "Switch to Center Channel Solo mode to isolate dialogue or lead vocals from films, interviews, and music recordings.",
+    ],
+    useCases: [
+      "Creating clean karaoke backing tracks and instrumental sing-alongs",
+      "Extracting vocal samples and center dialogue for remixing and production",
+      "Analyzing stereo mix balance and instrument pan positioning in professional tracks",
+    ],
+    related: ["stereo-widening", "downmixer", "equalizer"],
+  },
+  {
+    presetId: "music-bus-glue",
+    slug: "music-bus-glue",
+    what:
+      "Music Bus Glue Compressor is modeled after the revered solid-state VCA master bus compressors that have defined commercial album mastering since the late 1970s. Applying a gentle 2:1 ratio, deliberate 25 ms attack time, and musical 200 ms release curve with 12 dB soft knee, it does not crush the life out of your music; instead, it brings separate instruments together into an interconnected, cohesive master where the rhythm section feels locked and punchy. It turns a collection of disparate tracks into a finished, broadcast-ready record.",
+    sound:
+      "Cohesive, tight, and unified mix with enhanced rhythmic drive, punchy low-end lock, and smooth, professional commercial master polish.",
+    dsp: [
+      "Precision VCA-modeled compression algorithm with program-dependent soft-knee envelope curvature.",
+      "Calibrated 25 ms attack allowing full drum transients and percussive punch to pass before gain reduction engages.",
+      "Tempo-aligned 200 ms release envelope that breathes in sync with mid-tempo musical rhythms without pumping.",
+      "Linear make-up amplification (+1.5 dB) coupled with Audify's look-ahead peak limiter to maximize clean master loudness.",
+    ],
+    tips: [
+      "Apply to full stereo mixdowns, instrumental beats, or complex stem groups to create instant commercial polish.",
+      "Aim for no more than 1.5 dB to 3 dB of gain reduction on the loudest peaks of the chorus for transparent mix glue.",
+      "If the mix feels too dense or lacks punch, raise the threshold slightly to let transients breathe more dynamically.",
+      "Combine with Mastering Polish and Peak Protection for a complete, self-contained mastering chain in Audify.",
+    ],
+    useCases: [
+      "Final stereo mixdown finishing before digital streaming distribution",
+      "Drum group bus cohesion for hip-hop, pop, and rock beatmakers",
+      "Unifying multi-speaker live recordings and studio jam sessions",
+    ],
+    related: ["mastering-polish", "gentle-compression", "studio-compressor"],
+  },
 ];

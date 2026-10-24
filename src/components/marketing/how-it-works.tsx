@@ -23,55 +23,66 @@ const steps: Step[] = [
   {
     num: "01",
     icon: UploadSimple,
-    title: "Upload your audio",
-    tagline: "100% client-side memory decode",
-    body: "Drag in any audio file up to 10 MB. Audify uses browser-native AudioContext to decode your sample directly into client RAM—never transferring data to external servers.",
+    title: "Upload audio",
+    tagline: "Client-side memory decode",
+    body: "Drag in any audio track up to 10 MB. Audify uses browser-native Web Audio to decode samples directly into client RAM—never uploading bytes to external servers.",
     specDetails: [
-      { label: "Limit", value: "10 MB per file" },
+      { label: "Max Size", value: "10 MB per file" },
       { label: "Inputs", value: "WAV, MP3, FLAC, OGG, AAC" },
     ],
   },
   {
     num: "02",
     icon: Faders,
-    title: "Shape with presets & controls",
-    tagline: "Fine-grained parameter DSP",
-    body: "Dial in calibrated presets or manually adjust varispeed pitch, convolution impulse responses, dynamic stereo panning, and low-frequency shelving filters.",
+    title: "Choose preset or tool",
+    tagline: "Creative or utilitarian",
+    body: "Select a creative sound aesthetic (Slowed + Reverb, Nightcore, 8D Audio) or launch a precision utility (Compressor, Vocal Remover, Trimmer, Audio Converter).",
     specDetails: [
-      { label: "Algorithms", value: "Binaural 8D, Varispeed, Reverb" },
-      { label: "Controls", value: "Dry/Wet, Rate, Depth, Low Cut" },
+      { label: "Aesthetics", value: "30+ Curated Presets" },
+      { label: "Utilities", value: "15+ Precision DSP Tools" },
     ],
   },
   {
     num: "03",
-    icon: DownloadSimple,
-    title: "Preview & export the result",
-    tagline: "Peak-protected master render",
-    body: "Audition seamlessly with real-time waveform scrubbing, compare against dry original audio, and export clean files protected by a look-ahead sample-peak limiter.",
+    icon: SlidersHorizontal,
+    title: "Fine-tune controls",
+    tagline: "Transparent parameters",
+    body: "Customize every algorithm with interactive sliders: threshold, compression ratio, EQ bands, reverb room size, stereo width, and fade envelopes.",
     specDetails: [
-      { label: "Protection", value: "Look-Ahead Peak Limiter (−0.3 dBFS)" },
-      { label: "Outputs", value: "WAV (16/24/32-bit), AIFF, MP3" },
+      { label: "Controls", value: "100% Parameter Freedom" },
+      { label: "Engine", value: "32-bit Float Processing" },
+    ],
+  },
+  {
+    num: "04",
+    icon: DownloadSimple,
+    title: "Preview & export",
+    tagline: "Peak-protected render",
+    body: "Audition seamlessly with real-time waveform scrubbing, compare against dry original audio, and export clean masters guarded by our −0.3 dBFS peak limiter.",
+    specDetails: [
+      { label: "Protection", value: "Peak Limiter (−0.3 dBFS)" },
+      { label: "Outputs", value: "WAV, AIFF & MP3" },
     ],
   },
 ];
 
 export function HowItSteps({ className }: { className?: string }) {
   return (
-    <div className={cn("grid gap-6 md:grid-cols-3", className)}>
+    <div className={cn("grid gap-5 sm:grid-cols-2 lg:grid-cols-4", className)}>
       {steps.map((step) => (
         <div
           key={step.num}
-          className="group relative flex flex-col justify-between rounded-2xl border border-line/60 bg-raised/40 p-6 md:p-7 backdrop-blur-sm transition-all duration-300 hover:border-line hover:bg-raised/70"
+          className="group relative flex flex-col justify-between rounded-2xl border border-line/70 bg-surface/70 p-6 md:p-7 backdrop-blur-md transition-all duration-300 hover:border-line-strong hover:bg-surface hover:shadow-md hover:-translate-y-1"
         >
           {/* Subtle top indicator bar */}
-          <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="absolute inset-x-6 top-0 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
           <div>
             <div className="flex items-center justify-between">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-line/80 bg-raised text-primary transition-transform duration-300 group-hover:scale-105">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-raised text-primary transition-all duration-300 group-hover:scale-105 group-hover:border-primary/40 group-hover:shadow-[0_0_12px_rgba(107,0,245,0.2)]">
                 <step.icon aria-hidden="true" size={22} weight="duotone" />
               </span>
-              <span className="font-mono text-xs font-semibold tracking-wider text-faint">
+              <span className="rounded-full border border-line/80 bg-canvas/80 px-2.5 py-0.5 font-mono text-[10px] font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#ff2a5f]">
                 STEP {step.num}
               </span>
             </div>
@@ -80,7 +91,7 @@ export function HowItSteps({ className }: { className?: string }) {
               <span className="text-[11px] font-mono font-medium tracking-wide uppercase text-accent-crimson">
                 {step.tagline}
               </span>
-              <h3 className="mt-1 text-lg font-semibold tracking-tight text-fg">
+              <h3 className="mt-1 text-lg font-semibold tracking-tight text-fg group-hover:text-primary transition-colors">
                 {step.title}
               </h3>
               <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-muted">
@@ -89,12 +100,12 @@ export function HowItSteps({ className }: { className?: string }) {
             </div>
           </div>
 
-          <div className="mt-6 border-t border-line/40 pt-4">
-            <dl className="grid grid-cols-2 gap-2 text-[11px]">
+          <div className="mt-6 border-t border-line/50 pt-4">
+            <dl className="grid grid-cols-2 gap-2 text-[11px] rounded-xl border border-line/50 bg-raised/50 p-2.5">
               {step.specDetails.map((spec) => (
-                <div key={spec.label} className="flex flex-col">
-                  <dt className="text-faint">{spec.label}</dt>
-                  <dd className="font-mono font-medium text-fg truncate">{spec.value}</dd>
+                <div key={spec.label} className="flex flex-col min-w-0">
+                  <dt className="text-faint text-[10px] uppercase font-mono">{spec.label}</dt>
+                  <dd className="font-mono font-semibold text-fg text-[11px] truncate">{spec.value}</dd>
                 </div>
               ))}
             </dl>

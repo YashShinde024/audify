@@ -21,6 +21,7 @@ import {
 } from "@phosphor-icons/react";
 import { presets, getPresetById } from "@/config/presets";
 import { presetArticleRegistry } from "@/config/blog-registry";
+import { getToolSlugForPreset } from "@/config/tools-registry";
 import { PresetIcon } from "@/components/icons/preset-icons";
 import { Button } from "@/components/ui/button";
 import { useEditorStore } from "@/stores/editor-store";
@@ -86,6 +87,7 @@ export const ACOUSTIC_CATEGORIES: AcousticCategory[] = [
       "stereo-widening",
       "haas-spatializer",
       "ping-pong",
+      "chorus-flanger",
     ],
   },
   {
@@ -106,6 +108,9 @@ export const ACOUSTIC_CATEGORIES: AcousticCategory[] = [
       "vocal-clarity",
       "de-harsh",
       "podcast-voice",
+      "gentle-compression",
+      "vocal-leveling",
+      "dc-offset-remover",
     ],
   },
   {
@@ -121,6 +126,7 @@ export const ACOUSTIC_CATEGORIES: AcousticCategory[] = [
       "muffled-room",
       "telephone-voice",
       "reverse",
+      "bitcrusher",
     ],
   },
   {
@@ -135,6 +141,9 @@ export const ACOUSTIC_CATEGORIES: AcousticCategory[] = [
       "bpm-detector",
       "format-converter",
       "mastering-polish",
+      "compressor",
+      "vocal-remover",
+      "music-bus-glue",
     ],
   },
 ];
@@ -372,7 +381,7 @@ export function PresetExplorer() {
                 Active in Studio: {getPresetById(selectedPresetId)?.name}
               </span>
             )}
-            <Button asChild size="sm" variant="outline" className="h-7 text-xs px-2.5">
+            <Button asChild size="sm" className="h-8 rounded-lg btn-gradient-primary text-white text-xs font-semibold px-3.5 shadow-glow-wire hover:opacity-95 cursor-pointer">
               <Link href="/studio">
                 <span>Go to Studio</span>
                 <ArrowRight size={12} />
@@ -385,7 +394,7 @@ export function PresetExplorer() {
       {/* ── Search & Filter Controls Bar ────────────────────────────── */}
       <div className="space-y-4">
         {/* Search and Secondary Filter Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="relative flex-1 max-w-md">
             <MagnifyingGlass
               aria-hidden="true"
@@ -397,14 +406,14 @@ export function PresetExplorer() {
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by preset name, audio effect, or DSP node…"
               aria-label="Search presets by name, effect, or DSP node"
-              className="h-10 w-full rounded-xl border border-line bg-surface pl-9 pr-9 text-xs text-fg placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary font-sans transition-colors"
+              className="h-9.5 w-full rounded-xl border border-line bg-surface pl-9 pr-9 text-xs text-fg placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary font-sans transition-colors"
             />
             {search && (
               <button
                 type="button"
                 onClick={() => setSearch("")}
                 aria-label="Clear search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-fg p-0.5"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-fg p-0.5 cursor-pointer"
               >
                 <X size={14} />
               </button>
@@ -417,10 +426,10 @@ export function PresetExplorer() {
               onClick={() => setOnlyStandards((prev) => !prev)}
               aria-pressed={onlyStandards}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-all cursor-pointer select-none",
+                "h-9.5 inline-flex items-center gap-1.5 rounded-xl border px-3 text-xs font-medium transition-all cursor-pointer select-none",
                 onlyStandards
-                  ? "border-primary bg-primary text-white shadow-xs"
-                  : "border-line bg-surface text-muted hover:text-fg hover:border-line-strong"
+                  ? "btn-gradient-primary text-white shadow-glow-wire font-semibold"
+                  : "border-line bg-surface text-muted hover:text-fg hover:border-line-strong hover:bg-surface"
               )}
             >
               <Sparkle size={13} weight={onlyStandards ? "fill" : "regular"} />
@@ -449,10 +458,10 @@ export function PresetExplorer() {
                 onClick={() => setSelectedCategoryId(cat.id)}
                 aria-pressed={isSelected}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all border cursor-pointer select-none",
+                  "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all border cursor-pointer select-none",
                   isSelected
-                    ? "btn-gradient-primary text-white shadow-xs font-semibold"
-                    : "border-line bg-surface/80 text-muted hover:text-fg hover:border-line-strong"
+                    ? "btn-gradient-primary text-white shadow-glow-wire font-semibold"
+                    : "border-line bg-surface/80 text-muted hover:text-fg hover:border-line-strong hover:bg-surface"
                 )}
               >
                 <span>{cat.label}</span>
@@ -472,7 +481,7 @@ export function PresetExplorer() {
         {/* Category Description Banner */}
         <div className="flex items-center justify-between text-xs text-muted border-b border-line pb-3">
           <p className="italic">{currentCategory.tagline}</p>
-          <Button asChild variant="ghost" size="sm" className="h-6 text-[11px] text-muted hover:text-fg px-2">
+          <Button asChild variant="ghost" size="sm" className="h-7 text-[11px] text-muted hover:text-fg px-2.5">
             <Link href="/effects" className="flex items-center gap-1">
               <Sliders size={12} />
               <span>View DSP parameters</span>
@@ -571,7 +580,7 @@ export function PresetExplorer() {
 
                 {/* Card Footer: Audition, Details, and Action */}
                 <div className="mt-5 pt-3.5 border-t border-line flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     {/* User-initiated Audition Button */}
                     <button
                       type="button"
@@ -582,10 +591,10 @@ export function PresetExplorer() {
                           : `Preview procedural chords for ${preset.name}`
                       }
                       className={cn(
-                        "inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-all cursor-pointer select-none",
+                        "h-8 inline-flex items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-all cursor-pointer select-none active:scale-95 shadow-xs",
                         isAuditioning
-                          ? "border-primary bg-primary text-white shadow-xs"
-                          : "border-line bg-canvas text-muted hover:text-fg hover:border-line-strong"
+                          ? "btn-gradient-primary text-white font-semibold shadow-glow-wire"
+                          : "border-line bg-canvas text-muted hover:text-fg hover:border-line-strong hover:bg-surface"
                       )}
                     >
                       {isAuditioning ? (
@@ -611,23 +620,46 @@ export function PresetExplorer() {
                       type="button"
                       onClick={() => setDetailPresetId(preset.id)}
                       aria-label={`View parameters and DSP details for ${preset.name}`}
-                      className="inline-flex items-center gap-1 text-[11px] font-medium text-muted hover:text-fg px-1.5 py-1 rounded transition-colors"
+                      className="h-8 inline-flex items-center gap-1 rounded-lg border border-line/70 bg-surface/60 hover:bg-raised text-muted hover:text-fg px-2 text-xs font-medium transition-colors cursor-pointer shadow-xs"
                       title="Inspect parameters & DSP nodes"
                     >
-                      <Info size={13} />
+                      <Info size={13} className="text-muted" />
                       <span className="hidden sm:inline">Details</span>
                     </button>
+
+                    {/* Dedicated Tool Link */}
+                    {getToolSlugForPreset(preset.id) && (
+                      <Link
+                        href={`/tools/${getToolSlugForPreset(preset.id)}`}
+                        className="h-8 inline-flex items-center gap-1 rounded-lg border border-primary/25 bg-primary/5 hover:bg-primary/10 text-primary px-2 text-xs font-medium transition-colors cursor-pointer shadow-xs"
+                        title={`Open dedicated ${preset.name} audio tool`}
+                      >
+                        <Sliders size={12} />
+                        <span className="hidden sm:inline">Tool</span>
+                      </Link>
+                    )}
                   </div>
 
-                  {/* Apply / Open-in-Studio Primary Action */}
+                  {/* Apply / Open-in-Studio Primary Action — Every card gets the signature rotating gradient button */}
                   <Button
                     size="sm"
-                    variant={isSelectedInStudio ? "primary" : "outline"}
                     onClick={() => handleApplyPreset(preset.id)}
-                    className="h-7 text-xs px-2.5 shrink-0"
+                    className={cn(
+                      "h-8 rounded-lg btn-gradient-primary text-white text-xs font-semibold px-3 shadow-glow-wire hover:opacity-95 transition-all cursor-pointer shrink-0 group/btn active:scale-95",
+                      isSelectedInStudio && "ring-2 ring-white/60",
+                    )}
                   >
-                    <span>Use in Studio</span>
-                    <ArrowRight size={12} />
+                    {isSelectedInStudio ? (
+                      <>
+                        <CheckCircle size={13} weight="fill" className="text-white shrink-0" />
+                        <span>Active in Studio</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Use in Studio</span>
+                        <ArrowRight size={12} className="transition-transform group-hover/btn:translate-x-0.5 shrink-0" />
+                      </>
+                    )}
                   </Button>
                 </div>
               </article>
@@ -751,12 +783,16 @@ export function PresetExplorer() {
             <BlogGuideDetail presetId={detailPreset.id} />
 
             {/* Modal Actions */}
-            <div className="pt-3 border-t border-line flex items-center justify-between gap-3">
+            <div className="pt-3 border-t border-line flex flex-wrap items-center justify-between gap-3">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => playAudition(detailPreset.id)}
-                className="text-xs"
+                className={cn(
+                  "h-8 rounded-lg text-xs font-medium cursor-pointer shadow-xs",
+                  auditioningId === detailPreset.id &&
+                    "border-primary/40 bg-primary/10 text-primary font-semibold shadow-glow-wire",
+                )}
               >
                 {auditioningId === detailPreset.id ? (
                   <>
@@ -772,7 +808,7 @@ export function PresetExplorer() {
               </Button>
 
               <div className="flex items-center gap-2">
-                <Button asChild variant="outline" size="sm" className="text-xs">
+                <Button asChild variant="outline" size="sm" className="h-8 rounded-lg text-xs font-medium shadow-xs">
                   <Link href={`/effects?preset=${detailPreset.id}`}>
                     <Sliders size={13} />
                     <span>Customize in Effects</span>
@@ -785,7 +821,7 @@ export function PresetExplorer() {
                     setDetailPresetId(null);
                     handleApplyPreset(detailPreset.id);
                   }}
-                  className="text-xs"
+                  className="h-8 rounded-lg btn-gradient-primary text-white text-xs font-semibold px-3.5 shadow-glow-wire hover:opacity-95 cursor-pointer active:scale-95"
                 >
                   <span>Open in Studio</span>
                   <ArrowRight size={13} />

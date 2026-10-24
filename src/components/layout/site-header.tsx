@@ -16,6 +16,7 @@ import {
   EnvelopeSimple,
   Info,
   CaretDown,
+  SlidersHorizontal,
 } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "motion/react";
 import { primaryNav, secondaryNav } from "@/config/navigation";
@@ -25,6 +26,7 @@ import { cn } from "@/lib/utils";
 
 const NAV_ICONS: Record<string, typeof Waveform> = {
   "/studio": Waveform,
+  "/tools": SlidersHorizontal,
   "/presets": Sparkle,
   "/effects": Sliders,
   "/how-it-works": Compass,

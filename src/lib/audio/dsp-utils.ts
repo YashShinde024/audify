@@ -318,3 +318,112 @@ export function float80Bytes(value: number): Uint8Array {
   bytes[9] = lo & 0xff;
   return bytes;
 }
+
+/**
+ * Calculates root-mean-square (RMS) energy across all channels.
+ * Returns linear amplitude (0.0 to 1.0+).
+ */
+export function measureRms(channels: Float32Array[]): number {
+  if (channels.length === 0 || channels[0].length === 0) return 0;
+  let sumSq = 0;
+  let totalSamples = 0;
+  for (const channel of channels) {
+    const len = channel.length;
+    totalSamples += len;
+    for (let i = 0; i < len; i++) {
+      const v = channel[i];
+      sumSq += v * v;
+    }
+  }
+  return totalSamples > 0 ? Math.sqrt(sumSq / totalSamples) : 0;
+}
+
+/**
+ * Measures the maximum absolute DC bias (mean sample value) across all channels.
+ */
+export function measureDcOffset(channels: Float32Array[]): number {
+  if (channels.length === 0 || channels[0].length === 0) return 0;
+  let maxOffset = 0;
+  for (const channel of channels) {
+    let sum = 0;
+    const len = channel.length;
+    for (let i = 0; i < len; i++) {
+      sum += channel[i];
+    }
+    const offset = Math.abs(sum / len);
+    if (offset > maxOffset) maxOffset = offset;
+  }
+  return maxOffset;
+}
+
+/**
+ * Removes DC offset by subtracting the mean sample value from each channel.
+ * Returns the largest absolute offset that was corrected.
+ */
+export function removeDcOffset(channels: Float32Array[]): number {
+  if (channels.length === 0 || channels[0].length === 0) return 0;
+  let maxCorrected = 0;
+  for (const channel of channels) {
+    let sum = 0;
+    const len = channel.length;
+    for (let i = 0; i < len; i++) {
+      sum += channel[i];
+    }
+    const mean = sum / len;
+    const absMean = Math.abs(mean);
+    if (absMean > maxCorrected) maxCorrected = absMean;
+
+    if (absMean > 1e-7) {
+      for (let i = 0; i < len; i++) {
+        channel[i] -= mean;
+      }
+    }
+  }
+  return maxCorrected;
+}
+
+/**
+ * Pure Float32Array bitcrusher and sample-rate decimation.
+ * - bitDepth: discrete word length (2 to 16 bits).
+ * - downsampleFactor: sample-and-hold interval (1 to 64).
+ * - mix: linear wet/dry balance (0 to 1).
+ */
+export function applyBitcrush(
+  channels: Float32Array[],
+  bitDepth = 8,
+  downsampleFactor = 1,
+  mix = 1.0
+): void {
+  if (channels.length === 0 || channels[0].length === 0) return;
+  const clampedDepth = Math.max(2, Math.min(16, Math.round(bitDepth)));
+  const clampedDownsample = Math.max(1, Math.min(64, Math.round(downsampleFactor)));
+  const clampedMix = Math.max(0, Math.min(1, mix));
+
+  if (clampedDepth >= 16 && clampedDownsample === 1) return;
+  if (clampedMix <= 0) return;
+
+  const levels = Math.pow(2, clampedDepth - 1);
+  const invLevels = 1 / levels;
+
+  for (const channel of channels) {
+    const len = channel.length;
+    let heldSample = 0;
+
+    for (let i = 0; i < len; i++) {
+      if (i % clampedDownsample === 0) {
+        const orig = channel[i];
+        // Quantize
+        heldSample = Math.round(orig * levels) * invLevels;
+        // Clamp to [-1, 1]
+        if (heldSample > 1) heldSample = 1;
+        else if (heldSample < -1) heldSample = -1;
+      }
+
+      if (clampedMix >= 0.999) {
+        channel[i] = heldSample;
+      } else {
+        channel[i] = channel[i] * (1 - clampedMix) + heldSample * clampedMix;
+      }
+    }
+  }
+}

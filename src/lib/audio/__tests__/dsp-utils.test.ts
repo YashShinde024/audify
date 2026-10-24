@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  applyBitcrush,
   applyLookaheadLimiter,
   applyPeakNormalize,
   downmixChannels,
   float80Bytes,
+  measureDcOffset,
   measurePeak,
+  measureRms,
+  removeDcOffset,
   resampleChannels,
   sanitizeChannels,
 } from "../dsp-utils";
@@ -236,5 +240,57 @@ describe("float80Bytes", () => {
     expect(float80Bytes(-1).length).toBe(10);
     // First byte top bit is sign; mantissa of 1 gives exponent 16383.
     expect((float80Bytes(-1)[0] & 0x80) !== 0).toBe(true);
+  });
+});
+
+describe("measureRms", () => {
+  it("measures root-mean-square level accurately", () => {
+    // DC offset of 0.5 has RMS of 0.5
+    const ch = new Float32Array([0.5, 0.5, -0.5, -0.5]);
+    expect(measureRms([ch])).toBeCloseTo(0.5, 5);
+  });
+
+  it("returns 0 for silence", () => {
+    expect(measureRms([new Float32Array(10)])).toBe(0);
+    expect(measureRms([])).toBe(0);
+  });
+});
+
+describe("measureDcOffset & removeDcOffset", () => {
+  it("detects and nullifies DC offset across stereo channels", () => {
+    const left = new Float32Array([0.2, 0.4, 0.0, 0.2]); // mean = 0.2
+    const right = new Float32Array([0.1, 0.3, -0.1, 0.1]); // mean = 0.1
+    const channels = [left, right];
+
+    const initialOffset = measureDcOffset(channels);
+    expect(initialOffset).toBeCloseTo(0.2, 4);
+
+    const removed = removeDcOffset(channels);
+    expect(removed).toBeCloseTo(0.2, 4);
+
+    // After calibration, offset should be effectively 0
+    expect(measureDcOffset(channels)).toBeLessThan(1e-6);
+  });
+});
+
+describe("applyBitcrush", () => {
+  it("quantizes continuous samples into stepped levels", () => {
+    const channel = new Float32Array([-0.8, -0.2, 0.2, 0.8]);
+    // 4-bit quantization -> 8 discrete steps (2^(4-1) = 8)
+    applyBitcrush([channel], 4, 1, 1.0);
+
+    for (const sample of channel) {
+      const step = 1 / 8;
+      const quantizedVal = Math.round(sample / step) * step;
+      expect(sample).toBeCloseTo(quantizedVal, 3);
+    }
+  });
+
+  it("decimates sample rate using sample-and-hold", () => {
+    const channel = new Float32Array([0.1, 0.9, 0.5, 0.2]);
+    // factor of 2 means every 2 samples hold the first sample's value
+    applyBitcrush([channel], 16, 2, 1.0);
+    expect(channel[1]).toBeCloseTo(channel[0]);
+    expect(channel[3]).toBeCloseTo(channel[2]);
   });
 });

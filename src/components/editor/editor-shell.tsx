@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { AudioUploader } from "./audio-uploader";
 import { AudioPlayer } from "./audio-player";
 import { SoundSelector } from "./sound-selector";
@@ -28,6 +28,7 @@ import { supportedExtensions, validateAudioFile, fileSizeError } from "@/lib/aud
 
 export function EditorShell() {
   const replaceInputRef = useRef<HTMLInputElement>(null);
+  const [mobileView, setMobileView] = useState<"dsp" | "export">("dsp");
 
   const file = useEditorStore((s) => s.file);
   const duration = useEditorStore((s) => s.duration);
@@ -233,9 +234,9 @@ export function EditorShell() {
 
         {/* STATE C: LOADED-AUDIO WORKSTATION */}
         {file && !isDecoding && (
-          <div className="space-y-6 min-w-0">
-            {/* Active Track Metadata Bar */}
-            <div className="rounded-xl border border-line bg-surface/60 px-4 py-3 text-xs flex flex-wrap items-center justify-between gap-3 shadow-xs min-w-0 overflow-hidden">
+          <div className="space-y-5 min-w-0">
+            {/* Active Track Metadata & Quick Context Bar */}
+            <div className="rounded-xl border border-line bg-surface/80 px-4 py-2.5 text-xs flex flex-wrap items-center justify-between gap-3 shadow-xs min-w-0 overflow-hidden">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
                   <FileAudio size={16} weight="duotone" />
@@ -248,7 +249,7 @@ export function EditorShell() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 font-mono text-[11px] text-muted shrink-0">
+              <div className="flex flex-wrap items-center gap-2.5 font-mono text-[11px] text-muted shrink-0">
                 {file.sampleRate && <span>{(file.sampleRate / 1000).toFixed(1)} kHz</span>}
                 {file.channels && (
                   <>
@@ -262,6 +263,10 @@ export function EditorShell() {
                     <span className="text-primary font-semibold">{file.detectedBpm} BPM</span>
                   </>
                 )}
+                <span aria-hidden="true" className="text-line-strong">·</span>
+                <span className="rounded bg-primary/10 text-primary px-2 py-0.5 font-sans font-medium">
+                  {selectedPreset?.name || "Preset Active"}
+                </span>
               </div>
             </div>
 
@@ -270,15 +275,51 @@ export function EditorShell() {
               <AudioPlayer />
             </div>
 
+            {/* Mobile / Tablet View Switcher (Only visible on screens < 1024px) */}
+            <div className="flex lg:hidden items-center justify-center p-1 rounded-xl bg-deep/60 border border-line">
+              <button
+                type="button"
+                onClick={() => setMobileView("dsp")}
+                className={cn(
+                  "flex-1 py-1.5 px-3 rounded-lg text-xs font-medium transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer",
+                  mobileView === "dsp"
+                    ? "bg-surface text-fg font-semibold shadow-xs"
+                    : "text-muted hover:text-fg",
+                )}
+              >
+                <SlidersHorizontal size={14} className="text-primary" />
+                <span>1. DSP Presets &amp; Sliders</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileView("export")}
+                className={cn(
+                  "flex-1 py-1.5 px-3 rounded-lg text-xs font-medium transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer",
+                  mobileView === "export"
+                    ? "bg-surface text-fg font-semibold shadow-xs"
+                    : "text-muted hover:text-fg",
+                )}
+              >
+                <Cpu size={14} className="text-primary" />
+                <span>2. Mastering &amp; Export</span>
+              </button>
+            </div>
+
             {/* 2. DUAL WORKSTATION DECKS: Presets Sculpting & Mastering Console */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full min-w-0">
-              {/* Presets & Acoustic DSP Rack (Cols 1-7 on desktop) */}
-              <div className="lg:col-span-7 space-y-6 min-w-0 overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start w-full min-w-0">
+              {/* Presets & Acoustic DSP Rack (Cols 1-7 on desktop, visible when mobileView === 'dsp' on mobile) */}
+              <div className={cn(
+                "lg:col-span-7 space-y-5 min-w-0 overflow-hidden",
+                mobileView !== "dsp" && "hidden lg:block",
+              )}>
                 <SoundSelector />
               </div>
 
-              {/* Mastering & Lossless Export Console (Cols 8-12 on desktop) */}
-              <div className="lg:col-span-5 space-y-6 min-w-0 overflow-hidden">
+              {/* Mastering & Lossless Export Console (Cols 8-12 on desktop, visible when mobileView === 'export' on mobile) */}
+              <div className={cn(
+                "lg:col-span-5 space-y-5 min-w-0 overflow-hidden",
+                mobileView !== "export" && "hidden lg:block",
+              )}>
                 <ProcessAndOutput />
               </div>
             </div>

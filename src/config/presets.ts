@@ -220,6 +220,23 @@ export const presets: Preset[] = [
     ],
     defaults: { "delay-ms": 20, mix: 75 },
   },
+  {
+    id: "chorus-flanger",
+    name: "Stereo Chorus & Flanger",
+    kind: "preset",
+    category: "stereo-spatial",
+    description: "Modulated delay line with sinusoidal LFO creates lush, shimmering stereo dimension and subtle comb-filter movement.",
+    supportedOps: ["DelayNode", "StereoPannerLFO", "FeedbackGain"],
+    compatibilityNote: "Best experienced on stereo monitors or headphones.",
+    tags: ["chorus", "flanger", "modulation", "shimmer", "dimension", "stereo"],
+    params: [
+      slider("rate", "Modulation Rate", 0.2, 6.0, 0.1, "Hz", "Speed of the sweeping LFO."),
+      slider("depth", "Delay Depth", 1, 20, 1, "ms", "Modulated delay time window."),
+      slider("feedback", "Feedback Resonance", 0, 70, 1, "%", "Sustains harmonic comb filtering."),
+      slider("mix", "Chorus Mix", 10, 90, 1, "%", "Balance of dry and modulated signal."),
+    ],
+    defaults: { rate: 1.2, depth: 7, feedback: 25, mix: 50 },
+  },
 
   /* ----------------------------------------------------
    * 3. Bass & Equalizer
@@ -609,6 +626,21 @@ export const presets: Preset[] = [
     ],
     defaults: { cutoff: 320, bass: 4, reverb: 32 },
   },
+  {
+    id: "bitcrusher",
+    name: "8-Bit Digital Bitcrusher",
+    kind: "tool",
+    category: "creative",
+    description: "Sample-rate decimation and word-length quantization for authentic vintage sampler, arcade, and chiptune degradation.",
+    supportedOps: ["SampleRateDecimation", "BitQuantization"],
+    tags: ["bitcrusher", "8bit", "chiptune", "lo-fi", "distortion", "retro", "arcade"],
+    params: [
+      slider("bit-depth", "Bit Depth", 2, 16, 1, "bits", "Word-length resolution (8-bit is classic arcade)."),
+      slider("downsample", "Sample Hold Factor", 1, 32, 1, "x", "Decimates effective sample rate."),
+      slider("mix", "Effect Mix", 10, 100, 1, "%", "Dry/crushed balance."),
+    ],
+    defaults: { "bit-depth": 8, downsample: 4, mix: 100 },
+  },
 
   /* ----------------------------------------------------
    * 7. Audio Cleanup
@@ -695,6 +727,54 @@ export const presets: Preset[] = [
     ],
     defaults: { presence: 3, "mud-cut": true, smooth: true },
   },
+  {
+    id: "gentle-compression",
+    name: "Gentle Leveling Compressor",
+    kind: "preset",
+    category: "cleanup",
+    description: "Subtle 2.5:1 dynamic control with a gentle knee that smooths out volume spikes transparently without pumping.",
+    supportedOps: ["DynamicsCompressorNode"],
+    tags: ["compressor", "leveling", "smooth", "dynamic control", "gentle"],
+    params: [
+      slider("threshold", "Threshold", -40, 0, 1, "dB", "Level at which compression begins."),
+      slider("ratio", "Ratio", 1, 10, 0.5, ":1", "Gain reduction slope above threshold."),
+      slider("attack", "Attack Time", 5, 100, 1, "ms", "How quickly compression engages."),
+      slider("release", "Release Time", 50, 600, 10, "ms", "How smoothly gain returns to unity."),
+      slider("makeup", "Make-Up Gain", 0, 12, 0.5, "dB", "Output level compensation."),
+    ],
+    defaults: { threshold: -18, ratio: 2.5, attack: 30, release: 220, makeup: 2 },
+  },
+  {
+    id: "vocal-leveling",
+    name: "Vocal Dynamics Leveler",
+    kind: "preset",
+    category: "cleanup",
+    description: "Fast-reacting vocal dynamics compressor paired with an 80 Hz rumble cut: tames plosives, catches peaks, and elevates quiet phrases.",
+    supportedOps: ["DynamicsCompressorNode", "BiquadHighPass"],
+    tags: ["vocal", "speech", "leveler", "compressor", "podcast", "consistent"],
+    params: [
+      slider("threshold", "Threshold", -50, 0, 1, "dB", "Compression sensitivity threshold."),
+      slider("ratio", "Ratio", 1.5, 12, 0.5, ":1", "Compression strength."),
+      slider("attack", "Fast Attack", 1, 50, 1, "ms", "Fast response to vocal transients."),
+      slider("release", "Release", 20, 400, 10, "ms", "Vocal release time."),
+      slider("makeup", "Make-Up Gain", 0, 16, 0.5, "dB", "Volume boost for compressed vocal."),
+    ],
+    defaults: { threshold: -24, ratio: 4.5, attack: 8, release: 140, makeup: 5 },
+  },
+  {
+    id: "dc-offset-remover",
+    name: "DC Offset Removal & Calibration",
+    kind: "tool",
+    category: "cleanup",
+    description: "Re-centers the audio waveform to true zero-crossing, removing asymmetric DC offset bias and infrasonic rumble to recover headroom.",
+    supportedOps: ["DcOffsetSubtraction", "BiquadHighPass20Hz"],
+    tags: ["dc offset", "calibration", "clean", "headroom", "centering", "mastering"],
+    params: [
+      toggle("remove-dc", "Subtract DC Bias", "Calculates and subtracts mean channel offset."),
+      toggle("sub-hpf", "Sub-Sonic 20 Hz High-Pass", "Removes inaudible sub-bass infrasonic air movement."),
+    ],
+    defaults: { "remove-dc": true, "sub-hpf": true },
+  },
 
   /* ----------------------------------------------------
    * 8. Audio Utilities
@@ -766,6 +846,49 @@ export const presets: Preset[] = [
     ],
     defaults: { speed: 100 },
   },
+  {
+    id: "compressor",
+    name: "Studio Dynamics Compressor",
+    kind: "tool",
+    category: "utilities",
+    description: "Full-featured studio compressor: configurable threshold, ratio, attack, release, knee, makeup gain, and parallel wet/dry blending.",
+    supportedOps: ["DynamicsCompressorNode", "LookAheadLimiter"],
+    tags: ["compressor", "dynamics", "mastering", "sidechain", "punch", "leveler"],
+    params: [
+      slider("threshold", "Threshold", -60, 0, 1, "dB", "Audio level where compression begins."),
+      slider("ratio", "Ratio", 1, 20, 0.5, ":1", "Compression ratio above threshold."),
+      slider("attack", "Attack", 1, 200, 1, "ms", "Time to reach full compression."),
+      slider("release", "Release", 20, 1000, 10, "ms", "Time to release compression."),
+      slider("knee", "Knee Width", 0, 40, 1, "dB", "Soft knee transition range."),
+      slider("makeup", "Make-Up Gain", 0, 24, 0.5, "dB", "Compensates for compressed level."),
+      slider("mix", "Dry / Wet Mix", 0, 100, 1, "%", "Parallel compression balance."),
+    ],
+    defaults: { threshold: -20, ratio: 4, attack: 15, release: 180, knee: 12, makeup: 4, mix: 100 },
+  },
+  {
+    id: "vocal-remover",
+    name: "Vocal Remover & Center Isolator",
+    kind: "tool",
+    category: "utilities",
+    description: "Mid/Side stereo processing isolates or removes centered audio (vocals and lead instruments) while preserving low-end kick and bass via a crossover filter.",
+    supportedOps: ["MidSideSubtraction", "ChannelSplitter", "CrossoverFilter"],
+    compatibilityNote: "Requires a stereo input with centered vocals and stereo instrumentation.",
+    tags: ["vocal remover", "karaoke", "acapella", "center channel", "instrumental", "isolate"],
+    params: [
+      select(
+        "mode",
+        "Processing Mode",
+        [
+          { label: "Vocal Remover (Karaoke Instrumental)", value: "remove-center" },
+          { label: "Center Channel Solo (Acapella / Lead)", value: "isolate-center" },
+        ],
+        "Subtract centered vocals or solo the center channel."
+      ),
+      slider("bass-retention", "Bass Retention Crossover", 40, 300, 10, "Hz", "Preserves kick drum and bass guitar in stereo."),
+      slider("reduction", "Reduction Depth", 10, 100, 1, "%", "Intensity of center cancellation."),
+    ],
+    defaults: { mode: "remove-center", "bass-retention": 120, reduction: 90 },
+  },
 
   /* ----------------------------------------------------
    * 9. Export & Conversion
@@ -797,6 +920,23 @@ export const presets: Preset[] = [
       slider("presence", "Mid Focus", 0, 3, 1, "dB", "Mix glue peaking boost."),
     ],
     defaults: { bass: 2, treble: 2, presence: 1 },
+  },
+  {
+    id: "music-bus-glue",
+    name: "Music Bus Glue Compressor",
+    kind: "preset",
+    category: "export-conversion",
+    description: "Classic VCA-style master bus glue compression (2:1 ratio, moderate attack, smooth release) that unites mixed elements into a cohesive master.",
+    supportedOps: ["DynamicsCompressorNode"],
+    tags: ["glue", "master bus", "bus compressor", "mix glue", "punch", "cohesive"],
+    params: [
+      slider("threshold", "Threshold", -30, 0, 1, "dB", "Bus compression threshold."),
+      slider("ratio", "Ratio", 1.2, 6, 0.2, ":1", "Subtle mix compression ratio."),
+      slider("attack", "Attack Time", 5, 100, 5, "ms", "Lets transient punch pass through before compressing."),
+      slider("release", "Release Time", 50, 500, 10, "ms", "Breathes naturally with musical tempo."),
+      slider("makeup", "Make-Up Gain", 0, 8, 0.5, "dB", "Subtle makeup compensation."),
+    ],
+    defaults: { threshold: -14, ratio: 2.0, attack: 25, release: 200, makeup: 1.5 },
   },
 ];
 

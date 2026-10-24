@@ -37,7 +37,7 @@ export const STANDARD_PRESET_IDS = new Set([
 ]);
 
 export function SoundSelector() {
-  const [activeTab, setActiveTab] = useState<"presets" | "customize">("presets");
+  const [activeTab, setActiveTab] = useState<"presets" | "customize" | "chain">("presets");
   const [onlyStandards, setOnlyStandards] = useState(false);
 
   const selectedPresetId = useEditorStore((s) => s.selectedPresetId);
@@ -91,33 +91,33 @@ export function SoundSelector() {
         <div>
           <div className="flex items-center gap-2">
             <h3 id="sound-selection-heading" className="text-base font-semibold text-fg">
-              Choose Sound or Tool
+              Acoustic DSP Workstation
             </h3>
             {isCustomized && !isProcessing && (
               <span className="rounded bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[10px] font-semibold text-amber-500 uppercase tracking-wide">
-                Custom Parameters
+                Customized
               </span>
             )}
             {isProcessing && (
               <span className="rounded bg-primary/10 border border-primary/25 px-2 py-0.5 text-[10px] font-semibold text-primary uppercase tracking-wide animate-pulse">
-                DSP Render in Progress (Locked)
+                DSP Locked
               </span>
             )}
           </div>
           <p className="text-xs text-muted mt-0.5">
             {isProcessing
               ? "Parameter adjustments are locked while offline DSP rendering completes."
-              : "Select an aesthetic preset, or engage dedicated audio utilities like Equalizer, Trimmer, or 432 Hz tuning."}
+              : "Select a sonic preset, fine-tune sliders, or inspect the Web Audio node graph."}
           </p>
         </div>
 
-        {/* Tab Toggle */}
-        <div className="flex items-center rounded-lg border border-line bg-deep/60 p-1 self-start sm:self-auto">
+        {/* 3-Way Segmented Tab Toggle */}
+        <div className="flex items-center rounded-lg border border-line bg-deep/60 p-1 self-start sm:self-auto shrink-0">
           <button
             type="button"
             onClick={() => setActiveTab("presets")}
             className={cn(
-              "rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer",
               activeTab === "presets"
                 ? "bg-surface text-fg font-semibold shadow-xs"
                 : "text-muted hover:text-fg",
@@ -129,14 +129,28 @@ export function SoundSelector() {
             type="button"
             onClick={() => setActiveTab("customize")}
             className={cn(
-              "rounded-md px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5",
+              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer",
               activeTab === "customize"
                 ? "bg-surface text-fg font-semibold shadow-xs"
                 : "text-muted hover:text-fg",
             )}
           >
             <Faders className="h-3 w-3" />
-            DSP Controls
+            <span>Sliders</span>
+            {isCustomized && <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("chain")}
+            className={cn(
+              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer",
+              activeTab === "chain"
+                ? "bg-surface text-fg font-semibold shadow-xs"
+                : "text-muted hover:text-fg",
+            )}
+          >
+            <Cpu className="h-3 w-3" />
+            <span>Signal Chain</span>
           </button>
         </div>
       </div>
@@ -149,14 +163,14 @@ export function SoundSelector() {
             type="text"
             value={naturalPrompt}
             onChange={(e) => setNaturalPrompt(e.target.value)}
-            placeholder="Describe what you want (e.g. slowed reverb, 432 hz, heavy bass boost, nightcore, 8d audio)"
-            className="h-9.5 w-full rounded-lg border border-line bg-surface pl-9 pr-24 text-xs text-fg placeholder:text-faint focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary font-sans transition-all"
+            placeholder="Search sound or tool (e.g. slowed reverb, 432 hz, heavy bass boost, 8d audio)"
+            className="h-9 w-full rounded-lg border border-line bg-surface pl-9 pr-24 text-xs text-fg placeholder:text-faint focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary font-sans transition-all"
           />
           <button
             type="submit"
             className="absolute right-1.5 inline-flex items-center gap-1 rounded bg-raised border border-line px-2.5 py-1 text-[11px] font-medium text-fg hover:border-primary/40 transition-colors cursor-pointer"
           >
-            Map Tool
+            Map Sound
             <ArrowRight className="h-2.5 w-2.5" />
           </button>
         </div>
@@ -170,16 +184,16 @@ export function SoundSelector() {
       </form>
 
       {/* Active Preset / Tool Ribbon */}
-      <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-lg border border-line bg-raised/50 px-3.5 py-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-lg border border-line bg-raised/50 px-3.5 py-2">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-muted">Active module:</span>
+          <span className="text-xs text-muted">Active:</span>
           <span className="text-xs font-semibold text-fg flex items-center gap-1.5">
             <PresetIcon presetId={selectedPresetId || ""} size={15} className="text-primary" />
             {selectedPreset?.name || "Custom DSP Curve"}
           </span>
 
           <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-surface border border-line text-muted">
-            {selectedPreset?.kind === "tool" ? "Audio Tool" : "Creative Preset"}
+            {selectedPreset?.kind === "tool" ? "Audio Tool" : "Preset"}
           </span>
 
           {isCustomized ? (
@@ -209,7 +223,7 @@ export function SoundSelector() {
               title="Reset parameters to the original preset values"
             >
               <ArrowsClockwise className="h-3 w-3" />
-              Reset to Preset
+              Reset
             </button>
           )}
 
@@ -217,35 +231,33 @@ export function SoundSelector() {
             <button
               type="button"
               onClick={() => setActiveTab("customize")}
-              className="text-xs font-medium text-primary hover:underline flex items-center gap-1 ml-2 cursor-pointer"
+              className="text-xs font-medium text-primary hover:underline flex items-center gap-1 ml-1 cursor-pointer"
             >
-              Adjust sliders
+              Fine-tune
               <ArrowRight className="h-3 w-3" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Tab A: Catalog (Presets & Tools) */}
+      {/* TAB 1: Catalog (Bounded Scrollable Grid) */}
       {activeTab === "presets" && (
-        <div className={cn("space-y-4 transition-opacity duration-200", isProcessing && "pointer-events-none opacity-50")}>
-          {/* Sub-Filters: Standards vs All vs Presets vs Tools */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-line/70 pb-3">
-            <div className="flex flex-wrap items-center gap-2">
+        <div className={cn("space-y-3 transition-opacity duration-200", isProcessing && "pointer-events-none opacity-50")}>
+          {/* Sub-Filters: Standards vs All vs Presets vs Tools & Search */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-line/70 pb-2.5">
+            <div className="flex flex-wrap items-center gap-1.5">
               <button
                 type="button"
-                onClick={() => {
-                  setOnlyStandards(!onlyStandards);
-                }}
+                onClick={() => setOnlyStandards(!onlyStandards)}
                 className={cn(
-                  "px-2.5 py-1 rounded text-xs font-medium transition-all flex items-center gap-1 cursor-pointer",
+                  "px-2 py-0.5 rounded text-xs font-medium transition-all flex items-center gap-1 cursor-pointer",
                   onlyStandards
                     ? "bg-primary text-white font-semibold shadow-glow-wire"
                     : "text-muted hover:text-fg bg-raised border border-line hover:border-primary/40",
                 )}
               >
                 <Sparkle className="w-3 h-3 text-amber-400" weight="fill" />
-                <span>Standard Presets ({STANDARD_PRESET_IDS.size})</span>
+                <span>Top 9</span>
               </button>
 
               <button
@@ -255,13 +267,13 @@ export function SoundSelector() {
                   setActiveKind("all");
                 }}
                 className={cn(
-                  "px-2.5 py-1 rounded text-xs font-medium transition-colors cursor-pointer",
+                  "px-2 py-0.5 rounded text-xs font-medium transition-colors cursor-pointer",
                   !onlyStandards && activeKind === "all"
                     ? "bg-primary text-white font-semibold"
                     : "text-muted hover:text-fg bg-raised border border-line",
                 )}
               >
-                All Modules ({presets.length})
+                All ({presets.length})
               </button>
 
               <button
@@ -271,7 +283,7 @@ export function SoundSelector() {
                   setActiveKind("preset");
                 }}
                 className={cn(
-                  "px-2.5 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer",
+                  "px-2 py-0.5 rounded text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer",
                   !onlyStandards && activeKind === "preset"
                     ? "bg-primary text-white font-semibold"
                     : "text-muted hover:text-fg bg-raised border border-line",
@@ -288,7 +300,7 @@ export function SoundSelector() {
                   setActiveKind("tool");
                 }}
                 className={cn(
-                  "px-2.5 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer",
+                  "px-2 py-0.5 rounded text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer",
                   !onlyStandards && activeKind === "tool"
                     ? "bg-primary text-white font-semibold"
                     : "text-muted hover:text-fg bg-raised border border-line",
@@ -299,25 +311,25 @@ export function SoundSelector() {
               </button>
             </div>
 
-            <div className="relative sm:w-56 shrink-0">
-              <MagnifyingGlass className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
+            <div className="relative sm:w-44 shrink-0">
+              <MagnifyingGlass className="pointer-events-none absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted" />
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Filter tools or tags…"
-                className="h-8 w-full rounded-md border border-line bg-surface pl-8 pr-2.5 text-xs text-fg placeholder:text-faint focus:border-primary focus:outline-none font-sans"
+                placeholder="Filter catalog…"
+                className="h-7 w-full rounded-md border border-line bg-surface pl-7 pr-2 text-xs text-fg placeholder:text-faint focus:border-primary focus:outline-none font-sans"
               />
             </div>
           </div>
 
-          {/* 9 Categories Pills */}
-          <div className="flex flex-wrap gap-1.5">
+          {/* 9 Categories Pills in Horizontal Scroll Rail */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
             <button
               type="button"
               onClick={() => setActiveCategory("all")}
               className={cn(
-                "rounded-md px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer",
+                "rounded-md px-2 py-0.5 text-xs font-medium transition-colors cursor-pointer shrink-0",
                 activeCategory === "all"
                   ? "bg-primary text-white font-semibold shadow-xs"
                   : "bg-surface text-muted hover:text-fg border border-line",
@@ -331,7 +343,7 @@ export function SoundSelector() {
                 type="button"
                 onClick={() => setActiveCategory(c.id)}
                 className={cn(
-                  "rounded-md px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer",
+                  "rounded-md px-2 py-0.5 text-xs font-medium transition-colors cursor-pointer shrink-0",
                   activeCategory === c.id
                     ? "bg-primary text-white font-semibold shadow-xs"
                     : "bg-surface text-muted hover:text-fg border border-line",
@@ -342,90 +354,98 @@ export function SoundSelector() {
             ))}
           </div>
 
-          {/* Preset & Tool Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-2.5 min-w-0">
-            {filteredPresets.map((preset) => {
-              const isSelected = selectedPresetId === preset.id;
+          {/* Bounded Scrollable Preset Grid (Eliminates Infinite Scroll) */}
+          <div className="max-h-[440px] overflow-y-auto pr-1 overscroll-contain scrollbar-thin rounded-xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-2.5 min-w-0">
+              {filteredPresets.map((preset) => {
+                const isSelected = selectedPresetId === preset.id;
 
-              return (
-                <button
-                  key={preset.id}
-                  type="button"
-                  onClick={() => selectPreset(preset.id)}
-                  className={cn(
-                    "flex flex-col justify-between rounded-xl border p-3.5 text-left transition-all cursor-pointer group shadow-xs min-w-0 overflow-hidden",
-                    isSelected
-                      ? "border-primary bg-primary/5 ring-1 ring-primary shadow-glow-wire/20"
-                      : "border-line bg-surface hover:bg-raised hover:border-line-strong",
-                  )}
-                >
-                  <div className="w-full min-w-0">
-                    <div className="flex items-start gap-2.5 min-w-0">
-                      <div
-                        className={cn(
-                          "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors",
-                          isSelected
-                            ? "border-primary/40 bg-primary/10 text-primary"
-                            : "border-line bg-surface text-muted group-hover:text-primary group-hover:border-primary/30",
-                        )}
-                      >
-                        <PresetIcon presetId={preset.id} size={16} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-1.5 min-w-0">
-                          <span className={cn("text-xs font-semibold truncate", isSelected ? "text-primary" : "text-fg")}>
-                            {preset.name}
-                          </span>
-                          {isSelected ? (
-                            <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-xs">
-                              <Check className="h-2.5 w-2.5 stroke-[3]" />
-                            </span>
-                          ) : (
-                            <span className="h-4 w-4 shrink-0 rounded-full border border-line" />
+                return (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    onClick={() => selectPreset(preset.id)}
+                    className={cn(
+                      "flex flex-col justify-between rounded-xl border p-3 text-left transition-all cursor-pointer group shadow-xs min-w-0 overflow-hidden",
+                      isSelected
+                        ? "border-primary bg-primary/5 ring-1 ring-primary shadow-glow-wire/20"
+                        : "border-line bg-surface hover:bg-raised hover:border-line-strong",
+                    )}
+                  >
+                    <div className="w-full min-w-0">
+                      <div className="flex items-start gap-2.5 min-w-0">
+                        <div
+                          className={cn(
+                            "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors",
+                            isSelected
+                              ? "border-primary/40 bg-primary/10 text-primary"
+                              : "border-line bg-surface text-muted group-hover:text-primary group-hover:border-primary/30",
                           )}
+                        >
+                          <PresetIcon presetId={preset.id} size={15} />
                         </div>
-                        <p className="mt-1 text-[11px] leading-relaxed text-muted line-clamp-2 break-words">
-                          {preset.description}
-                        </p>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1.5 min-w-0">
+                            <span className={cn("text-xs font-semibold truncate", isSelected ? "text-primary" : "text-fg")}>
+                              {preset.name}
+                            </span>
+                            {isSelected ? (
+                              <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-xs">
+                                <Check className="h-2.5 w-2.5 stroke-[3]" />
+                              </span>
+                            ) : (
+                              <span className="h-4 w-4 shrink-0 rounded-full border border-line" />
+                            )}
+                          </div>
+                          <p className="mt-0.5 text-[11px] leading-snug text-muted line-clamp-2 break-words">
+                            {preset.description}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Operations & Param summary badges */}
-                  <div className="mt-2.5 pt-2 border-t border-line/60 flex flex-wrap items-center justify-between gap-1 text-[10px] min-w-0">
-                    <div className="flex items-center gap-1 text-faint truncate">
-                      <Cpu className="w-2.5 h-2.5 shrink-0" />
-                      <span className="truncate">{preset.supportedOps[0]}</span>
-                    </div>
+                    {/* Operations & Param summary badges */}
+                    <div className="mt-2 pt-1.5 border-t border-line/60 flex flex-wrap items-center justify-between gap-1 text-[10px] min-w-0">
+                      <div className="flex items-center gap-1 text-faint truncate">
+                        <Cpu className="w-2.5 h-2.5 shrink-0" />
+                        <span className="truncate">{preset.supportedOps[0]}</span>
+                      </div>
 
-                    <div className="flex flex-wrap gap-1 font-mono text-muted overflow-hidden">
-                      {preset.params.slice(0, 2).map((p) => {
-                        const defVal = preset.defaults[p.id];
-                        return (
-                          <span key={p.id} className="bg-raised px-1 py-0.5 rounded border border-line text-[10px] truncate">
-                            {p.id}: {p.kind === "slider" ? `${defVal}${p.unit}` : "on"}
-                          </span>
-                        );
-                      })}
+                      <div className="flex flex-wrap gap-1 font-mono text-muted overflow-hidden">
+                        {preset.params.slice(0, 2).map((p) => {
+                          const defVal = preset.defaults[p.id];
+                          return (
+                            <span key={p.id} className="bg-raised px-1 py-0.5 rounded border border-line text-[10px] truncate">
+                              {p.id}: {p.kind === "slider" ? `${defVal}${p.unit}` : "on"}
+                            </span>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                </button>
-              );
-            })}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Catalog Footer Info */}
+          <div className="flex items-center justify-between text-[11px] text-muted border-t border-line/60 pt-2 px-1">
+            <span>Showing {filteredPresets.length} of {presets.length} modules</span>
+            <span className="font-mono text-faint">Bounded catalog view</span>
           </div>
         </div>
       )}
 
-      {/* Tab B: Customize Active Parameters */}
+      {/* TAB 2: Customize Active Parameters */}
       {activeTab === "customize" && (
         <div className={cn("space-y-4 transition-opacity duration-200", isProcessing && "pointer-events-none opacity-50")}>
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
             <div>
               <span className="text-xs font-medium text-muted">
-                Active DSP Chain: <strong className="text-fg">{selectedPreset?.name || "Custom Shape"}</strong>
+                Active Parameters: <strong className="text-fg">{selectedPreset?.name || "Custom Shape"}</strong>
               </span>
               <p className="text-[11px] text-faint mt-0.5">
-                Every slider updates the OfflineAudioContext DSP graph in real time.
+                Sliders update parameters for offline Web Audio DSP rendering.
               </p>
             </div>
 
@@ -442,33 +462,33 @@ export function SoundSelector() {
 
           {/* Special Custom Controls for Specific Tools */}
           {selectedPresetId === "trimmer-cutter" && decodedAudio && (
-            <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-3">
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-3.5 space-y-2">
               <div className="flex items-center justify-between text-xs font-medium">
                 <span className="flex items-center gap-1.5 text-primary font-semibold">
                   <Scissors className="w-3.5 h-3.5" />
                   Crop Range Selector
                 </span>
-                <span className="font-mono text-fg">
-                  Total File: {formatTime(decodedAudio.duration)}
+                <span className="font-mono text-fg text-[11px]">
+                  Total: {formatTime(decodedAudio.duration)}
                 </span>
               </div>
-              <p className="text-xs text-muted">
-                Specify start and end times to trim. The exported master will only contain the cropped slice.
+              <p className="text-[11px] text-muted">
+                Adjust start and end sliders below. The exported master will only contain the cropped time slice.
               </p>
             </div>
           )}
 
           {selectedPresetId === "pitch-432hz" && (
-            <div className="rounded-xl border border-primary/30 bg-primary/5 p-3.5 text-xs text-muted leading-relaxed">
-              <span className="font-semibold text-primary block mb-1">
-                Concert Pitch (A=440 Hz) → Sacred Pitch (A=432 Hz)
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 text-xs text-muted leading-relaxed">
+              <span className="font-semibold text-primary block mb-0.5">
+                Sacred Harmonic Pitch Transposition
               </span>
-              Applying exact mathematical tuning frequency ratio of <code className="text-primary font-mono font-semibold">432 / 440 = 0.981818</code> (-31.766 cents pitch transposition) preserving clean acoustic harmonic balance.
+              Mathematical frequency ratio of <code className="text-primary font-mono font-semibold">432 / 440 = 0.981818</code> (-31.766 cents pitch transposition) preserving pristine acoustic harmonic resonance.
             </div>
           )}
 
           {/* Preset / Tool Sliders */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {selectedPreset?.params.map((param) => {
               if (param.kind === "slider") {
                 return <ActiveSliderControl key={param.id} param={param} />;
@@ -481,15 +501,116 @@ export function SoundSelector() {
           </div>
 
           {/* Master Sound Sculpting Faders */}
-          <div className="pt-3 border-t border-line space-y-3">
+          <div className="pt-3 border-t border-line space-y-2.5">
             <h4 className="text-xs font-semibold text-fg uppercase tracking-wide flex items-center gap-1.5">
               <SlidersHorizontal className="w-3.5 h-3.5 text-primary" />
               Master Tone Sculpting
             </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <MasterSliderControl id="bass" label="Low-Shelf Bass" min={0} max={15} unit="dB" description="Boosts low frequencies centered at 85 Hz." />
-              <MasterSliderControl id="treble" label="High-Shelf Treble" min={-8} max={10} unit="dB" description="Brightens air or smooths harsh highs." />
-              <MasterSliderControl id="presence" label="Mid-Presence" min={-4} max={8} unit="dB" description="Vocal clarity contour around 2.4 kHz." />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <MasterSliderControl id="bass" label="Low Bass (85 Hz)" min={0} max={15} unit="dB" description="Warm low-end boost." />
+              <MasterSliderControl id="treble" label="High Treble (10 kHz)" min={-8} max={10} unit="dB" description="Air & crisp presence." />
+              <MasterSliderControl id="presence" label="Mid Vocals (2.4 kHz)" min={-4} max={8} unit="dB" description="Speech clarity contour." />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: DSP Signal Chain Architecture */}
+      {activeTab === "chain" && (
+        <div className="space-y-4">
+          <div className="border-b border-line pb-2.5">
+            <h4 className="text-xs font-semibold text-fg flex items-center gap-1.5">
+              <Cpu className="w-3.5 h-3.5 text-primary" />
+              Web Audio DSP Signal Architecture
+            </h4>
+            <p className="text-[11px] text-muted mt-0.5">
+              Real-time visualization of the node graph synthesized during offline rendering.
+            </p>
+          </div>
+
+          <div className="space-y-2 text-xs">
+            {/* Stage 1: PCM Source */}
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-line bg-surface shadow-xs">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary font-mono text-xs font-bold shrink-0">
+                01
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-semibold text-fg block">PCM Buffer Source</span>
+                <span className="text-[11px] text-muted font-mono">
+                  {decodedAudio
+                    ? `${decodedAudio.numberOfChannels}ch · ${(decodedAudio.sampleRate / 1000).toFixed(1)} kHz · ${formatTime(decodedAudio.duration)}`
+                    : "Source audio loaded"}
+                </span>
+              </div>
+              <span className="text-[10px] font-mono uppercase bg-raised px-2 py-0.5 rounded border border-line text-muted">
+                AudioBuffer
+              </span>
+            </div>
+
+            {/* Stage 2: Preset Filter Graph */}
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-primary/30 bg-primary/5 shadow-xs">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-white font-mono text-xs font-bold shrink-0 shadow-xs">
+                02
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-semibold text-primary block">
+                  {selectedPreset?.name || "Acoustic DSP Processor"}
+                </span>
+                <span className="text-[11px] text-muted">
+                  Ops: {selectedPreset?.supportedOps.join(" → ") || "Standard Filters"}
+                </span>
+              </div>
+              <span className="text-[10px] font-mono uppercase bg-surface px-2 py-0.5 rounded border border-primary/30 text-primary font-semibold">
+                DSP Graph
+              </span>
+            </div>
+
+            {/* Stage 3: Master Tone Faders */}
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-line bg-surface shadow-xs">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface border border-line text-fg font-mono text-xs font-bold shrink-0">
+                03
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-semibold text-fg block">Master 3-Band Tone Sculptor</span>
+                <span className="text-[11px] text-muted font-mono">
+                  Low: {Number(effectValues.bass ?? 0) > 0 ? `+${effectValues.bass}` : effectValues.bass ?? 0}dB · Mid: {Number(effectValues.presence ?? 0) > 0 ? `+${effectValues.presence}` : effectValues.presence ?? 0}dB · High: {Number(effectValues.treble ?? 0) > 0 ? `+${effectValues.treble}` : effectValues.treble ?? 0}dB
+                </span>
+              </div>
+              <span className="text-[10px] font-mono uppercase bg-raised px-2 py-0.5 rounded border border-line text-muted">
+                Biquad Tri-Filter
+              </span>
+            </div>
+
+            {/* Stage 4: Pro Lookahead Limiter */}
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-line bg-surface shadow-xs">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500 font-mono text-xs font-bold shrink-0 border border-emerald-500/20">
+                04
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-semibold text-fg block">Mastering Limiter &amp; Normalizer</span>
+                <span className="text-[11px] text-muted font-mono">
+                  Ceiling −0.3 dBFS · Ratio 20:1 · Lookahead 3ms
+                </span>
+              </div>
+              <span className="text-[10px] font-mono uppercase bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold">
+                Safeguard
+              </span>
+            </div>
+
+            {/* Stage 5: Output Destination */}
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-line bg-deep/50 shadow-xs">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface border border-line text-fg font-mono text-xs font-bold shrink-0">
+                05
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-semibold text-fg block">PCM Master Encoder</span>
+                <span className="text-[11px] text-muted">
+                  Lossless WAV (16/24/32-bit Float) / MP3 / AIFF
+                </span>
+              </div>
+              <span className="text-[10px] font-mono uppercase bg-surface px-2 py-0.5 rounded border border-line text-muted">
+                OfflineAudioContext
+              </span>
             </div>
           </div>
         </div>

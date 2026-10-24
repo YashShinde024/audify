@@ -63,18 +63,18 @@ export function TrustAndSpecs({ className }: { className?: string }) {
         {specItems.map((spec) => (
           <div
             key={spec.title}
-            className="group relative flex flex-col justify-between rounded-xl border border-line/60 bg-raised/30 p-5 transition-all duration-300 hover:border-line hover:bg-raised/60"
+            className="group relative flex flex-col justify-between rounded-2xl border border-line/70 bg-surface/70 p-5.5 transition-all duration-300 hover:border-line-strong hover:bg-surface hover:shadow-md hover:-translate-y-0.5"
           >
             <div>
-              <div className="flex items-center justify-between">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line/70 bg-raised text-primary transition-colors group-hover:text-accent-crimson">
+              <div className="flex items-center justify-between gap-2">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-line bg-raised text-primary transition-all group-hover:border-primary/40 group-hover:text-accent-crimson group-hover:shadow-[0_0_10px_rgba(255,42,95,0.2)]">
                   <spec.icon aria-hidden="true" size={18} weight="duotone" />
                 </span>
-                <span className="font-mono text-[11px] font-semibold text-accent-crimson">
+                <span className="inline-flex items-center rounded-md border border-line/70 bg-raised/70 px-2 py-0.5 font-mono text-[11px] font-semibold text-accent-crimson">
                   {spec.value}
                 </span>
               </div>
-              <h3 className="mt-3.5 text-sm font-semibold text-fg tracking-tight">
+              <h3 className="mt-3.5 text-sm font-semibold text-fg tracking-tight group-hover:text-primary transition-colors">
                 {spec.title}
               </h3>
               <p className="mt-1.5 text-xs leading-relaxed text-muted">
@@ -85,16 +85,16 @@ export function TrustAndSpecs({ className }: { className?: string }) {
         ))}
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between rounded-xl border border-line/60 bg-card/40 px-6 py-4 gap-4 text-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between rounded-2xl border border-line/70 bg-surface/80 px-6 py-4.5 gap-4 text-xs backdrop-blur-md shadow-xs">
         <p className="text-muted text-center sm:text-left">
           Have deeper technical questions about our DSP pipeline, sinc resampling, or stereo algorithms?
         </p>
         <Link
-          href="/docs"
-          className="inline-flex items-center gap-1.5 font-medium text-primary hover:text-accent-crimson transition-colors whitespace-nowrap"
+          href="/how-it-works"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong bg-surface hover:bg-raised px-3.5 py-1.5 font-medium text-fg hover:text-primary hover:border-primary/40 transition-all shadow-xs whitespace-nowrap"
         >
-          <span>Read technical documentation</span>
-          <ArrowRight size={14} aria-hidden="true" />
+          <span>Read Audio Guide &amp; DSP pipeline</span>
+          <ArrowRight size={13} aria-hidden="true" />
         </Link>
       </div>
     </div>

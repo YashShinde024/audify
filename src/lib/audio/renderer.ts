@@ -18,6 +18,10 @@ import {
   resolveProcessing,
 } from "./dsp-plan";
 import type {
+  BitcrusherSpec,
+  CenterExtractorSpec,
+  ChorusSpec,
+  CompressorSpec,
   EchoSpec,
   FilterSpec,
   HaasSpec,
@@ -25,9 +29,11 @@ import type {
   ReverbSpec,
 } from "./dsp-plan";
 import {
+  applyBitcrush,
   applyLookaheadLimiter,
   applyPeakNormalize,
   downmixChannels,
+  removeDcOffset,
   resampleChannels,
   sanitizeChannels,
 } from "./dsp-utils";
@@ -446,6 +452,181 @@ export function buildHaasBranch(
 }
 
 /**
+ * Dynamics Compressor: threshold, knee, ratio, attack, release + makeup gain + dry/wet mix.
+ */
+export function buildCompressorBranch(
+  ctx: BaseAudioContext,
+  input: AudioNode,
+  spec: CompressorSpec
+): AudioNode {
+  const compressor = ctx.createDynamicsCompressor();
+  compressor.threshold.value = clampNumber(spec.thresholdDb, -100, 0);
+  compressor.knee.value = clampNumber(spec.kneeDb, 0, 40);
+  compressor.ratio.value = clampNumber(spec.ratio, 1, 20);
+  compressor.attack.value = clampNumber(spec.attackSeconds, 0.001, 1);
+  compressor.release.value = clampNumber(spec.releaseSeconds, 0.01, 1);
+
+  const makeup = ctx.createGain();
+  makeup.gain.value = Math.pow(10, clampNumber(spec.makeupGainDb, 0, 24) / 20);
+  compressor.connect(makeup);
+
+  const mix = clampNumber(spec.mix, 0, 1);
+  if (mix >= 0.999) {
+    input.connect(compressor);
+    return makeup;
+  }
+
+  // Parallel compression: dry/wet crossfade
+  const dryGain = ctx.createGain();
+  dryGain.gain.value = 1 - mix;
+  const wetGain = ctx.createGain();
+  wetGain.gain.value = mix;
+
+  const output = ctx.createGain();
+  input.connect(dryGain);
+  dryGain.connect(output);
+
+  input.connect(compressor);
+  makeup.connect(wetGain);
+  wetGain.connect(output);
+
+  return output;
+}
+
+/**
+ * Center Channel Extractor / Vocal Remover using Mid/Side matrix subtraction
+ * with a sub-bass retention crossover filter to keep kick and sub-bass intact.
+ */
+export function buildCenterExtractorBranch(
+  ctx: BaseAudioContext,
+  input: AudioNode,
+  spec: CenterExtractorSpec
+): AudioNode {
+  const splitter = ctx.createChannelSplitter(2);
+  const merger = ctx.createChannelMerger(2);
+  input.connect(splitter);
+
+  if (spec.mode === "remove-center") {
+    // Vocal Remover (Karaoke): Side = (L - R) * 0.7071
+    // Filter low frequencies to retain mono bass and kick foundation
+    const crossoverFreq = clampNumber(spec.bassPreserveHz, 40, 300);
+    const reduction = clampNumber(spec.reductionAmount, 0, 1);
+
+    const leftLowPass = ctx.createBiquadFilter();
+    leftLowPass.type = "lowpass";
+    leftLowPass.frequency.value = crossoverFreq;
+    leftLowPass.Q.value = 0.707;
+
+    const rightLowPass = ctx.createBiquadFilter();
+    rightLowPass.type = "lowpass";
+    rightLowPass.frequency.value = crossoverFreq;
+    rightLowPass.Q.value = 0.707;
+
+    splitter.connect(leftLowPass, 0);
+    splitter.connect(rightLowPass, 1);
+
+    // Side channel extraction: L * 0.7071 - R * 0.7071
+    const sideGainL = ctx.createGain();
+    sideGainL.gain.value = 0.7071 * reduction;
+    const sideGainR = ctx.createGain();
+    sideGainR.gain.value = -0.7071 * reduction;
+
+    splitter.connect(sideGainL, 0);
+    splitter.connect(sideGainR, 1);
+
+    const sideBus = ctx.createGain();
+    sideGainL.connect(sideBus);
+    sideGainR.connect(sideBus);
+
+    // Invert side for right channel to preserve stereo separation:
+    // Left = Side + LeftLowPass
+    // Right = -Side + RightLowPass
+    const sideToLeft = ctx.createGain();
+    sideToLeft.gain.value = 1.0;
+    const sideToRight = ctx.createGain();
+    sideToRight.gain.value = -1.0;
+
+    sideBus.connect(sideToLeft);
+    sideBus.connect(sideToRight);
+
+    sideToLeft.connect(merger, 0, 0);
+    leftLowPass.connect(merger, 0, 0);
+
+    sideToRight.connect(merger, 0, 1);
+    rightLowPass.connect(merger, 0, 1);
+
+    return merger;
+  } else {
+    // Center Isolation (Lead / Acapella Focus): Mid = (L + R) * 0.5
+    const midL = ctx.createGain();
+    midL.gain.value = 0.5;
+    const midR = ctx.createGain();
+    midR.gain.value = 0.5;
+
+    splitter.connect(midL, 0);
+    splitter.connect(midR, 1);
+
+    const midBus = ctx.createGain();
+    midL.connect(midBus);
+    midR.connect(midBus);
+
+    midBus.connect(merger, 0, 0);
+    midBus.connect(merger, 0, 1);
+
+    return merger;
+  }
+}
+
+/**
+ * Modulated Delay Line (Chorus / Flanger) with variable LFO depth and feedback.
+ */
+export function buildChorusBranch(
+  ctx: BaseAudioContext,
+  input: AudioNode,
+  spec: ChorusSpec
+): AudioNode {
+  const delay = ctx.createDelay(0.05);
+  const baseDelay = clampNumber(spec.depthMs / 1000, 0.002, 0.025);
+  delay.delayTime.value = baseDelay;
+
+  // LFO modulation
+  const lfo = ctx.createOscillator();
+  lfo.type = "sine";
+  lfo.frequency.value = clampNumber(spec.rateHz, 0.1, 8.0);
+
+  const lfoDepth = ctx.createGain();
+  lfoDepth.gain.value = baseDelay * 0.45;
+  lfo.connect(lfoDepth);
+  lfoDepth.connect(delay.delayTime);
+  lfo.start(0);
+
+  // Feedback loop
+  if (spec.feedback > 0.001) {
+    const fbGain = ctx.createGain();
+    fbGain.gain.value = clampNumber(spec.feedback, 0, 0.75);
+    delay.connect(fbGain);
+    fbGain.connect(delay);
+  }
+
+  // Dry/wet blend
+  const mix = clampNumber(spec.mix, 0, 1);
+  const dryGain = ctx.createGain();
+  dryGain.gain.value = 1 - mix * 0.5;
+  const wetGain = ctx.createGain();
+  wetGain.gain.value = mix;
+
+  const output = ctx.createGain();
+  input.connect(dryGain);
+  dryGain.connect(output);
+
+  input.connect(delay);
+  delay.connect(wetGain);
+  wetGain.connect(output);
+
+  return output;
+}
+
+/**
  * Renders an AudioBuffer through the resolved DSP plan and encodes it using the
  * requested export configuration.
  */
@@ -541,6 +722,10 @@ export async function renderProcessedAudio(
     node = shaper;
   }
 
+  if (plan.compressor) {
+    node = buildCompressorBranch(offline, node, plan.compressor);
+  }
+
   if (Math.abs(plan.outputGainDb) > 0.001) {
     const gain = offline.createGain();
     gain.gain.value = Math.pow(10, plan.outputGainDb / 20);
@@ -569,6 +754,12 @@ export async function renderProcessedAudio(
   }
 
   let finalNode: AudioNode = bus;
+  if (plan.chorus) {
+    finalNode = buildChorusBranch(offline, finalNode, plan.chorus);
+  }
+  if (plan.centerExtractor && graphChannels === 2 && inputBuffer.numberOfChannels > 1) {
+    finalNode = buildCenterExtractorBranch(offline, finalNode, plan.centerExtractor);
+  }
   // Widening a mono source is a pass-through: there is no side signal.
   if (plan.width != null && graphChannels === 2 && inputBuffer.numberOfChannels > 1) {
     finalNode = buildWidthBranch(offline, finalNode, plan.width);
@@ -610,6 +801,23 @@ export async function renderProcessedAudio(
 
   report(0.62, "Checking for invalid samples…");
   sanitizeChannels(channelData);
+
+  if (plan.removeDc) {
+    report(0.64, "Removing DC offset…");
+    removeDcOffset(channelData);
+    assertActive();
+  }
+
+  if (plan.bitcrusher) {
+    report(0.66, "Applying digital bitcrush & decimation…");
+    applyBitcrush(
+      channelData,
+      plan.bitcrusher.bitDepth,
+      plan.bitcrusher.downsampleFactor,
+      plan.bitcrusher.mix
+    );
+    assertActive();
+  }
 
   const downmixed =
     plan.mono || config.channels === "mono" ? downmixChannels(channelData) : channelData;
