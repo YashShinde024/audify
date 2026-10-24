@@ -238,9 +238,9 @@ export function SoundSelector() {
                   setOnlyStandards(!onlyStandards);
                 }}
                 className={cn(
-                  "px-2.5 py-1 rounded text-xs font-medium transition-all flex items-center gap-1 cursor-pointer",
+                  "btn-preset-filter px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1 cursor-pointer",
                   onlyStandards
-                    ? "bg-primary text-white font-semibold shadow-glow-wire"
+                    ? "is-selected bg-primary text-white font-semibold shadow-xs"
                     : "text-muted hover:text-fg bg-raised border border-line hover:border-primary/40",
                 )}
               >
@@ -255,9 +255,9 @@ export function SoundSelector() {
                   setActiveKind("all");
                 }}
                 className={cn(
-                  "px-2.5 py-1 rounded text-xs font-medium transition-colors cursor-pointer",
+                  "btn-preset-filter px-2.5 py-1 rounded text-xs font-medium cursor-pointer",
                   !onlyStandards && activeKind === "all"
-                    ? "bg-primary text-white font-semibold"
+                    ? "is-selected bg-primary text-white font-semibold"
                     : "text-muted hover:text-fg bg-raised border border-line",
                 )}
               >
@@ -271,9 +271,9 @@ export function SoundSelector() {
                   setActiveKind("preset");
                 }}
                 className={cn(
-                  "px-2.5 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer",
+                  "btn-preset-filter px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1 cursor-pointer",
                   !onlyStandards && activeKind === "preset"
-                    ? "bg-primary text-white font-semibold"
+                    ? "is-selected bg-primary text-white font-semibold"
                     : "text-muted hover:text-fg bg-raised border border-line",
                 )}
               >
@@ -288,9 +288,9 @@ export function SoundSelector() {
                   setActiveKind("tool");
                 }}
                 className={cn(
-                  "px-2.5 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer",
+                  "btn-preset-filter px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1 cursor-pointer",
                   !onlyStandards && activeKind === "tool"
-                    ? "bg-primary text-white font-semibold"
+                    ? "is-selected bg-primary text-white font-semibold"
                     : "text-muted hover:text-fg bg-raised border border-line",
                 )}
               >
@@ -317,9 +317,9 @@ export function SoundSelector() {
               type="button"
               onClick={() => setActiveCategory("all")}
               className={cn(
-                "rounded-md px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer",
+                "btn-preset-filter rounded-md px-2.5 py-1 text-xs font-medium cursor-pointer",
                 activeCategory === "all"
-                  ? "bg-primary text-white font-semibold shadow-xs"
+                  ? "is-selected bg-primary text-white font-semibold shadow-xs"
                   : "bg-surface text-muted hover:text-fg border border-line",
               )}
             >
@@ -331,9 +331,9 @@ export function SoundSelector() {
                 type="button"
                 onClick={() => setActiveCategory(c.id)}
                 className={cn(
-                  "rounded-md px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer",
+                  "btn-preset-filter rounded-md px-2.5 py-1 text-xs font-medium cursor-pointer",
                   activeCategory === c.id
-                    ? "bg-primary text-white font-semibold shadow-xs"
+                    ? "is-selected bg-primary text-white font-semibold shadow-xs"
                     : "bg-surface text-muted hover:text-fg border border-line",
                 )}
               >
@@ -353,9 +353,9 @@ export function SoundSelector() {
                   type="button"
                   onClick={() => selectPreset(preset.id)}
                   className={cn(
-                    "flex flex-col justify-between rounded-xl border p-3.5 text-left transition-all cursor-pointer group shadow-xs min-w-0 overflow-hidden",
+                    "btn-preset-filter flex flex-col justify-between rounded-xl border p-3.5 text-left cursor-pointer group shadow-xs min-w-0 overflow-hidden",
                     isSelected
-                      ? "border-primary bg-primary/5 ring-1 ring-primary shadow-glow-wire/20"
+                      ? "is-selected border-primary bg-primary/5 ring-1 ring-primary"
                       : "border-line bg-surface hover:bg-raised hover:border-line-strong",
                   )}
                 >

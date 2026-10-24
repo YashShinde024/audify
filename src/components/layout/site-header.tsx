@@ -238,8 +238,7 @@ export function SiteHeader() {
               href="/studio"
               className={cn(
                 "group relative inline-flex items-center gap-1.5 rounded-full px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold text-white",
-                "bg-wire-gradient shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(230,0,38,0.2)] hover:brightness-110",
-                "hover:scale-[1.02] active:scale-[0.98] transition-all duration-150"
+                "btn-gradient-primary cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
               )}
             >
               <span className="hidden xs:inline">Open Studio</span>
@@ -247,7 +246,7 @@ export function SiteHeader() {
               <ArrowRight
                 size={13}
                 weight="bold"
-                className="transition-transform group-hover:translate-x-0.5"
+                className="btn-arrow"
               />
             </Link>
 
@@ -257,7 +256,7 @@ export function SiteHeader() {
               onClick={() => setDrawerOpen((prev) => !prev)}
               aria-expanded={drawerOpen}
               aria-label={drawerOpen ? "Close menu" : "Open navigation menu"}
-              className="flex md:hidden h-9 w-9 items-center justify-center rounded-full border border-line bg-surface text-muted hover:text-fg hover:border-primary/40 transition-colors cursor-pointer"
+              className="btn-icon flex md:hidden h-9 w-9 items-center justify-center rounded-full border border-line bg-surface text-muted hover:text-fg hover:border-primary/40 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               {drawerOpen ? <X size={18} weight="bold" /> : <List size={18} weight="bold" />}
             </button>

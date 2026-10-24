@@ -158,7 +158,7 @@ export default function HomePage() {
             <Button
               asChild
               size="lg"
-              className="h-12 px-7 rounded-xl bg-gradient-to-r from-[#6b00f5] via-[#8518f8] via-45% to-[#e60067] text-white font-medium shadow-md hover:shadow-glow-crimson transition-all duration-200"
+              className="h-12 px-7 rounded-xl font-medium"
             >
               <Link href="/studio">
                 Open Audify Studio
@@ -169,7 +169,7 @@ export default function HomePage() {
               asChild
               size="lg"
               variant="outline"
-              className="h-12 px-6 rounded-xl border-line/80 hover:border-line hover:bg-raised/70 text-fg font-medium transition-colors"
+              className="h-12 px-6 rounded-xl font-medium"
             >
               <Link href="#presets">Explore Presets</Link>
             </Button>

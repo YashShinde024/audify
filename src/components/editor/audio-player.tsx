@@ -264,7 +264,7 @@ export function AudioPlayer() {
             size="icon"
             onClick={() => togglePlay()}
             aria-label={isPlaying ? "Pause audio playback" : "Play audio playback"}
-            className="h-10 w-10 rounded-full shadow-glow-wire cursor-pointer transition-transform active:scale-95"
+            className="h-10 w-10 rounded-full cursor-pointer"
           >
             {isPlaying ? (
               <Pause size={17} weight="fill" />
@@ -315,7 +315,7 @@ export function AudioPlayer() {
           <button
             type="button"
             onClick={() => setVolume(volume === 0 ? 85 : 0)}
-            className="text-muted hover:text-fg transition-colors cursor-pointer"
+            className="btn-icon p-1 rounded-md text-muted hover:text-fg cursor-pointer focus-visible:outline-2 focus-visible:outline-primary"
             aria-label={volume === 0 ? "Unmute" : "Mute"}
           >
             {volume === 0 ? (
