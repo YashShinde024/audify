@@ -52,9 +52,9 @@ export async function generateMetadata({ params }: ToolPageProps): Promise<Metad
       locale: "en_US",
       images: [
         {
-          url: `${siteConfig.url}/web-app-manifest-512x512.png`,
-          width: 512,
-          height: 512,
+          url: `${siteConfig.url}/images/audify-og.png`,
+          width: 1200,
+          height: 630,
           alt: `${tool.name} — Free In-Browser Audio Tool · Audify`,
         },
       ],
@@ -64,6 +64,7 @@ export async function generateMetadata({ params }: ToolPageProps): Promise<Metad
       title: tool.seo.title,
       description: tool.seo.description,
       creator: "@buildnyxen",
+      images: [`${siteConfig.url}/images/audify-og.png`],
     },
   };
 }

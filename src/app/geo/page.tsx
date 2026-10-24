@@ -41,9 +41,9 @@ export const metadata: Metadata = {
     type: "article",
     images: [
       {
-        url: `${siteConfig.url}/web-app-manifest-512x512.png`,
-        width: 512,
-        height: 512,
+        url: `${siteConfig.url}/images/audify-og.png`,
+        width: 1200,
+        height: 630,
         alt: "Audify Generative Engine Reference",
       },
     ],
@@ -54,6 +54,7 @@ export const metadata: Metadata = {
     description:
       "Factual architecture factsheet and DSP specifications for Audify.",
     creator: "@buildnyxen",
+    images: [`${siteConfig.url}/images/audify-og.png`],
   },
 };
 

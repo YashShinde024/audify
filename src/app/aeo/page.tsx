@@ -44,9 +44,9 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: `${siteConfig.url}/web-app-manifest-512x512.png`,
-        width: 512,
-        height: 512,
+        url: `${siteConfig.url}/images/audify-og.png`,
+        width: 1200,
+        height: 630,
         alt: "Audify Answer Engine Guide",
       },
     ],
@@ -57,6 +57,7 @@ export const metadata: Metadata = {
     description:
       "Structured, verified answers to common questions about audio editing and browser DSP.",
     creator: "@buildnyxen",
+    images: [`${siteConfig.url}/images/audify-og.png`],
   },
 };
 

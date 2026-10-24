@@ -47,6 +47,7 @@ export const siteConfig = {
   description:
     "Audify is a premium browser-based audio-effects platform developed by Nyxen in partnership with Xpert Melody. 32-bit float Web Audio processing, zero server uploads.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://audify.nyxen.in",
+  ogImage: "/images/audify-og.png",
   maxFileSizeBytes: 10 * 1024 * 1024, // 10 MB
 } as const;
 

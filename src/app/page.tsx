@@ -28,10 +28,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: `${siteConfig.url}/web-app-manifest-512x512.png`,
-        width: 512,
-        height: 512,
-        alt: "Audify — Sound, reimagined",
+        url: `${siteConfig.url}/images/audify-og.png`,
+        width: 1200,
+        height: 630,
+        alt: "Audify — Sound, reimagined by Nyxen × Xpert Melody",
       },
     ],
   },
@@ -41,6 +41,7 @@ export const metadata: Metadata = {
     description:
       "Comprehensive browser-native audio workstation by Nyxen × Xpert Melody. 100% in-browser processing.",
     creator: "@buildnyxen",
+    images: [`${siteConfig.url}/images/audify-og.png`],
   },
 };
 
