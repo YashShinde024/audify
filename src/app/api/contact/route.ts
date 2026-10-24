@@ -246,7 +246,7 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           from: process.env.CONTACT_FROM_EMAIL || "Audify Contact <onboarding@resend.dev>",
-          to: process.env.CONTACT_TO_EMAIL || "team@nyxen.in",
+          to: process.env.CONTACT_TO_EMAIL || "hello@nyxen.in",
           subject: `[Audify] ${topic}: ${name}`,
           text: `Name: ${name}\nEmail: ${email}\nTopic: ${topic}\nAudio Format: ${audioFormat || "N/A"}\n\n${message}`,
         }),

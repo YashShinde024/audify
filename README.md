@@ -166,7 +166,7 @@ NEXT_PUBLIC_SITE_URL=https://audify.nyxen.in
 
 # Optional Contact Delivery Provider (Resend API)
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxx
-CONTACT_TO_EMAIL=team@nyxen.in
+CONTACT_TO_EMAIL=hello@nyxen.in
 CONTACT_FROM_EMAIL=Audify Contact <onboarding@resend.dev>
 
 # Optional Webhook Destination for Contact Submissions

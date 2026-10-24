@@ -12,7 +12,7 @@ Every variable listed below has been verified against the current codebase in `s
 | :--- | :---: | :--- | :--- | :--- | :--- |
 | `NEXT_PUBLIC_SITE_URL` | No | `https://audify.nyxen.in` | Client & Server | Canonical site URL used for OpenGraph tags, JSON-LD structured metadata, and sitemaps. | `src/config/site.ts` |
 | `RESEND_API_KEY` | No | *None* | Server-Only | API Key for Resend email dispatch service. When omitted, `/api/contact` logs safely to stdout and returns `{ delivered: false, simulated: true }`. | `src/app/api/contact/route.ts` |
-| `CONTACT_TO_EMAIL` | No | `team@nyxen.in` | Server-Only | Destination email address where contact inquiries are sent when Resend is configured. | `src/app/api/contact/route.ts` |
+| `CONTACT_TO_EMAIL` | No | `hello@nyxen.in` | Server-Only | Destination email address where contact inquiries are sent when Resend is configured. | `src/app/api/contact/route.ts` |
 | `CONTACT_FROM_EMAIL` | No | `Audify Contact <onboarding@resend.dev>` | Server-Only | Verified sender email address configured in Resend. | `src/app/api/contact/route.ts` |
 | `CONTACT_WEBHOOK_URL` | No | *None* | Server-Only | Optional external webhook endpoint. When present, contact payloads are forwarded as HTTP POST requests. | `src/app/api/contact/route.ts` |
 

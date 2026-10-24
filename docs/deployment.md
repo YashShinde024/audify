@@ -24,7 +24,7 @@ When importing the repository to Vercel:
 5. **Environment Variables:**
    - `NEXT_PUBLIC_SITE_URL`: `https://audify.nyxen.in`
    - `RESEND_API_KEY`: *(Optional)* Your Resend API key for contact submissions.
-   - `CONTACT_TO_EMAIL`: *(Optional)* `team@nyxen.in`.
+   - `CONTACT_TO_EMAIL`: *(Optional)* `hello@nyxen.in`.
    - `CONTACT_FROM_EMAIL`: *(Optional)* `Audify Contact <onboarding@resend.dev>`.
 
 ---

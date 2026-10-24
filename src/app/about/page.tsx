@@ -211,13 +211,13 @@ export default function AboutPage() {
         {/* ========================================================= */}
         {/* TOP BRAND HEADER — LOGO AT TOP, PILL BELOW LOGO           */}
         {/* ========================================================= */}
-        <div className="flex flex-col items-start gap-3.5 pb-8 border-b border-line">
+        <div className="flex flex-col items-start gap-4 pb-8 border-b border-line">
           <Link
             href="/"
             className="inline-flex items-center gap-3 transition-transform hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-violet rounded-xl"
             aria-label="Audify Home"
           >
-            <Logo variant="by-nyxen" height={44} priority />
+            <Logo variant="by-nyxen" height={64} priority />
           </Link>
 
           <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/90 px-3.5 py-1.5 text-xs text-muted backdrop-blur-sm shadow-xs">
@@ -443,7 +443,206 @@ export default function AboutPage() {
         </section>
 
         {/* ========================================================= */}
-        {/* SECTION 4: CREATIVE SOUND PARTNERSHIP                     */}
+        {/* SECTION 4: ABOUT NYXEN — INDEPENDENT DIGITAL STUDIO       */}
+        {/* ========================================================= */}
+        <section aria-labelledby="nyxen-studio-heading" className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div className="space-y-1">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-violet">
+                The Studio Behind Audify
+              </span>
+              <h2 id="nyxen-studio-heading" className="text-2xl sm:text-3xl font-bold tracking-tight text-fg">
+                About Nyxen
+              </h2>
+              <p className="text-sm text-muted">
+                An independent technology studio engineering privacy-first digital tools from Mumbai, India.
+              </p>
+            </div>
+
+            <a
+              href="https://nyxen.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-1.5 text-xs font-semibold text-violet hover:underline underline-offset-4 shrink-0"
+            >
+              <span>Visit nyxen.in</span>
+              <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* Left Card: Nyxen Studio Brand & Logo Card */}
+            <div className="lg:col-span-5 surface-card rounded-2xl border border-line p-6 sm:p-8 flex flex-col justify-between space-y-6 transition-all duration-200 hover:border-violet/40 hover:shadow-lg">
+              <div className="space-y-6">
+                {/* Logo Frame */}
+                <div className="relative overflow-hidden rounded-2xl border border-line bg-surface/80 p-6 flex flex-col items-center justify-center text-center shadow-xs">
+                  <div className="relative w-48 h-32 sm:w-56 sm:h-36 flex items-center justify-center">
+                    <Image
+                      src="/images/nyxen/nyxen-logo.png"
+                      alt="Nyxen Studio Logo"
+                      width={240}
+                      height={160}
+                      className="max-h-28 w-auto object-contain transition-transform duration-300 hover:scale-105"
+                      priority
+                    />
+                  </div>
+                  <div className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-violet/30 bg-violet/10 px-3 py-1 text-[11px] font-mono text-violet font-semibold">
+                    <span>Innovate · Build · Empower</span>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="text-lg font-bold text-fg">
+                    Independent Product Engineering
+                  </h3>
+                  <p className="text-xs sm:text-sm text-muted leading-relaxed">
+                    Nyxen is a Mumbai-based independent software studio founded to build modern, purposeful tools for creators, developers, and thinkers. Free from venture capital pressures, tracking monetization, and artificial paywalls, Nyxen operates with a simple mandate: engineer software that runs fast, respects privacy, and solves real problems.
+                  </p>
+                </div>
+              </div>
+
+              {/* Studio HQ & Verification */}
+              <div className="pt-4 border-t border-line space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted">Studio Headquarters</span>
+                  <span className="font-semibold text-fg">Mumbai, Maharashtra, India</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted">Studio Model</span>
+                  <span className="font-mono text-emerald-500 font-semibold">Self-Funded &amp; Independent</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted">Primary Focus</span>
+                  <span className="text-fg font-medium">Edge &amp; In-Browser DSP Systems</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Card: Studio Philosophies & Official Verified Channels */}
+            <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
+              {/* Studio Ethos Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="surface-card rounded-2xl border border-line p-5 space-y-2">
+                  <div className="flex items-center gap-2 text-violet">
+                    <LockKey size={18} weight="duotone" />
+                    <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-fg">
+                      Zero Telemetry
+                    </h4>
+                  </div>
+                  <p className="text-xs text-muted leading-relaxed">
+                    Heavy compute belongs on user hardware, not remote cloud servers. Audify processes 100% of audio in your browser with zero remote transmission.
+                  </p>
+                </div>
+
+                <div className="surface-card rounded-2xl border border-line p-5 space-y-2">
+                  <div className="flex items-center gap-2 text-primary">
+                    <Cpu size={18} weight="duotone" />
+                    <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-fg">
+                      First-Principles Code
+                    </h4>
+                  </div>
+                  <p className="text-xs text-muted leading-relaxed">
+                    Direct Web Audio graphs, native float32 arrays, and clean TypeScript architectures built for maximum performance and instant feedback.
+                  </p>
+                </div>
+              </div>
+
+              {/* Official Verified Channels Box */}
+              <div className="surface-card rounded-2xl border border-line p-6 space-y-4">
+                <div className="flex items-center justify-between border-b border-line pb-3">
+                  <div className="flex items-center gap-2">
+                    <EnvelopeSimple size={18} className="text-violet" weight="duotone" />
+                    <h4 className="text-xs font-mono uppercase tracking-wider font-bold text-fg">
+                      Official Communications &amp; Direct Desks
+                    </h4>
+                  </div>
+                  <span className="rounded bg-violet/10 border border-violet/20 px-2 py-0.5 text-[10px] font-mono font-semibold text-violet">
+                    Verified nyxen.in
+                  </span>
+                </div>
+
+                <p className="text-xs text-muted leading-relaxed">
+                  We don&apos;t use anonymous ticketing systems or outsourced support. Reach our engineers directly at our three official desks:
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <a
+                    href="mailto:hello@nyxen.in"
+                    className="group rounded-xl border border-line bg-canvas p-3.5 space-y-1 transition-all hover:border-violet/50 hover:bg-surface"
+                  >
+                    <div className="text-[11px] font-mono text-muted uppercase font-semibold">
+                      General Desk
+                    </div>
+                    <div className="text-xs font-bold text-fg group-hover:text-violet transition-colors">
+                      hello@nyxen.in
+                    </div>
+                    <p className="text-[10px] text-faint">
+                      General inquiries, feedback &amp; press
+                    </p>
+                  </a>
+
+                  <a
+                    href="mailto:support@nyxen.in"
+                    className="group rounded-xl border border-line bg-canvas p-3.5 space-y-1 transition-all hover:border-violet/50 hover:bg-surface"
+                  >
+                    <div className="text-[11px] font-mono text-muted uppercase font-semibold">
+                      Customer Support
+                    </div>
+                    <div className="text-xs font-bold text-fg group-hover:text-violet transition-colors">
+                      support@nyxen.in
+                    </div>
+                    <p className="text-[10px] text-faint">
+                      Technical help, issues &amp; user support
+                    </p>
+                  </a>
+
+                  <a
+                    href="mailto:build@nyxen.in"
+                    className="group rounded-xl border border-line bg-canvas p-3.5 space-y-1 transition-all hover:border-violet/50 hover:bg-surface"
+                  >
+                    <div className="text-[11px] font-mono text-muted uppercase font-semibold">
+                      Studio Builds
+                    </div>
+                    <div className="text-xs font-bold text-fg group-hover:text-violet transition-colors">
+                      build@nyxen.in
+                    </div>
+                    <p className="text-[10px] text-faint">
+                      Partnerships &amp; custom software builds
+                    </p>
+                  </a>
+                </div>
+              </div>
+
+              {/* Studio Dispatch Strip */}
+              <div className="rounded-xl border border-line bg-surface/60 px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2 text-muted">
+                  <Sparkle size={15} className="text-amber-500" weight="fill" />
+                  <span>Public Dispatches &amp; Engineering Updates:</span>
+                  <a
+                    href="https://x.com/buildnyxen"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-fg hover:text-violet underline underline-offset-2"
+                  >
+                    @buildnyxen
+                  </a>
+                </div>
+                <a
+                  href="https://nyxen.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-violet hover:underline flex items-center gap-1"
+                >
+                  <span>Explore Nyxen HQ</span>
+                  <ArrowUpRight size={13} />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================= */}
+        {/* SECTION 5: CREATIVE SOUND PARTNERSHIP                     */}
         {/* ========================================================= */}
         <section aria-labelledby="partnership-heading" className="space-y-4">
           <div className="space-y-1">
@@ -487,7 +686,7 @@ export default function AboutPage() {
         </section>
 
         {/* ========================================================= */}
-        {/* SECTION 5: NYXEN STUDIO PRINCIPLES                        */}
+        {/* SECTION 6: NYXEN STUDIO PRINCIPLES                        */}
         {/* ========================================================= */}
         <section aria-labelledby="principles-heading" className="space-y-6">
           <div className="space-y-1">
@@ -537,7 +736,7 @@ export default function AboutPage() {
         </section>
 
         {/* ========================================================= */}
-        {/* SECTION 6: THE NYXEN PRODUCT LINEUP                       */}
+        {/* SECTION 7: THE NYXEN PRODUCT LINEUP                       */}
         {/* ========================================================= */}
         <section aria-labelledby="ecosystem-heading" className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -615,7 +814,7 @@ export default function AboutPage() {
         </section>
 
         {/* ========================================================= */}
-        {/* SECTION 7: OFFICIAL NYXEN SOCIALS & COMMUNITY             */}
+        {/* SECTION 8: OFFICIAL NYXEN SOCIALS & COMMUNITY             */}
         {/* ========================================================= */}
         <section aria-labelledby="socials-heading" className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -694,7 +893,7 @@ export default function AboutPage() {
         </section>
 
         {/* ========================================================= */}
-        {/* SECTION 8: FINAL IMMERSIVE STUDIO INVITATION              */}
+        {/* SECTION 9: FINAL IMMERSIVE STUDIO INVITATION              */}
         {/* ========================================================= */}
         <section
           aria-labelledby="about-cta-heading"
