@@ -14,7 +14,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       onClick={toggleTheme}
       aria-label={isDark ? "Switch to porcelain light theme" : "Switch to obsidian dark theme"}
       title={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      className={`btn-icon relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-line bg-surface text-fg hover:border-line-strong hover:bg-raised transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet ${className}`}
+      className={`relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-line bg-surface text-fg hover:border-line-strong hover:bg-raised transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet ${className}`}
     >
       <motion.div
         key={isDark ? "dark" : "light"}

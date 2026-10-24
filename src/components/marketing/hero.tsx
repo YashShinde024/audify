@@ -50,18 +50,18 @@ export function Hero() {
             <Button
               asChild
               size="lg"
-              className="h-11 px-6 rounded-xl font-medium"
+              className="h-11 px-6 rounded-xl btn-gradient-rainbow text-white font-medium group"
             >
               <Link href="/studio" aria-label="Open Audify Studio">
                 <span>Open Audify Studio</span>
-                <ArrowRight aria-hidden="true" className="ml-1.5 h-4 w-4 btn-arrow" />
+                <ArrowRight aria-hidden="true" className="ml-1.5 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
             </Button>
             <Button
               asChild
               size="lg"
               variant="outline"
-              className="h-11 px-5 rounded-xl border-line/80 font-medium"
+              className="h-11 px-5 rounded-xl border-line/80 bg-surface/60 hover:bg-surface text-fg font-medium transition-colors"
             >
               <Link href="#presets">
                 <Faders className="mr-1.5 h-4 w-4 text-muted" />

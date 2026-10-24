@@ -213,7 +213,7 @@ export function AudioUploader() {
             size="md"
             onClick={() => inputRef.current?.click()}
             aria-label="Select an audio file from your device"
-            className="rounded-full"
+            className="rounded-full shadow-glow-wire"
           >
             <UploadSimple size={15} weight="bold" />
             <span>Choose Audio File</span>

@@ -40,8 +40,8 @@ export function PresetCategoryTabs() {
               if (e.key === "ArrowLeft") setActive(categoryOrder[(idx - 1 + categoryOrder.length) % categoryOrder.length]);
             }}
             className={cn(
-              "btn-preset-filter shrink-0 rounded-md px-3 py-1.5 text-xs font-medium cursor-pointer sm:text-sm",
-              selected ? "is-selected bg-faint text-canvas" : "text-muted hover:bg-raised hover:text-fg",
+              "shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition-colors sm:text-sm",
+              selected ? "bg-faint text-canvas" : "text-muted hover:bg-raised hover:text-fg",
             )}
           >
             {label}

@@ -449,9 +449,9 @@ export function PresetExplorer() {
                 onClick={() => setSelectedCategoryId(cat.id)}
                 aria-pressed={isSelected}
                 className={cn(
-                  "btn-preset-filter inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium border cursor-pointer select-none",
+                  "inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all border cursor-pointer select-none",
                   isSelected
-                    ? "is-selected border-primary bg-primary text-white shadow-xs font-semibold"
+                    ? "border-primary bg-primary text-white shadow-xs font-semibold"
                     : "border-line bg-surface/80 text-muted hover:text-fg hover:border-line-strong"
                 )}
               >
@@ -582,7 +582,7 @@ export function PresetExplorer() {
                           : `Preview procedural chords for ${preset.name}`
                       }
                       className={cn(
-                        "btn-subtle inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-medium cursor-pointer select-none",
+                        "inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-all cursor-pointer select-none",
                         isAuditioning
                           ? "border-primary bg-primary text-white shadow-xs"
                           : "border-line bg-canvas text-muted hover:text-fg hover:border-line-strong"
@@ -611,7 +611,7 @@ export function PresetExplorer() {
                       type="button"
                       onClick={() => setDetailPresetId(preset.id)}
                       aria-label={`View parameters and DSP details for ${preset.name}`}
-                      className="btn-ghost inline-flex items-center gap-1 text-[11px] font-medium text-muted hover:text-fg px-1.5 py-1 rounded cursor-pointer"
+                      className="inline-flex items-center gap-1 text-[11px] font-medium text-muted hover:text-fg px-1.5 py-1 rounded transition-colors"
                       title="Inspect parameters & DSP nodes"
                     >
                       <Info size={13} />

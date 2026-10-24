@@ -178,7 +178,7 @@ export function CookieBanner() {
               <button
                 type="button"
                 onClick={() => setShowPreferences(true)}
-                className="btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl border border-line text-muted hover:text-fg hover:bg-canvas-subtle cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl border border-line text-muted hover:text-fg hover:bg-canvas-subtle transition-colors cursor-pointer"
               >
                 <SlidersHorizontal size={14} />
                 <span>Preferences</span>
@@ -187,7 +187,7 @@ export function CookieBanner() {
               <button
                 type="button"
                 onClick={handleRejectOptional}
-                className="btn-outline inline-flex items-center justify-center px-4 py-2 text-xs font-medium rounded-xl border border-line-strong text-fg hover:bg-canvas-subtle cursor-pointer"
+                className="inline-flex items-center justify-center px-4 py-2 text-xs font-medium rounded-xl border border-line-strong text-fg hover:bg-canvas-subtle transition-colors cursor-pointer"
               >
                 Reject optional
               </button>
@@ -195,7 +195,7 @@ export function CookieBanner() {
               <Button
                 size="sm"
                 onClick={handleAcceptAll}
-                className="rounded-xl px-5 text-xs font-semibold cursor-pointer"
+                className="rounded-xl px-5 text-xs font-semibold cursor-pointer shadow-glow-wire"
               >
                 Accept all
               </Button>
@@ -228,7 +228,7 @@ export function CookieBanner() {
                 type="button"
                 onClick={() => setShowPreferences(false)}
                 aria-label="Back to banner"
-                className="btn-icon p-1.5 rounded-lg text-muted hover:text-fg hover:bg-canvas-subtle cursor-pointer"
+                className="p-1.5 rounded-lg text-muted hover:text-fg hover:bg-canvas-subtle transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -326,21 +326,21 @@ export function CookieBanner() {
                 <button
                   type="button"
                   onClick={handleRejectOptional}
-                  className="btn-secondary px-3 py-1.5 text-xs rounded-xl border border-line text-muted hover:text-fg hover:bg-canvas-subtle cursor-pointer"
+                  className="px-3 py-1.5 text-xs rounded-xl border border-line text-muted hover:text-fg hover:bg-canvas-subtle transition-colors cursor-pointer"
                 >
                   Reject optional
                 </button>
                 <button
                   type="button"
                   onClick={handleAcceptAll}
-                  className="btn-outline px-3 py-1.5 text-xs rounded-xl border border-line-strong text-fg hover:bg-canvas-subtle cursor-pointer"
+                  className="px-3 py-1.5 text-xs rounded-xl border border-line-strong text-fg hover:bg-canvas-subtle transition-colors cursor-pointer"
                 >
                   Accept all
                 </button>
                 <Button
                   size="sm"
                   onClick={handleSaveCustom}
-                  className="rounded-xl px-4 text-xs font-semibold cursor-pointer"
+                  className="rounded-xl px-4 text-xs font-semibold cursor-pointer shadow-glow-wire"
                 >
                   Save preferences
                 </Button>
