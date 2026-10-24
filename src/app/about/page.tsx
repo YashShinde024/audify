@@ -443,78 +443,46 @@ export default function AboutPage() {
         </section>
 
         {/* ========================================================= */}
-        {/* SECTION 4: THE PARTNERSHIP — NYXEN × XPERT MELODY         */}
+        {/* SECTION 4: CREATIVE SOUND PARTNERSHIP                     */}
         {/* ========================================================= */}
-        <section aria-labelledby="partnership-heading" className="space-y-6">
+        <section aria-labelledby="partnership-heading" className="space-y-4">
           <div className="space-y-1">
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-amber-500">
-              Creative Music Partnership
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted">
+              Creative Sound Partner
             </span>
-            <h2 id="partnership-heading" className="text-2xl sm:text-3xl font-bold tracking-tight text-fg">
-              A union of code craftsmanship &amp; music culture
+            <h2 id="partnership-heading" className="text-xl sm:text-2xl font-bold tracking-tight text-fg">
+              Acoustic Curation &amp; Sound Design
             </h2>
           </div>
 
-          <div className="surface-card rounded-2xl border border-line p-6 sm:p-9 space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-              <div className="md:col-span-8 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-500 shadow-xs">
-                    <MusicNotes size={26} weight="duotone" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-fg">Xpert Melody</h3>
-                    <p className="text-xs text-muted font-mono">Curator &amp; Creative Sound Partner</p>
-                  </div>
-                </div>
-
-                <p className="text-sm sm:text-base text-muted leading-relaxed">
-                  <strong className="text-fg font-medium">Xpert Melody</strong> brings authentic music creator culture to the Audify ecosystem. Having cultivated an extensive audience dedicated to slowed + reverb aesthetics, immersive 8D spatial mixes, and alternative musical tunings, Xpert Melody ensures every preset inside Audify sounds musically emotional, refined, and authentic.
-                </p>
-
-                <p className="text-sm text-muted leading-relaxed">
-                  While Nyxen engineers the low-level signal processing architecture, Xpert Melody stress-tests acoustic algorithms against diverse genres — from indie bedroom pop and lo-fi hip-hop to heavy electronic basslines.
-                </p>
+          <div className="surface-card rounded-2xl border border-line p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 shadow-xs">
+                <MusicNotes size={22} weight="duotone" />
               </div>
-
-              {/* Channel Spotlight Card */}
-              <div className="md:col-span-4 rounded-xl border border-line bg-surface/70 p-5 flex flex-col items-center text-center space-y-4 shadow-sm">
-                <div className="relative h-16 w-32 flex items-center justify-center p-2 rounded-xl bg-canvas border border-line">
-                  <Image
-                    src="/images/xpert-melody.png"
-                    alt="Xpert Melody Logo"
-                    width={128}
-                    height={64}
-                    className="h-12 w-auto object-contain"
-                  />
+              <div className="min-w-0 space-y-0.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-sm font-bold text-fg">Xpert Melody</h3>
+                  <span className="rounded bg-raised px-2 py-0.5 text-[10px] font-mono font-medium text-muted border border-line">
+                    Creative Sound Partner
+                  </span>
                 </div>
-
-                <div>
-                  <h4 className="text-sm font-semibold text-fg">Xpert Melody Official</h4>
-                  <p className="text-xs text-muted font-mono mt-0.5">@xpertmelody</p>
-                </div>
-
-                <a
-                  href={siteConfig.youtubeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2.5 text-xs font-semibold text-white transition-all shadow-sm active:scale-95 group"
-                >
-                  <YoutubeLogo size={16} weight="fill" />
-                  <span>Visit YouTube Channel</span>
-                  <ArrowUpRight size={13} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </a>
+                <p className="text-xs text-muted leading-relaxed max-w-xl">
+                  Creative curator advising on Audify&apos;s slowed+reverb soundscapes, 8D spatial curves, and acoustic listening presets.
+                </p>
               </div>
             </div>
 
-            {/* Quote Strip */}
-            <div className="border-t border-line pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-              <div className="flex items-center gap-2 text-fg italic">
-                <Sparkle size={15} className="text-primary shrink-0" weight="fill" />
-                <span>&ldquo;Slow it down. Add space. Shape your sound. Every sound tells an acoustic story.&rdquo;</span>
-              </div>
-              <span className="font-mono text-faint">Audify by Nyxen × Xpert Melody</span>
-            </div>
+            <a
+              href={siteConfig.youtubeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface hover:bg-raised px-4 py-2 text-xs font-semibold text-fg transition-all shrink-0 cursor-pointer shadow-xs"
+            >
+              <YoutubeLogo size={15} weight="fill" className="text-red-500" />
+              <span>@xpertmelody</span>
+              <ArrowUpRight size={13} className="text-muted" />
+            </a>
           </div>
         </section>
 
