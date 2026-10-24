@@ -7,12 +7,8 @@ import {
   Pause,
   ArrowRight,
   Sparkle,
-  Sliders,
-  Waveform,
-  Headphones,
 } from "@phosphor-icons/react";
 import { PresetIcon } from "@/components/icons/preset-icons";
-import { getPresetById, presetCategories } from "@/config/presets";
 import { cn } from "@/lib/utils";
 
 interface FeaturedPresetData {
@@ -201,10 +197,15 @@ export function PresetSignatures({ className }: { className?: string }) {
         const irBuf = ctx.createBuffer(2, irLength, sampleRate);
         const irL = irBuf.getChannelData(0);
         const irR = irBuf.getChannelData(1);
+        let seed = 1234567;
+        const nextRand = () => {
+          seed = (seed * 1664525 + 1013904223) % 4294967296;
+          return seed / 4294967296;
+        };
         for (let i = 0; i < irLength; i++) {
           const decay = Math.exp((-i / sampleRate) * (3 / presetData.audioConfig.reverbDecay));
-          irL[i] = (Math.random() * 2 - 1) * decay * 0.4;
-          irR[i] = (Math.random() * 2 - 1) * decay * 0.4;
+          irL[i] = (nextRand() * 2 - 1) * decay * 0.4;
+          irR[i] = (nextRand() * 2 - 1) * decay * 0.4;
         }
         convolver.buffer = irBuf;
 

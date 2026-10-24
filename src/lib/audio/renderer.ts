@@ -17,7 +17,13 @@ import {
   computeRenderSignature,
   resolveProcessing,
 } from "./dsp-plan";
-import type { EchoSpec, FilterSpec, PanSpec, ReverbSpec } from "./dsp-plan";
+import type {
+  EchoSpec,
+  FilterSpec,
+  HaasSpec,
+  PanSpec,
+  ReverbSpec,
+} from "./dsp-plan";
 import {
   applyLookaheadLimiter,
   applyPeakNormalize,
@@ -405,6 +411,41 @@ export function buildPanBranch(ctx: BaseAudioContext, input: AudioNode, spec: Pa
 }
 
 /**
+ * Haas effect precedence micro-delay (10–40 ms) on the right channel for
+ * psychoacoustic stereo width without mono phase cancellation.
+ */
+export function buildHaasBranch(
+  ctx: BaseAudioContext,
+  input: AudioNode,
+  spec: HaasSpec
+): AudioNode {
+  const splitter = ctx.createChannelSplitter(2);
+  const merger = ctx.createChannelMerger(2);
+  input.connect(splitter);
+
+  // Left channel passes direct
+  splitter.connect(merger, 0, 0);
+
+  // Right channel passes through delay
+  const delay = ctx.createDelay(0.1);
+  delay.delayTime.value = clampNumber(spec.delayMs / 1000, 0.005, 0.05);
+
+  const delayGain = ctx.createGain();
+  delayGain.gain.value = clampNumber(spec.mix, 0, 1);
+  const dryGain = ctx.createGain();
+  dryGain.gain.value = 1 - clampNumber(spec.mix, 0, 1) * 0.5;
+
+  splitter.connect(dryGain, 1);
+  dryGain.connect(merger, 0, 1);
+
+  splitter.connect(delay, 1);
+  delay.connect(delayGain);
+  delayGain.connect(merger, 0, 1);
+
+  return merger;
+}
+
+/**
  * Renders an AudioBuffer through the resolved DSP plan and encodes it using the
  * requested export configuration.
  */
@@ -532,8 +573,27 @@ export async function renderProcessedAudio(
   if (plan.width != null && graphChannels === 2 && inputBuffer.numberOfChannels > 1) {
     finalNode = buildWidthBranch(offline, finalNode, plan.width);
   }
+  if (plan.haas && graphChannels === 2) {
+    finalNode = buildHaasBranch(offline, finalNode, plan.haas);
+  }
   if (plan.pan) {
     finalNode = buildPanBranch(offline, finalNode, plan.pan);
+  }
+  if (plan.fade) {
+    const fadeGain = offline.createGain();
+    const duration = plannedSeconds;
+    const { fadeInSeconds, fadeOutSeconds } = plan.fade;
+    if (fadeInSeconds > 0) {
+      fadeGain.gain.setValueAtTime(0, 0);
+      fadeGain.gain.linearRampToValueAtTime(1, Math.min(fadeInSeconds, duration / 2));
+    }
+    if (fadeOutSeconds > 0) {
+      const fadeStart = Math.max(0, duration - fadeOutSeconds);
+      fadeGain.gain.setValueAtTime(1, fadeStart);
+      fadeGain.gain.linearRampToValueAtTime(0, duration);
+    }
+    finalNode.connect(fadeGain);
+    finalNode = fadeGain;
   }
   finalNode.connect(offline.destination);
 

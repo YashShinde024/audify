@@ -57,6 +57,7 @@ export const ACOUSTIC_CATEGORIES: AcousticCategory[] = [
       "church-hall-reverb",
       "cathedral-reverb",
       "vocal-reverb",
+      "plate-reverb",
       "slapback-echo",
       "echo-chamber",
     ],
@@ -83,6 +84,7 @@ export const ACOUSTIC_CATEGORIES: AcousticCategory[] = [
       "auto-panner",
       "stereo-panner",
       "stereo-widening",
+      "haas-spatializer",
       "ping-pong",
     ],
   },
@@ -113,6 +115,8 @@ export const ACOUSTIC_CATEGORIES: AcousticCategory[] = [
     presetIds: [
       "lofi-tape",
       "tape-warmth",
+      "tube-warmth",
+      "am-radio",
       "underwater",
       "muffled-room",
       "telephone-voice",
@@ -126,6 +130,7 @@ export const ACOUSTIC_CATEGORIES: AcousticCategory[] = [
     presetIds: [
       "volume-changer",
       "trimmer-cutter",
+      "fade-in-out",
       "downmixer",
       "bpm-detector",
       "format-converter",

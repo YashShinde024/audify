@@ -64,6 +64,16 @@ export interface TrimSpec {
   end: number | null;
 }
 
+export interface FadeSpec {
+  fadeInSeconds: number;
+  fadeOutSeconds: number;
+}
+
+export interface HaasSpec {
+  delayMs: number;
+  mix: number;
+}
+
 export interface ProcessingPlan {
   presetId: string | null;
   playbackRate: number;
@@ -71,6 +81,8 @@ export interface ProcessingPlan {
   pitchChangesTempo: boolean;
   reverse: boolean;
   trim: TrimSpec | null;
+  fade: FadeSpec | null;
+  haas: HaasSpec | null;
   filters: FilterSpec[];
   /** 0..100 waveshaper drive. */
   saturation: number;
@@ -178,6 +190,8 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
   let echoSpec: EchoSpec | null = null;
   let width: number | null = null;
   let pan: PanSpec | null = null;
+  let fadeSpec: FadeSpec | null = null;
+  let haasSpec: HaasSpec | null = null;
 
   const wet = num("reverb", 0);
 
@@ -207,6 +221,16 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
     case "vocal-reverb":
       reverbSpec = reverb(wet, 1.8, 0.65, 0.035);
       break;
+    case "plate-reverb": {
+      const decay = clamp(num("decay", 2.4), 0.8, 6.0);
+      const brightness = clamp(num("brightness", 3), 0, 8);
+      filters.push({ type: "highpass", frequency: 220, q: 0.707 });
+      if (brightness !== 0) {
+        filters.push({ type: "highshelf", frequency: 8500, gain: brightness });
+      }
+      reverbSpec = reverb(wet, decay, 0.22, 0.008);
+      break;
+    }
     case "slapback-echo":
       if (num("echo", 35) > 0) {
         echoSpec = {
@@ -265,6 +289,12 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
     case "stereo-widening":
       width = clamp(num("width", 65) / 50, 0.2, 2);
       break;
+    case "haas-spatializer": {
+      const delayMs = clamp(num("delay-ms", 20), 10, 40);
+      const mix = clamp(num("mix", 75) / 100, 0, 1);
+      haasSpec = { delayMs, mix };
+      break;
+    }
 
     case "bass-boost-light":
       filters.push({ type: "lowshelf", frequency: 95, gain: num("bass", 3.5) });
@@ -348,6 +378,29 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
         filters.push({ type: "lowshelf", frequency: 100, gain: subWarmth });
       }
       filters.push({ type: "lowpass", frequency: 14000, q: 0.6 });
+      break;
+    }
+
+    case "tube-warmth": {
+      saturation = clamp(num("drive", 25), 0, 50);
+      const warmth = clamp(num("warmth", 2.5), 0, 6);
+      const air = clamp(num("air", -1.5), -6, 2);
+      if (warmth > 0) {
+        filters.push({ type: "lowshelf", frequency: 200, gain: warmth });
+      }
+      if (air !== 0) {
+        filters.push({ type: "highshelf", frequency: 13000, gain: air });
+      }
+      break;
+    }
+
+    case "am-radio": {
+      const cutoff = clamp(num("bandwidth", 2800), 1200, 5000);
+      filters.push({ type: "highpass", frequency: 550, q: 1.2 });
+      filters.push({ type: "peaking", frequency: 1800, q: 1.5, gain: 4 });
+      filters.push({ type: "lowpass", frequency: cutoff, q: 1.2 });
+      filters.push({ type: "lowpass", frequency: cutoff, q: 0.707 });
+      saturation = clamp(num("saturation", 35), 0, 60);
       break;
     }
 
@@ -436,6 +489,13 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
       break;
     }
 
+    case "fade-in-out": {
+      const fadeInSeconds = clamp(num("fade-in", 2), 0, 15);
+      const fadeOutSeconds = clamp(num("fade-out", 3), 0, 15);
+      fadeSpec = { fadeInSeconds, fadeOutSeconds };
+      break;
+    }
+
     // Speed / tuning / trim / reverse utilities need no timbre filters.
     case "slowed":
     case "sped-up":
@@ -462,6 +522,8 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
     pitchChangesTempo: playbackRate !== 1,
     reverse,
     trim,
+    fade: fadeSpec,
+    haas: haasSpec,
     filters,
     saturation: clamp(saturation, 0, 100),
     outputGainDb: clamp(outputGainDb, -24, 18),
@@ -470,7 +532,7 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
     width,
     pan,
     mono: presetId === "downmixer",
-    needsStereo: Boolean(pan || width != null || echoSpec?.pingPong),
+    needsStereo: Boolean(pan || width != null || echoSpec?.pingPong || haasSpec != null),
     tailSeconds,
   };
 }

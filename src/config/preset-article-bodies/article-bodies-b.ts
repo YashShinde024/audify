@@ -529,4 +529,134 @@ export const articleBodiesB: PresetArticleBody[] = [
     useCases: ["Lead vocal polish", "Podcast voice enhancement", "Acoustic instrument sheen"],
     related: ["vocal-clarity", "podcast-voice", "vocal-reverb"],
   },
+  {
+    presetId: "haas-spatializer",
+    slug: "haas-spatializer",
+    what:
+      "The Haas Effect Spatializer leverages the psychoacoustic precedence effect to create an expansive, wrap-around stereo image from any audio source. By introducing a microscopic time delay between the left and right stereo channels (typically 12 to 35 milliseconds), the human brain fuses the direct and delayed arrivals into a single auditory event with dramatic perceived lateral width. Rather than hearing two separate echoes, listeners perceive an immense phantom stereo panorama that extends far beyond the physical boundaries of headphone drivers or studio monitor spacing, breathing three-dimensional air into mono tracks and flat stereo mixes alike without artificial reverb mud.",
+    sound:
+      "Super-wide, holographic stereo panorama that feels expansive and immersive without the diffuse wash, smearing, or distance of a reverb tail, keeping instruments focused and immediately present.",
+    dsp: [
+      "Dedicated stereo delay line splitting the incoming signal and introducing calibrated micro-delay (12–35 ms) on the target channel.",
+      "Gain attenuation balance across channels to maintain phantom center imaging and stereo energy balance.",
+      "Integrated low-cut filter to prevent phase cancellations in the critical sub-bass foundation below 120 Hz.",
+      "Look-ahead peak protection limiting running at -0.3 dBFS sample peak ceiling to guard against delayed transient summing and digital clipping.",
+    ],
+    tips: [
+      "Use between 15 and 25 ms for optimal width on rhythm guitars, synthesizer pads, and background vocals.",
+      "Audition your mix in mono to verify that phase cancellation doesn't excessively thin out lead instruments.",
+      "Keep delay times below 35 ms to avoid crossing the psychoacoustic threshold into audible discrete slapback echo.",
+      "Pairs exceptionally well before plate or room reverbs to give the acoustic space a wider starting footprint across the stereo field.",
+    ],
+    useCases: [
+      "Stereo widener for electric and acoustic guitars",
+      "Immersive background vocal spreading and chorus doubling",
+      "Headphone spatial enhancement for flat mono synthesizer tracks",
+    ],
+    related: ["stereo-widening", "8d-audio", "auto-panner"],
+  },
+  {
+    presetId: "plate-reverb",
+    slug: "plate-reverb",
+    what:
+      "Plate Reverb recreates the lush, dense acoustic character of classic 1960s electromechanical reverberation plates such as the legendary EMT 140. By simulating sound waves propagating through a large suspended steel sheet driven by an electromagnetic transducer and captured by contact pickups, it delivers an instantaneous burst of high-density diffuse reflections with characteristic high-frequency shimmer and metallic brightness. Because steel plates do not suffer from the discrete echoes or room resonances of physical chambers, they provide incredible acoustic sustain that sits cleanly behind vocals and drums without muddying up the critical midrange frequencies.",
+    sound:
+      "Bright, shimmering, and exceptionally dense reverberant tail with smooth decay and crisp top-end sparkle that floats above the mix without cluttering delicate vocal consonants or drum transients.",
+    dsp: [
+      "Algorithmic convolution simulating rapid-onset electromechanical plate reflection diffusion with ultra-high echo density.",
+      "Integrated high-pass pre-filter at 220 Hz to clear muddy resonance and protect mix clarity in the lower registers.",
+      "High-frequency damping curve that allows top-end shimmer to sustain smoothly without harsh sibilance buildup.",
+      "Look-ahead peak limiter safeguarding the reverberant tail against full-scale digital clipping on high-energy dynamic peaks.",
+    ],
+    tips: [
+      "The ultimate reverb choice for lead vocals, snare drums, and clean electric guitar arpeggios in commercial arrangements.",
+      "Use moderate decay times (1.8 to 2.8 s) to give vocals dramatic commercial sustain without cluttering fast phrasing.",
+      "Leave the low-cut enabled so the plate reflections do not compete with kick drums, bass synths, or low guitar fundamentals.",
+      "Combine with Vocal Air or Tape Warmth for the definitive vintage studio vocal chain heard on iconic records.",
+    ],
+    useCases: [
+      "Lead vocal sustain and commercial air sheen",
+      "Snare drum gloss, body, and explosive crack",
+      "Acoustic guitar sparkle and atmospheric depth",
+    ],
+    related: ["vocal-reverb", "medium-room-reverb", "cathedral-reverb"],
+  },
+  {
+    presetId: "tube-warmth",
+    slug: "tube-warmth",
+    what:
+      "Tube Warmth & Analog Saturation emulates the organic electrical characteristics of vintage class-A triode vacuum tube preamplifiers. By gently soft-clipping audio transients using mathematical hyperbolic tangent (tanh) transfer curves, it infuses digital tracks with musical even- and odd-order harmonic overtones, natural dynamic compression, and a round 200 Hz low-end body boost that banishes clinical digital harshness. Rather than sounding distorted or aggressive, tube warmth imparts a subtle tactile thickness, analog depth, and cohesive glue that binds multi-track recordings into a unified, expensive-sounding musical performance.",
+    sound:
+      "Warm, rich, and harmonically glued sound with rounded transient spikes, pleasing low-mid weight, and smooth vintage analog character that flatters digital recordings effortlessly.",
+    dsp: [
+      "Hyperbolic tangent (tanh) soft-saturation waveshaper generating warm 2nd and 3rd harmonic overtones and gentle compression.",
+      "Low-frequency warming shelf at 200 Hz (+1.5 dB) imparting analog transformer body, weight, and low-end resonance.",
+      "Subtle gentle top-end roll-off above 16 kHz to eliminate sterile digital glare, aliasing, and high-frequency harshness.",
+      "Sample-peak limiter guarding output levels against cumulative harmonic saturation boost and unexpected signal spikes.",
+    ],
+    tips: [
+      "Apply to sterile digital synthesizers, direct-injected bass guitars, and dry drum machines to add immediate analog weight.",
+      "Use gentle drive settings on entire mix busses for subtle vintage mastering glue that binds disparate elements together.",
+      "Push drive harder on electric guitar solos or vintage vocal lines for intentional preamp coloration and edge.",
+      "Combine with Lo-Fi Tape or Tape Warmth for full vintage studio console emulation across your entire project.",
+    ],
+    useCases: [
+      "Analog mix buss glue and mastering warmth",
+      "Electric and synth bass guitar fattening",
+      "Digital synthesizer overtone enrichment and harmonic smoothing",
+    ],
+    related: ["tape-warmth", "lofi-tape", "mastering-polish"],
+  },
+  {
+    presetId: "am-radio",
+    slug: "am-radio",
+    what:
+      "The AM Radio Effect transports your audio directly into the nostalgic golden age of medium-wave amplitude modulation broadcasting. By restricting frequency response to the historical 550 Hz to 2.8 kHz broadcast transmission window, exaggerating nasal horn speaker resonance at 1.8 kHz, and applying gritty transistor overdrive, it instantly evokes vintage car radios, pocket transistor receivers, and historic emergency news bulletins. This band-limited acoustic character strips away modern fidelity in favor of immediate narrative character, making it one of the most effective storytelling and stylistic tools in audio production.",
+    sound:
+      "Boxy, band-limited, gritty retro broadcast texture with piercing mid-range clarity, squawky speaker resonance, and zero sub-bass or airy treble content whatsoever.",
+    dsp: [
+      "Steep 24 dB/octave high-pass filter at 550 Hz stripping away all low-end weight, room rumble, and sub-bass energy.",
+      "Resonant bandpass peaking bell centered at 1.8 kHz emulating tiny dashboard speaker cone coloration and nasal horn acoustic response.",
+      "Cascaded steep low-pass filtering at 2.8 kHz cutting off all modern high frequencies, sibilance, and air.",
+      "Asymmetrical transistor distortion waveshaper adding genuine broadcast transmitter grit, saturation, and drive.",
+    ],
+    tips: [
+      "Ideal for dramatic intro sections, nostalgic flashback sequences, and creative vocal telephone filters in storytelling tracks.",
+      "Automate into full-frequency modern audio right at the chorus drop for an explosive, crowd-pleasing dynamic contrast.",
+      "Add subtle Room Reverb or Slapback Echo afterwards to place the radio in a physical vintage living room or garage.",
+      "Export to MP3 or WAV depending on whether you want additional lossy compression artifacts to enhance the retro vibe.",
+    ],
+    useCases: [
+      "Podcast narrative intro filters and period reenactments",
+      "Cinematic flashback scenes and telephone dialogue",
+      "Lofi hip-hop beat transitional breaks and skits",
+    ],
+    related: ["telephone-voice", "lofi-tape", "muffled-room"],
+  },
+  {
+    presetId: "fade-in-out",
+    slug: "fade-in-out",
+    what:
+      "Fade In & Out provides sample-accurate linear gain automation designed to eliminate start-boundary clicks, abrupt song cuts, and jarring audio transitions. By smoothly ramping amplitude from absolute zero at the track start and gracefully tapering audio down to silence at the tail, it delivers broadcast-compliant, professional beginnings and endings for song stems, podcast episodes, and social media audio clips. Because digital audio abruptly chopped at non-zero waveform values produces grating audible clicks, smooth envelope fading is an indispensable master finishing step for all recorded media.",
+    sound:
+      "Smooth, click-free audio entrances and gentle natural exits that ease the listener into and out of the listening experience without jarring discontinuities or sudden volume drops.",
+    dsp: [
+      "Sample-accurate linear gain multiplier ramping smoothly from 0.0 to 1.0 across the designated fadeInSeconds window.",
+      "Symmetric tail multiplier ramping smoothly from 1.0 to 0.0 across the configurable fadeOutSeconds duration.",
+      "Mathematical zero-crossing alignment preventing transient step discontinuities and speaker-damaging pops.",
+      "Completely transparent bit-perfect pass-through during the steady-state body of the audio buffer.",
+    ],
+    tips: [
+      "Use a short 0.2 to 0.5-second fade-in to eliminate microphone turn-on thumps without clipping initial spoken words.",
+      "Apply 3 to 6-second fade-outs on live jams or repetitive outro grooves for a classic commercial radio fade finish.",
+      "Pair with Trimmer/Cutter to extract a precise segment and apply seamless protective edge fades to avoid clicks.",
+      "Lossless WAV export ensures that subtle fade tails taper into pure silence without codec quantization noise or dither hiss.",
+    ],
+    useCases: [
+      "Podcast episode intro and outro smoothing",
+      "Remix stem boundary cleaning and click removal",
+      "Live concert recording track separation and crowd fades",
+    ],
+    related: ["trimmer-cutter", "volume-changer", "mastering-polish"],
+  },
 ];

@@ -274,6 +274,43 @@ describe("presets → plan consistency", () => {
     expect(flat.filters).toHaveLength(0);
   });
 
+  it("plate-reverb applies 220 Hz low-cut, high-frequency shimmer, and calibrated plate decay", () => {
+    const plate = plan("plate-reverb");
+    expect(plate.filters[0]).toMatchObject({ type: "highpass", frequency: 220 });
+    expect(plate.filters[1]).toMatchObject({ type: "highshelf", frequency: 8500, gain: 3 });
+    expect(plate.reverb?.decaySeconds).toBe(2.4);
+    expect(plate.reverb?.damping).toBeCloseTo(0.22);
+    expect(plate.reverb?.preDelaySeconds).toBe(0.008);
+  });
+
+  it("haas-spatializer computes micro-delay and marks needsStereo true", () => {
+    const haas = plan("haas-spatializer", { "delay-ms": 25, mix: 80 });
+    expect(haas.haas?.delayMs).toBe(25);
+    expect(haas.haas?.mix).toBeCloseTo(0.8);
+    expect(haas.needsStereo).toBe(true);
+  });
+
+  it("tube-warmth resolves triode harmonic saturation, 200 Hz body, and high-end softening", () => {
+    const tube = plan("tube-warmth");
+    expect(tube.saturation).toBe(25);
+    expect(tube.filters[0]).toMatchObject({ type: "lowshelf", frequency: 200, gain: 2.5 });
+    expect(tube.filters[1]).toMatchObject({ type: "highshelf", frequency: 13000, gain: -1.5 });
+  });
+
+  it("am-radio cascades narrow broadcast bandpass with 1.8 kHz horn resonance and drive", () => {
+    const radio = plan("am-radio");
+    expect(radio.filters[0]).toMatchObject({ type: "highpass", frequency: 550 });
+    expect(radio.filters[1]).toMatchObject({ type: "peaking", frequency: 1800, gain: 4 });
+    expect(radio.filters[2]).toMatchObject({ type: "lowpass", frequency: 2800 });
+    expect(radio.saturation).toBe(35);
+  });
+
+  it("fade-in-out configures linear start and end amplitude ramps", () => {
+    const fade = plan("fade-in-out", { "fade-in": 3, "fade-out": 4.5 });
+    expect(fade.fade?.fadeInSeconds).toBe(3);
+    expect(fade.fade?.fadeOutSeconds).toBe(4.5);
+  });
+
   it("output gain is clamped and independent sliders cannot smuggle extra gain", () => {
     expect(plan("volume-changer", { "volume-db": 100 }).outputGainDb).toBe(18);
     expect(plan("volume-changer", { "volume-db": -100 }).outputGainDb).toBe(-24);

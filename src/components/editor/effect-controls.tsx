@@ -132,6 +132,45 @@ function EffectToggle({
   );
 }
 
+function EffectSelect({
+  param,
+  defaultValue,
+}: {
+  param: Extract<PresetParam, { kind: "select" }>;
+  defaultValue: string | number;
+}) {
+  const storeValue = useEditorStore((s) => s.effectValues[param.id]);
+  const setValue = useEditorStore((s) => s.setEffectValue);
+  const current = storeValue !== undefined ? storeValue : defaultValue;
+  const inputId = `effect-${param.id}`;
+
+  return (
+    <div className="rounded-lg border border-line bg-canvas p-4">
+      <label htmlFor={inputId} className="text-sm font-medium text-fg">
+        {param.label}
+      </label>
+      <select
+        id={inputId}
+        value={String(current)}
+        onChange={(event) => {
+          const raw = event.target.value;
+          const asNum = Number(raw);
+          setValue(param.id, !Number.isNaN(asNum) && raw.trim() !== "" ? asNum : raw);
+        }}
+        aria-label={param.label}
+        className="mt-2.5 w-full rounded-md border border-line bg-surface px-3 py-2 text-sm text-fg shadow-xs outline-hidden focus:border-focus focus:ring-1 focus:ring-focus"
+      >
+        {param.options.map((opt) => (
+          <option key={String(opt.value)} value={String(opt.value)}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+      <p className="mt-2 text-xs leading-snug text-muted">{param.description}</p>
+    </div>
+  );
+}
+
 export function EffectControls() {
   const selectedPresetId = useEditorStore((s) => s.selectedPresetId);
   const selectedPreset = getPresetById(selectedPresetId ?? "");
@@ -210,6 +249,20 @@ export function EffectControls() {
                 key={param.id}
                 param={param}
                 defaultValue={selectedPreset.defaults[param.id] === true}
+              />
+            );
+          }
+          if (param.kind === "select") {
+            const rawDefault = selectedPreset.defaults[param.id];
+            const safeDefault =
+              typeof rawDefault === "string" || typeof rawDefault === "number"
+                ? rawDefault
+                : param.options[0]?.value ?? "";
+            return (
+              <EffectSelect
+                key={param.id}
+                param={param}
+                defaultValue={safeDefault}
               />
             );
           }

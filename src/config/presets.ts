@@ -1,4 +1,4 @@
-import type { Preset, PresetCategory, PresetCategoryId, PresetParam } from "@/types/preset";
+import type { EffectValue, Preset, PresetCategory, PresetCategoryId, PresetParam } from "@/types/preset";
 
 export const presetCategories: PresetCategory[] = [
   { id: "speed-viral", label: "Speed & Viral Edits", tagline: "Tempo shifts, pitch transformations, and energetic or melancholic pacing." },
@@ -18,6 +18,15 @@ function slider(id: string, label: string, min: number, max: number, step: numbe
 
 function toggle(id: string, label: string, description: string): PresetParam {
   return { id, label, kind: "toggle", description };
+}
+
+export function select(
+  id: string,
+  label: string,
+  options: { label: string; value: string | number }[],
+  description: string
+): PresetParam {
+  return { id, label, kind: "select", options, description };
 }
 
 export const presets: Preset[] = [
@@ -195,6 +204,21 @@ export const presets: Preset[] = [
       slider("size", "Echo Feedback", 10, 80, 1, "%", "Higher values sustain more repeats before fading (clamped to 0.80 feedback)."),
     ],
     defaults: { echo: 40, size: 45 },
+  },
+  {
+    id: "haas-spatializer",
+    name: "Haas Stereo Spatializer",
+    kind: "preset",
+    category: "stereo-spatial",
+    description: "Psychoacoustic Haas effect (precedence delay) introduces a subtle 12–35 ms time offset between stereo channels to produce an expansive, immersive stereo field from narrow or centered audio.",
+    supportedOps: ["StereoPanner", "DelayNode", "PhaseAlignment"],
+    compatibilityNote: "Best experienced with headphones or balanced stereo monitors.",
+    tags: ["haas", "spatial", "widening", "stereo", "3d", "immersive"],
+    params: [
+      slider("delay-ms", "Spatial Delay", 12, 35, 1, "ms", "Interaural time difference between left and right channels."),
+      slider("mix", "Stereo Spread Mix", 0, 100, 1, "%", "Intensity of the spatialized stereo imaging."),
+    ],
+    defaults: { "delay-ms": 20, mix: 75 },
   },
 
   /* ----------------------------------------------------
@@ -383,6 +407,21 @@ export const presets: Preset[] = [
     defaults: { reverb: 28 },
   },
   {
+    id: "plate-reverb",
+    name: "Studio Plate Reverb",
+    kind: "preset",
+    category: "reverb-echo",
+    description: "Classic EMT-style electromechanical metal plate reverberation: dense, bright early diffusion with a 220 Hz low-cut filter to keep vocal and snare transients pristine.",
+    supportedOps: ["ImpulseConvolver", "BiquadHighPass", "BiquadHighShelf"],
+    tags: ["plate", "reverb", "studio", "shimmer", "vocal", "snare"],
+    params: [
+      slider("reverb", "Plate Wet Mix", 0, 100, 1, "%", "Volume of reverberant plate reflections."),
+      slider("decay", "Decay Time", 1.0, 5.0, 0.1, "s", "Duration of the plate shimmer decay tail."),
+      slider("brightness", "High End Shimmer", 0, 8, 1, "dB", "High shelf presence boost on plate reflections."),
+    ],
+    defaults: { reverb: 36, decay: 2.4, brightness: 3 },
+  },
+  {
     id: "slapback-echo",
     name: "Slapback Echo",
     kind: "preset",
@@ -527,6 +566,35 @@ export const presets: Preset[] = [
     defaults: { warmth: 24, "sub-warmth": 1.5 },
   },
   {
+    id: "tube-warmth",
+    name: "Vintage Tube Warmth",
+    kind: "preset",
+    category: "creative",
+    description: "Analog triode tube preamp simulation: non-linear harmonic drive adds musical even/odd harmonics paired with a 200 Hz low-shelf warmth body and smooth high-frequency roll-off.",
+    supportedOps: ["WaveShaperSaturation", "BiquadLowShelf", "BiquadHighShelf"],
+    tags: ["tube", "preamp", "warmth", "analog", "vintage", "saturation"],
+    params: [
+      slider("drive", "Tube Drive", 0, 50, 1, "%", "Analog harmonic saturation intensity."),
+      slider("warmth", "Low-Mid Body", 0, 6, 0.5, "dB", "200 Hz low-shelf body boost."),
+      slider("air", "High-Frequency Softening", -6, 2, 0.5, "dB", "13 kHz high-shelf contour."),
+    ],
+    defaults: { drive: 25, warmth: 2.5, air: -1.5 },
+  },
+  {
+    id: "am-radio",
+    name: "Vintage AM Radio",
+    kind: "preset",
+    category: "creative",
+    description: "Authentic medium-wave AM radio broadcast character: steep 550 Hz high-pass, 2.8 kHz low-pass, a resonant broadcast horn peak at 1.8 kHz, and gentle transistor saturation.",
+    supportedOps: ["BiquadHighPass", "BiquadLowPass", "BiquadPeaking", "WaveShaperSaturation"],
+    tags: ["radio", "am", "vintage", "broadcast", "transistor", "lo-fi"],
+    params: [
+      slider("bandwidth", "Bandwidth", 1500, 4500, 100, "Hz", "Upper low-pass cutoff of the radio receiver."),
+      slider("saturation", "Receiver Drive", 0, 60, 1, "%", "Analog transistor harmonic drive."),
+    ],
+    defaults: { bandwidth: 2800, saturation: 35 },
+  },
+  {
     id: "muffled-room",
     name: "Room Next Door (Muffled)",
     kind: "preset",
@@ -659,6 +727,20 @@ export const presets: Preset[] = [
     defaults: { "trim-start": 0, "trim-end": 60 },
   },
   {
+    id: "fade-in-out",
+    name: "Audio Fade In & Out",
+    kind: "tool",
+    category: "utilities",
+    description: "Applies smooth, non-destructive linear amplitude fades to the start and finish of your audio to create clean song intros, transitions, and fadeouts without abrupt clicks.",
+    supportedOps: ["GainNode", "OfflineAudioContext"],
+    tags: ["fade", "fade in", "fade out", "intro", "outro", "transition", "utility"],
+    params: [
+      slider("fade-in", "Fade In Duration", 0, 15, 0.5, "s", "Smooth gain ramp from 0 to full volume at track start."),
+      slider("fade-out", "Fade Out Duration", 0, 15, 0.5, "s", "Smooth decay to silence at the end of track."),
+    ],
+    defaults: { "fade-in": 2, "fade-out": 3 },
+  },
+  {
     id: "downmixer",
     name: "Stereo to Mono Downmixer",
     kind: "tool",
@@ -755,7 +837,7 @@ export function searchPresets(
   });
 }
 
-export function resolveDefaults(preset: Preset): Record<string, number | boolean> {
+export function resolveDefaults(preset: Preset): Record<string, EffectValue> {
   return { ...preset.defaults };
 }
 

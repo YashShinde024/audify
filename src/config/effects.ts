@@ -85,6 +85,20 @@ export const effects: EffectModule[] = [
     targetPresetId: "ping-pong",
     status: "supported",
   },
+  {
+    id: "plate-reverb-module",
+    name: "EMT-Style Plate Reverb",
+    category: "Reverb & Echo",
+    summary: "Dense, metallic plate reverberation with bright early reflection diffusion and low-end rumble cut at 220 Hz.",
+    dspNodeChain: ["BiquadFilterNode (highpass, 220 Hz)", "ConvolverNode (Bright Plate IR)", "BiquadFilterNode (highshelf)", "Dry/Wet Gain Bus"],
+    parameters: [
+      { name: "Plate Wet Mix", range: "0% – 100%", unit: "%", description: "Reverberant plate signal level." },
+      { name: "Decay Time", range: "1.0s – 5.0s", unit: "s", description: "Shimmering decay tail duration." },
+      { name: "High End Shimmer", range: "0 dB to +8 dB", unit: "dB", description: "High-shelf presence boost." },
+    ],
+    targetPresetId: "plate-reverb",
+    status: "supported",
+  },
 
   /* 3. Tone & EQ */
   {
@@ -175,6 +189,19 @@ export const effects: EffectModule[] = [
     targetPresetId: "stereo-widening",
     status: "supported",
   },
+  {
+    id: "haas-precedence",
+    name: "Haas Psychoacoustic Stereo Precedence",
+    category: "Stereo",
+    summary: "Introduces an interaural micro-delay (12–35 ms) across channels to generate a dimensional 3D soundstage from narrow or centered recordings.",
+    dspNodeChain: ["ChannelSplitterNode", "DelayNode (Micro-Delay)", "Dry/Wet Balance", "ChannelMergerNode"],
+    parameters: [
+      { name: "Spatial Delay", range: "12 ms – 35 ms", unit: "ms", description: "Interaural channel time offset." },
+      { name: "Spread Mix", range: "0% – 100%", unit: "%", description: "Intensity of the spatialized stereo image." },
+    ],
+    targetPresetId: "haas-spatializer",
+    status: "supported",
+  },
 
   /* 6. Creative */
   {
@@ -213,8 +240,34 @@ export const effects: EffectModule[] = [
     targetPresetId: "underwater",
     status: "supported",
   },
+  {
+    id: "tube-preamp-saturation",
+    name: "Vacuum Tube Preamp Warmth",
+    category: "Creative",
+    summary: "Simulates vintage analog triode valve behavior with gentle even/odd harmonic saturation, 200 Hz body, and top-end smoothing.",
+    dspNodeChain: ["BiquadFilterNode (lowshelf, 200 Hz)", "WaveShaperNode (tanh curve)", "BiquadFilterNode (highshelf, 13 kHz)"],
+    parameters: [
+      { name: "Tube Drive", range: "0% – 50%", unit: "%", description: "Vacuum tube harmonic coloration." },
+      { name: "Low-Mid Body", range: "0 dB to +6 dB", unit: "dB", description: "Warm analog low-shelf resonance." },
+    ],
+    targetPresetId: "tube-warmth",
+    status: "supported",
+  },
 
   /* 7. Utility & Finishing */
+  {
+    id: "audio-fade-envelope",
+    name: "Linear Gain Fade In & Out",
+    category: "Utility & Finishing",
+    summary: "Applies smooth, non-destructive start and end gain ramping to ensure seamless audio transitions without clicks.",
+    dspNodeChain: ["GainNode (linearRampToValueAtTime)"],
+    parameters: [
+      { name: "Fade In Duration", range: "0s – 15s", unit: "s", description: "Length of start volume ramp." },
+      { name: "Fade Out Duration", range: "0s – 15s", unit: "s", description: "Length of trailing silence ramp." },
+    ],
+    targetPresetId: "fade-in-out",
+    status: "supported",
+  },
   {
     id: "peak-protection-limiter",
     name: "Look-Ahead Peak Protection Limiter",

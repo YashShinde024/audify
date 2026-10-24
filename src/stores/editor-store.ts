@@ -106,7 +106,13 @@ export function defaultValuesFor(presetId: string | null): EffectValues {
   if (!preset) return {};
   const values: EffectValues = {};
   for (const param of preset.params) {
-    values[param.id] = preset.defaults[param.id] ?? (param.kind === "toggle" ? false : 0);
+    values[param.id] =
+      preset.defaults[param.id] ??
+      (param.kind === "toggle"
+        ? false
+        : param.kind === "select"
+          ? (param.options[0]?.value ?? "")
+          : 0);
   }
   return values;
 }

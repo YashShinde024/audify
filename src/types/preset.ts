@@ -61,9 +61,9 @@ export interface Preset {
   /** Params exposed by this preset's control panel */
   params: PresetParam[];
   /** Default values resolved from param definitions */
-  defaults: Record<string, number | boolean>;
+  defaults: Record<string, EffectValue>;
 }
 
-export type EffectValue = number | boolean;
+export type EffectValue = number | boolean | string;
 
 export type EffectValues = Record<string, EffectValue>;

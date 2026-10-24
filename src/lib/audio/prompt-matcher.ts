@@ -41,6 +41,9 @@ export function interpretSoundPrompt(prompt: string): { presetId: string; matche
   if (p.includes("vocal reverb") || p.includes("voice reverb")) {
     return { presetId: "vocal-reverb", matchedLabel: "Vocal Reverb" };
   }
+  if (p.includes("plate") || p.includes("plate reverb")) {
+    return { presetId: "plate-reverb", matchedLabel: "Studio Plate Reverb" };
+  }
 
   // Stereo & Panning
   if (p.includes("auto pan") || p.includes("panner") || p.includes("left to right")) {
@@ -49,8 +52,14 @@ export function interpretSoundPrompt(prompt: string): { presetId: string; matche
   if (p.includes("8d") || p.includes("rotate") || p.includes("spinning") || p.includes("3d")) {
     return { presetId: "8d-audio", matchedLabel: "8D Audio" };
   }
+  if (p.includes("haas") || p.includes("precedence")) {
+    return { presetId: "haas-spatializer", matchedLabel: "Haas Stereo Spatializer" };
+  }
 
   // Utilities
+  if (p.includes("fade") || p.includes("fade in") || p.includes("fade out")) {
+    return { presetId: "fade-in-out", matchedLabel: "Audio Fade In & Out" };
+  }
   if (p.includes("volume") || p.includes("louder") || p.includes("quieter") || p.includes("gain")) {
     return { presetId: "volume-changer", matchedLabel: "Volume & Gain Changer" };
   }
@@ -72,12 +81,18 @@ export function interpretSoundPrompt(prompt: string): { presetId: string; matche
     return { presetId: "vocal-air", matchedLabel: "Vocal Air & Presence" };
   }
 
-  // Tape / Lo-Fi Warmth
+  // Tape / Tube / Lo-Fi Warmth
+  if (p.includes("tube") || p.includes("preamp") || p.includes("tube warmth")) {
+    return { presetId: "tube-warmth", matchedLabel: "Vintage Tube Warmth" };
+  }
   if (p.includes("tape warmth") || p.includes("analog warmth") || p.includes("warm tape")) {
     return { presetId: "tape-warmth", matchedLabel: "Warm Analog Tape" };
   }
 
-  // Room next door / muffled
+  // Creative & Radios
+  if (p.includes("radio") || p.includes("am radio") || p.includes("walkie talkie") || p.includes("broadcast")) {
+    return { presetId: "am-radio", matchedLabel: "Vintage AM Radio" };
+  }
   if (p.includes("room next door") || p.includes("party next door") || p.includes("muffled")) {
     return { presetId: "muffled-room", matchedLabel: "Room Next Door (Muffled)" };
   }

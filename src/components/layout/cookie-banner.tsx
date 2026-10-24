@@ -7,7 +7,6 @@ import {
   ShieldCheck,
   X,
   SlidersHorizontal,
-  CheckCircle,
   LockKey,
   Info,
 } from "@phosphor-icons/react";
@@ -35,37 +34,45 @@ const DEFAULT_PREFERENCES: CookiePreferences = {
 export function CookieBanner() {
   const [isVisible, setIsVisible] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
-  const [preferences, setPreferences] = useState<CookiePreferences>(DEFAULT_PREFERENCES);
-  const bannerRef = useRef<HTMLElement>(null);
-
-  // Initialize and check for stored consent
-  useEffect(() => {
+  const [preferences, setPreferences] = useState<CookiePreferences>(() => {
+    if (typeof window === "undefined") return DEFAULT_PREFERENCES;
     try {
       const stored = localStorage.getItem(COOKIE_CONSENT_KEY) || localStorage.getItem(LEGACY_COOKIE_KEY);
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
           if (typeof parsed === "object" && parsed !== null) {
-            setPreferences({
+            return {
               necessary: true,
               analytics: Boolean(parsed.analytics),
               functional: Boolean(parsed.functional),
               timestamp: Number(parsed.timestamp) || Date.now(),
               choice: parsed.choice || "custom",
-            });
+            };
           }
         } catch {
-          // If legacy string like "all" or "essential"
           const isAll = stored === "all";
-          setPreferences({
+          return {
             necessary: true,
             analytics: isAll,
             functional: isAll,
             timestamp: Date.now(),
             choice: isAll ? "all" : "reject",
-          });
+          };
         }
-      } else {
+      }
+    } catch {
+      // LocalStorage unavailable in strict sandbox
+    }
+    return DEFAULT_PREFERENCES;
+  });
+  const bannerRef = useRef<HTMLElement>(null);
+
+  // Initialize and check for stored consent
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(COOKIE_CONSENT_KEY) || localStorage.getItem(LEGACY_COOKIE_KEY);
+      if (!stored) {
         // First visit: Delay entry slightly so first paint & audio graph settle smoothly
         const timer = setTimeout(() => setIsVisible(true), 1200);
         return () => clearTimeout(timer);

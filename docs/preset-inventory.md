@@ -1,8 +1,8 @@
 # Audify Preset Inventory & DSP Mapping Specification
 
 **Attribution:** Audify by Nyxen × Xpert Melody  
-**Total Calibrated Presets:** 38  
-**Verification Status:** All presets validated against `tests/audio-engine.test.ts` and offline render pipeline.
+**Total Calibrated Presets & Tools:** 54  
+**Verification Status:** All presets and tools validated against `src/config/__tests__/preset-audit.test.ts`, `src/lib/audio/__tests__/dsp-plan.test.ts`, and the offline render pipeline.
 
 ---
 
@@ -11,81 +11,120 @@
 Every preset in Audify executes through a deliberate, non-destructive Web Audio DSP graph:
 1. **Source Buffer Ingestion:** In-memory PCM buffer decoded at source native sample rate.
 2. **Buffer Slicing / Trimming (if applied):** Start & end offsets sliced directly on source PCM.
-3. **Varispeed / Rate Modulation:** `AudioBufferSourceNode.playbackRate` (e.g. 0.85x for Slowed, 1.25x for Nightcore, 432/440 for 432Hz).
-4. **Primary Filtering / EQ:** Cascaded `BiquadFilterNode` elements (lowpass, highpass, bandpass, peaking, shelving).
-5. **Dynamic Modulation / Spatialization:** `StereoPannerNode` automated via time-domain LFO or static azimuth.
-6. **Time-Based FX (Reverb / Delay):** Parallel convolution with synthesized exponential impulse responses or feedback delay lines.
-7. **Gain Staging & Master Volume:** Linear `GainNode` with pre-gain attenuation for heavy boosts.
-8. **Export Peak Limiter (Look-Ahead):** Sliding-window sample-peak limiter with −0.3 dBFS ceiling.
-9. **Binary Codec Serialization:** 16-bit PCM, 24-bit PCM, 32-bit Float WAV, AIFF, or 320kbps MP3 via `lamejs`.
+3. **Buffer Reversal (if applied):** Genuine bit-pure PCM channel reversal (`Float32Array.reverse()`).
+4. **Varispeed / Rate Modulation:** `AudioBufferSourceNode.playbackRate` (e.g. 0.80x for Slowed, 1.35x for Nightcore, 432/440 for 432Hz).
+5. **Primary Filtering / EQ:** Cascaded `BiquadFilterNode` elements (lowpass, highpass, bandpass, peaking, lowshelf, highshelf).
+6. **Harmonic Saturation:** `WaveShaperNode` with oversampled 4x hyperbolic tangent (`tanh`) transfer curve.
+7. **Pre-Bus Output Gain:** Linear `GainNode` with decibel scaling for calibrated makeup or attenuation.
+8. **Time-Based FX (Reverb / Delay):** Parallel convolution with synthesized exponential impulse responses or cross-channel ping-pong feedback loops.
+9. **Spatialization & Stereo Imaging:** Mid/side matrix width scaling, Haas effect precedence micro-delay, and `StereoPannerNode` automated via sinusoidal LFO.
+10. **Gain Envelope Fades:** Start and finish linear gain ramps (`linearRampToValueAtTime`) for smooth transitions.
+11. **Sanitization & Resampling:** Inf/NaN removal and polyphase windowed-sinc resampling to target export sample rate.
+12. **Master Normalization & Headroom Protection:** Sample-peak normalization and look-ahead sliding-minimum peak limiter with −0.3 dBFS ceiling.
+13. **Binary Codec Serialization:** 16-bit PCM, 24-bit PCM, 32-bit Float WAV, AIFF, or 128–320 kbps MP3 via `lamejs`.
 
 ---
 
 ## 2. Comprehensive Preset Inventory
 
-### Group 1: Trending & Social (Slowed, Sped-up, Nightcore, Spatial)
+### Group 1: Speed & Viral Edits (7 presets)
 
-| Preset ID | Category | Parameters & Units | DSP Nodes & Operations | Expected Acoustic Behavior | Automated Test Reference |
-|---|---|---|---|---|---|
-| `slowed-reverb` | Trending | • `rate`: 0.5–1.0 (default 0.85)<br>• `decay`: 1.0–8.0s (default 4.8s)<br>• `cutoff`: 2000–8000Hz (default 4200Hz)<br>• `wet`: 0.0–1.0 (default 0.48) | • `playbackRate: 0.85`<br>• `BiquadFilterNode(lowpass, 4200Hz, Q=0.707)`<br>• `ConvolverNode(4.8s IR)` with parallel dry/wet mixer | Dreamy, decelerated pitch (-2.81 semitones) with warm rolled-off highs and spacious reverberant tail. | `tests/audio-engine.test.ts` ("renders slowed+reverb") |
-| `nightcore` | Trending | • `rate`: 1.0–1.5 (default 1.25) | • `playbackRate: 1.25` | Accelerated speed (+25%) with bright, energetic pitch transpose (+3.86 semitones). | `tests/audio-engine.test.ts` ("applies playback rate") |
-| `daycore` | Trending | • `rate`: 0.7–1.0 (default 0.85) | • `playbackRate: 0.85` | Pure decelerated varispeed (-15%) without reverb. | `tests/audio-engine.test.ts` ("renders daycore") |
-| `8d-audio` | Trending | • `speed`: 0.05–0.5 Hz (default 0.118 Hz / 8.5s orbit)<br>• `reverbWet`: 0.0–0.5 (default 0.22) | • `StereoPannerNode` sinusoidal automation<br>• `ConvolverNode(2.2s IR, wet 0.22)` | Dynamic orbital panning around listener's head in headphones. | `tests/audio-engine.test.ts` ("automates stereo panner") |
-| `lofi-tape` | Trending | • `saturation`: 0.0–1.0 (default 0.45)<br>• `lowCut`: 200–600Hz (default 320Hz)<br>• `highCut`: 3000–6000Hz (default 4500Hz) | • `BiquadFilterNode(highpass 320Hz)`<br>• `BiquadFilterNode(lowpass 4500Hz)`<br>• `WaveShaperNode(tanh curve, oversample 4x)` | Vintage cassette warmth with restricted frequency bandwidth and subtle harmonic drive. | `tests/audio-engine.test.ts` ("renders lofi tape") |
-| `tuning-432hz` | Pitch | • `frequency`: fixed 432 Hz | • `playbackRate: 432/440 = 0.981818` | Exact -31.766 cents pitch shift matching historical Verdi acoustic pitch standard. | `tests/audio-engine.test.ts` ("converts 440 to 432") |
-
----
-
-### Group 2: Bass & Dynamics (Headroom-Calibrated)
-
-| Preset ID | Category | Parameters & Units | DSP Nodes & Operations | Expected Acoustic Behavior | Automated Test Reference |
-|---|---|---|---|---|---|
-| `bass-boost-light` | Bass | • `gain`: +3.5 dB<br>• `frequency`: 95 Hz<br>• `Q`: 0.707 | • `BiquadFilterNode(lowshelf, 95Hz, +3.5dB)` | Gentle mix warmth, ideal for headphones without triggering limiter. | `tests/audio-engine.test.ts` ("applies bass boost light") |
-| `bass-boost-mod` | Bass | • `gain`: +7.0 dB<br>• `frequency`: 85 Hz<br>• `Q`: 0.707 | • `BiquadFilterNode(lowshelf, 85Hz, +7dB)`<br>• `preGain: -2.5dB` | Punchy low-end punch for electronic and hip-hop kick drums. | `tests/audio-engine.test.ts` ("applies bass boost mod") |
-| `bass-boost-heavy` | Bass | • `gain`: +10.5 dB<br>• `frequency`: 75 Hz<br>• `Q`: 0.85 | • `BiquadFilterNode(lowshelf, 75Hz, +10.5dB)`<br>• `preGain: -5dB` | Subwoofer-ready sub-bass with dynamic headroom padding. | `tests/audio-engine.test.ts` ("applies bass boost heavy") |
-| `bass-boost-extreme`| Bass | • `gain`: +15.0 dB<br>• `frequency`: 65 Hz<br>• `Q`: 1.0 | • `BiquadFilterNode(lowshelf, 65Hz, +15dB)`<br>• `preGain: -8dB`<br>• Look-ahead limiter | Maximum physical low-end weight while strictly preventing 0 dBFS clipping. | `tests/audio-engine.test.ts` ("applies bass boost extreme") |
-| `sub-bass-rumble` | Bass | • `gain`: +8.0 dB<br>• `frequency`: 45 Hz<br>• `Q`: 1.2 | • `BiquadFilterNode(lowshelf, 45Hz, +8dB)` | Deep infrasonic rumble focused on chest-thump frequencies. | `tests/audio-engine.test.ts` ("verifies sub bass") |
-
----
-
-### Group 3: Spatial & Reverb Synthesis
-
-| Preset ID | Category | Decay Time | Pre-Delay | High Cut / Damping | Wet/Dry Balance | Acoustic Room Signature |
-|---|---|---|---|---|---|---|
-| `bathroom-reverb` | Reverb | 0.65 s | 8 ms | 3,200 Hz | Dry 0.78 / Wet 0.22 | Tight tiled room with dense, reflective early flutter. |
-| `small-room-reverb` | Reverb | 1.20 s | 15 ms | 5,500 Hz | Dry 0.75 / Wet 0.25 | Natural acoustic intimacy, adding glue without smearing consonants. |
-| `medium-room-reverb`| Reverb | 2.40 s | 25 ms | 4,800 Hz | Dry 0.68 / Wet 0.32 | Studio live room, balanced reflection envelope. |
-| `large-room-reverb` | Reverb | 4.20 s | 40 ms | 3,800 Hz | Dry 0.60 / Wet 0.40 | Concert hall with warm, diffuse late reflections. |
-| `church-hall-reverb`| Reverb | 5.80 s | 55 ms | 3,000 Hz | Dry 0.55 / Wet 0.45 | Vaulted stone acoustics with prominent midrange sustain. |
-| `cathedral-reverb` | Reverb | 7.50 s | 70 ms | 2,400 Hz | Dry 0.48 / Wet 0.52 | Monumental space with expansive, ethereal decay tail. |
-| `vocal-reverb` | Reverb | 1.80 s | 35 ms | 7,200 Hz | Dry 0.72 / Wet 0.28 | Bright vocal plate preserving lyric crispness and intimacy. |
-
----
-
-### Group 4: Mixing, Equalization & Utilities
-
-| Preset ID | Category | Core Parameters | Node Graph & Implementation | Acoustic Role |
+| Preset ID | Kind | Default Parameters | DSP Chain & Operations | Acoustic Role |
 |---|---|---|---|---|
-| `equalizer` | EQ | Low: `±12dB` @ 250Hz<br>Mid: `±12dB` @ 1000Hz<br>High: `±12dB` @ 4000Hz | Cascaded lowshelf, peaking, and highshelf `BiquadFilterNode` filters | 3-band surgical mastering tone balance. |
-| `treble-air` | EQ | Highshelf `+4.5dB` @ 9000Hz (`Q: 0.707`) | Highshelf boost above vocal fundamental | Adds open, glossy sheen to dark recordings. |
-| `stereo-widener` | Spatial | Width slider: 0% to 200% | Mid/Side matrix sum & difference calculation | Expands soundstage or collapses to mono. |
-| `echo` | Delay | Delay: `0.35s`, Feedback: `38%` | Single-tap delay line with feedback gain loop | Classic slapback / dub delay repetitions. |
-| `ping-pong` | Delay | Delay: `0.28s`, Feedback: `42%` | Cross-stereo feedback loop (L → R → L) | Rhythmic bouncing delays across stereo field. |
-| `telephone-voice` | Filter | Highpass `450Hz`, Lowpass `3200Hz` | Bandpass cascade + mild hyperbolic saturation | Vintage carbon-microphone telephone voice. |
-| `underwater` | Filter | Dual lowpass `520Hz` (24 dB/oct slope) | Cascaded 2nd-order lowpass + convolver | Muffled aquatic sensation with resonant lows. |
-| `rumble-cut` | Cleanup | Highpass `80Hz` (`Q: 0.707`) | 12 dB/octave low cut | Eliminates mic handling and HVAC sub noise. |
-| `de-harsh` | Cleanup | Highshelf `-4.5dB` @ 7000Hz | Gentle top-end shelf attenuation | Tames harsh sibilance and brittle cymbal peaks. |
-| `vocal-clarity` | Vocal | Highpass `120Hz`, Peaking `+3.5dB` @ 2800Hz | Cleanup + vocal presence lift | Delivers crisp, forward vocal intelligibility. |
-| `volume-changer`| Gain | Gain: `-18dB` to `+12dB` | Linear `GainNode` with clean conversion | Clean level matching and gain staging. |
-| `peak-normalizer`| Dynamics| Ceiling: `-0.3 dBFS` | Two-pass sample peak scan + linear scaling | Maximizes level while ensuring true-peak safety. |
-| `trimmer-cutter`| Utility | In/out sample markers (seconds) | Native sample slicing with 5ms boundary anti-click fade | Lossless audio trimming and boundary trimming. |
-| `reverse` | Creative| Reversal index loop | In-memory PCM channel inversion | Genuine bit-pure reverse audio playback. |
-| `downmixer` | Utility | Mono sum matrix | Standard $0.5 \times (L + R)$ downmix | Single-driver mono playback compatibility check. |
-| `format-converter`| Export | WAV (16/24/32-bit), AIFF, MP3 | Format-specific binary encoding pipeline | Clean file transcoding with sample rate matching. |
+| `slowed-reverb` | preset | speed: 80%, reverb: 42%, size: 75% | `playbackRate: 0.80` + Parallel Convolver (decay: 4.2s, damping: 0.3) | Iconic relaxed tempo bathed in lush hall reverb. Pitch falls with tempo. |
+| `slowed` | preset | speed: 80% | `playbackRate: 0.80` | Clean tape-style slowdown with natural pitch drop. |
+| `super-slowed` | preset | speed: 50%, warmth: 40% | `playbackRate: 0.50` + `lowshelf(120Hz, +2.4dB)` + `lowpass(14kHz)` | Extreme half-speed drag with warm sub reinforcement. |
+| `vaporwave` | preset | speed: 72%, reverb: 30%, haze: 50% | `playbackRate: 0.72` + `lowpass(13kHz)` + Convolver (decay: 3.6s) | Nostalgic slowed aesthetic with frequency haze and surf reflections. |
+| `sped-up` | preset | speed: 118% | `playbackRate: 1.18` (windowed-sinc resampled) | Modest varispeed tempo acceleration with elevated pitch. |
+| `nightcore` | preset | speed: 135%, pitch: +3 st, treble: +4 dB | `playbackRate` + `highshelf(10kHz, +4dB)` | Fast tempo, elevated pitch transpose, and vocal air lift. |
+| `daycore` | preset | speed: 82%, pitch: -3 st, bass: +4 dB | `playbackRate` + `lowshelf(90Hz, +4dB)` | Anti-nightcore: baritone slowed pitch drop with heavy bass compensation. |
+
+### Group 2: Stereo & Spatial Effects (6 presets)
+
+| Preset ID | Kind | Default Parameters | DSP Chain & Operations | Acoustic Role |
+|---|---|---|---|---|
+| `8d-audio` | preset | rotation: 50%, reverb: 30% | Sinusoidal LFO pan (cycle: 9s) + Convolver (2.6s tail) | 360° orbital rotation around listener in headphones. |
+| `auto-panner` | tool | pan-speed: 50% | `StereoPannerNode` sinusoidal LFO (cycle: 3.5s) | Rhythmically oscillates audio between left and right channels. |
+| `stereo-panner`| tool | rotation: 50% | Static `StereoPannerNode` balance (-1 to +1) | Precise channel balance and pan steering. |
+| `stereo-widening` | preset | width: 65% | Mid/Side matrix separation (side gain: 1.30x) | Expands stereo soundstage width without phase artifacts. |
+| `haas-spatializer` | preset | delay-ms: 20 ms, mix: 75% | Right-channel micro-delay (20 ms) + mix gain | Psychoacoustic Haas precedence delay for immersive dimensional width. |
+| `ping-pong` | preset | echo: 40%, size: 45% | Stereo cross-delay line (320 ms) + feedback loop (0.45) | Rhythmic bouncing delays across the stereo field. |
+
+### Group 3: Bass & Equalizer (7 presets)
+
+| Preset ID | Kind | Default Parameters | DSP Chain & Operations | Acoustic Role |
+|---|---|---|---|---|
+| `bass-boost-light` | preset | bass: +3.5 dB | `BiquadFilterNode(lowshelf, 95Hz, +3.5dB)` | Transparent low-end presence, ideal for headphones. |
+| `bass-boost-mod` | preset | bass: +7.0 dB | `BiquadFilterNode(lowshelf, 85Hz, +7.0dB)` | Punchy kick drum and bassline reinforcement. |
+| `bass-boost-heavy` | preset | bass: +10.5 dB | `BiquadFilterNode(lowshelf, 75Hz, +10.5dB)` | Deep subwoofer body for electronic and hip-hop. |
+| `bass-boost-extreme` | preset | bass: +15.0 dB | `BiquadFilterNode(lowshelf, 65Hz, +15.0dB)` + Limiter | Extreme chest-rattle low end safely caught by peak limiter. |
+| `equalizer` | tool | bass: 0 dB, eq-mid: 0 dB, eq-high: 0 dB | 3-band: Lowshelf (120Hz), Peaking (2400Hz, Q=1.0), Highshelf (9kHz) | Full 3-band surgical mastering tone balance. |
+| `treble-air` | preset | treble: +5 dB | `BiquadFilterNode(highshelf, 9000Hz, +5dB)` | Opens high-frequency presence and glossy shimmer. |
+| `mid-scoop` | preset | cut: -3 dB, brightness: +3 dB | `peaking(350Hz, -3dB)` + `highshelf(8000Hz, +3dB)` | Scoops boxy lower-mids to create modern V-shaped clarity. |
+
+### Group 4: Reverb & Echo (10 presets)
+
+| Preset ID | Kind | Default Parameters | Decay / Delay Time | Acoustic Space Description |
+|---|---|---|---|---|
+| `bathroom-reverb` | preset | reverb: 35% | Decay: 0.65s (damping 0.75) | Tight, reflective tiled room with fast flutter. |
+| `small-room-reverb` | preset | reverb: 28% | Decay: 1.10s (damping 0.55) | Intimate studio tracking room, natural acoustics. |
+| `medium-room-reverb` | preset | reverb: 32% | Decay: 2.00s (damping 0.45) | Balanced studio live room with natural envelope. |
+| `large-room-reverb` | preset | reverb: 40% | Decay: 3.40s (damping 0.35) | Warm concert hall with diffuse reflections. |
+| `church-hall-reverb` | preset | reverb: 55% | Decay: 4.80s (damping 0.30) | Stone arched sanctuary with prominent sustain. |
+| `cathedral-reverb` | preset | reverb: 65%, size: 95% | Decay: 6.40s (damping 0.25) | Monumental cathedral with ethereal decay tail. |
+| `vocal-reverb` | preset | reverb: 28% | Decay: 1.80s (pre-delay: 35ms) | Transparent vocal chamber preserving lyric intelligibility. |
+| `plate-reverb` | preset | reverb: 36%, decay: 2.4s, brightness: +3dB | Decay: 2.40s (highpass 220Hz) | EMT metal plate simulation with metallic shimmer and clean lows. |
+| `slapback-echo` | preset | echo: 35% | Time: 115 ms (single repeat) | Classic rockabilly / slapback echo without wash. |
+| `echo-chamber` | preset | echo: 25%, size: 50%, reverb: 25% | Echo: 280 ms + Reverb: 2.2s | Vintage studio echo chamber with ambient decay. |
+
+### Group 5: Pitch & Tempo (3 tools)
+
+| Preset ID | Kind | Default Parameters | DSP Nodes & Operations | Acoustic Role |
+|---|---|---|---|---|
+| `pitch-432hz` | tool | 432hz-enabled: true | `playbackRate: 432/440 = 0.981818` | Exact -31.77 cents shift to historical Verdi 432 Hz concert pitch. |
+| `pitch-shifter`| tool | pitch: 0 st (-12 to +12) | `playbackRate = 2^(semitones/12)` | Musical semitone transposition. |
+| `tempo-changer`| tool | speed: 100% (30% to 180%) | `playbackRate = speed / 100` | Smooth playback speed and tempo variation. |
+
+### Group 6: Creative Effects (8 presets)
+
+| Preset ID | Kind | Default Parameters | DSP Nodes & Operations | Acoustic Role |
+|---|---|---|---|---|
+| `reverse` | tool | reverse-enabled: true | `Float32Array.reverse()` across channels | Bit-pure backwards playback and transitional swells. |
+| `underwater` | preset | reverb: 45%, bass: +6 dB | Cascaded Lowpass (520Hz, 24 dB/oct) + Lowshelf (160Hz) + Reverb | Muffled aquatic submersion with resonant deep lows. |
+| `telephone-voice` | preset | saturation: 40% | Highpass (450Hz) + Cascaded Lowpass (3.2kHz) + tanh Saturation | Vintage band-limited carbon microphone telephone tone. |
+| `lofi-tape` | preset | saturation: 50%, speed: 94%, treble: -3 dB | tanh saturation + Highshelf (6.5kHz) + Lowpass (9.5kHz) + Drag | 1980s cassette tape with motor drag and head roll-off. |
+| `tape-warmth` | preset | warmth: 24%, sub-warmth: +1.5 dB | Subtle tanh drive + Lowshelf (100Hz) + Lowpass (14kHz) | Studio console tape warmth and pleasant even harmonics. |
+| `tube-warmth` | preset | drive: 25%, warmth: +2.5 dB, air: -1.5 dB | Triode tanh waveshaping + Lowshelf (200Hz) + Highshelf (13kHz) | Analog vacuum tube preamp warmth with harmonic body. |
+| `am-radio` | preset | bandwidth: 2800 Hz, saturation: 35% | Highpass (550Hz) + Peaking (1800Hz, +4dB) + Lowpass (2.8kHz) + Drive | Vintage AM radio broadcast with resonant horn and transistor grit. |
+| `muffled-room` | preset | cutoff: 320 Hz, bass: +4 dB, reverb: 32% | Dual Lowpass (320Hz, 24 dB/oct) + Lowshelf (120Hz) + Diffusion | Sensation of music playing through a wall in the adjacent room. |
+
+### Group 7: Audio Cleanup (6 presets & tools)
+
+| Preset ID | Kind | Default Parameters | DSP Nodes & Operations | Acoustic Role |
+|---|---|---|---|---|
+| `sub-rumble-cut` | tool | rumble-cut: true | Cascaded 24 dB/oct Butterworth highpass at 30 Hz | Cleans inaudible DC offset and infrasonic sub rumble. |
+| `noise-reducer` | tool | mud-cut: true | Highpass at 115 Hz (Q=0.707) | Tames HVAC thumps, handling noise, and mic stand rumble. |
+| `vocal-air` | preset | presence: +3 dB, air: +4 dB | Peaking (3200Hz, +3dB) + Highshelf (11kHz, +4dB) | Forward vocal articulation and silky breath air. |
+| `vocal-clarity` | preset | presence: +3.5 dB, mud-cut: true | Highpass (110Hz) + Peaking (2600Hz, +3.5dB) | Removes low-end mud while emphasizing speech presence. |
+| `de-harsh` | preset | treble: -3.5 dB | Highshelf (7000Hz, -3.5dB) | Softens sibilant harshness and brittle cymbals. |
+| `podcast-voice` | preset | presence: +3 dB, mud-cut: true, smooth: true | Highpass (95Hz) + Peaking (3200Hz) + Highshelf (8kHz, -2dB) | Tailored voice contour for podcast, broadcast, and voiceover. |
+
+### Group 8: Audio Utilities & Export (8 tools & presets)
+
+| Preset ID | Kind | Default Parameters | DSP Nodes & Operations | Acoustic Role |
+|---|---|---|---|---|
+| `volume-changer` | tool | volume-db: +3 dB | Linear `GainNode` with dB scaling (-18 dB to +12 dB) | Clean track gain leveling and gain staging. |
+| `trimmer-cutter` | tool | trim-start: 0s, trim-end: 60s | Native PCM slicing with 5 ms anti-click fades | Lossless segment cropping and duration trimming. |
+| `fade-in-out` | tool | fade-in: 2s, fade-out: 3s | Gain envelope linear ramps at start and end | Smooth intro and outro volume fades without abrupt clicks. |
+| `downmixer` | tool | mud-cut: false | Arithmetic mean 0.5 * (L + R) summing | True mono fold-down for phone speaker and radio check. |
+| `bpm-detector` | tool | speed: 100% | Transient-energy autocorrelation analysis | Automatic tempo and beat detection. |
+| `format-converter` | tool | mud-cut: false | Multi-codec binary encoder pipeline | In-browser transcoding between WAV, MP3, and AIFF. |
+| `mastering-polish` | preset | bass: +2 dB, treble: +2 dB, presence: +1 dB | 3-band polish + 5 ms look-ahead limiter (-0.3 dBFS) | Commercial finishing curve with peak headroom safety. |
 
 ---
 
-## 3. Preset Switch & State Invariance Guarantees
-- **Atomic Parameter Reset:** Switching presets completely unmounts previous custom overrides and establishes pristine factory defaults.
-- **Audio Param Smoothing:** Real-time preview updates use `exponentialRampToValueAtTime` or `linearRampToValueAtTime` (15ms window) to avoid audible clicks or pops during live scrubbing.
-- **Preview vs Export Parity:** The offline rendering engine uses the exact same `DSPPlan` builder as the real-time preview graph, ensuring the exported WAV/MP3 is bit-faithful to what the user auditioned.
+## 3. Verification & Invariance Guarantees
+- **Pure Functional Resolution:** `resolveProcessing()` maps preset IDs and control values purely into deterministic plans.
+- **Render Signature Invariance:** Any change to an audible parameter or export setting modifies `signature`, preventing stale playback or outdated exports.
+- **Headroom & Peak Protection:** Look-ahead limiter with −0.3 dBFS ceiling guarantees zero digital overs regardless of boost levels.
+- **Test Integrity:** Every preset and operation is continuously verified in `src/config/__tests__/preset-audit.test.ts` and `src/lib/audio/__tests__/dsp-plan.test.ts`.

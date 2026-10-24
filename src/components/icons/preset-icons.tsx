@@ -90,6 +90,7 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "auto-panner": ArrowsLeftRight,
   "stereo-panner": ArrowsLeftRight,
   "stereo-widening": ArrowsOutCardinal,
+  "haas-spatializer": ArrowsOutCardinal,
   "ping-pong": ArrowArcRight,
 
   // Bass & Equalizer
@@ -109,6 +110,7 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "church-hall-reverb": Church,
   "cathedral-reverb": Church,
   "vocal-reverb": MicrophoneStage,
+  "plate-reverb": Sparkle,
 "slapback-echo": Pulse,
 "echo-chamber": Columns,
 
@@ -123,6 +125,8 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   "telephone-voice": PhoneCall,
   "lofi-tape": CassetteTape,
   "tape-warmth": CassetteTape,
+  "tube-warmth": Lightning,
+  "am-radio": Radioactive,
   "muffled-room": Buildings,
 
   // Cleanup
@@ -136,6 +140,7 @@ const presetIconMap: Record<PresetId, PresetIconComponent> = {
   // Utilities & Export
   "volume-changer": SpeakerHigh,
   "trimmer-cutter": Scissors,
+  "fade-in-out": SlidersHorizontal,
   "downmixer": ArrowsMerge,
   "bpm-detector": Metronome,
   "format-converter": FileAudio,
