@@ -94,9 +94,11 @@ export function ToolUploader({
       } else {
         onFilesChange(newLoaded.slice(0, 1));
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setErrorMessage(
-        err?.message || "Failed to decode audio file. It may be corrupt or encoded in an unsupported codec."
+        err instanceof Error && err.message
+          ? err.message
+          : "Failed to decode audio file. It may be corrupt or encoded in an unsupported codec."
       );
     } finally {
       setIsDecoding(false);

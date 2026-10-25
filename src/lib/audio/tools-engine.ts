@@ -4,7 +4,7 @@
  * Reuses the existing renderer, DSP utilities, and audio encoders.
  */
 
-import type { ToolDefinition } from "@/config/tools-registry";
+import type { ToolDefinition, ToolSettingValue, ToolTimeRange } from "@/config/tools-registry";
 import {
   measurePeak,
   measureRms,
@@ -13,10 +13,11 @@ import {
   applyPeakNormalize,
 } from "./dsp-utils";
 import { renderProcessedAudio, type ProcessedAudioResult } from "./renderer";
+import type { EffectValue } from "@/types/preset";
 import { encodeWav, encodeAiff, encodeMp3 } from "./encoders";
 import { getAudioContext } from "./decoding";
 import { detectAudioBpm } from "./analysis";
-import type { ExportConfig } from "@/types/export";
+import type { ExportConfig, ExportFormat } from "@/types/export";
 
 export interface AudioMetadataReport {
   fileName: string;
@@ -357,7 +358,7 @@ export function encodeBufferToBlob(
     let inputBuf = buffer;
     if (buffer.sampleRate !== 32000 && buffer.sampleRate !== 44100 && buffer.sampleRate !== 48000) {
       const targetSr = buffer.sampleRate > 46000 ? 48000 : 44100;
-      let chs: Float32Array[] = [];
+      const chs: Float32Array[] = [];
       for (let c = 0; c < buffer.numberOfChannels; c++) {
         chs.push(buffer.getChannelData(c));
       }
@@ -385,13 +386,20 @@ export async function executeToolTask(
   slug: string,
   files: File[],
   buffers: AudioBuffer[],
-  settings: Record<string, any>,
+  settings: Record<string, ToolSettingValue>,
   onProgress?: (progress: number, status: string) => void,
   isCancelled?: () => boolean
 ): Promise<ToolExecutionResult> {
   const checkCancel = () => {
     if (isCancelled?.()) throw new Error("Processing cancelled by user.");
   };
+
+  // Typed setting coercion helpers (settings are loosely-typed UI values).
+  const strSetting = (key: string, fallback: string): string => {
+    const v = settings[key];
+    return typeof v === "string" && v.length > 0 ? v : fallback;
+  };
+  const formatSetting = (): ExportFormat => strSetting("format", "wav") as ExportFormat;
 
   const primaryFile = files[0] || null;
   const primaryBuffer = buffers[0];
@@ -469,7 +477,7 @@ export async function executeToolTask(
   // 3. AUDIO SPLITTER
   // -------------------------------------------------------------
   if (slug === "audio-splitter") {
-    const splitMode = settings["splitMode"] || "parts";
+    const splitMode = strSetting("splitMode", "parts");
     const val =
       splitMode === "parts"
         ? Number(settings["partCount"] ?? 2)
@@ -478,7 +486,7 @@ export async function executeToolTask(
     onProgress?.(25, `Partitioning audio into ${splitMode === "parts" ? `${val} parts` : `${val}s intervals`}...`);
     checkCancel();
 
-    const rawSegments = splitAudioBuffer(primaryBuffer, splitMode, val);
+    const rawSegments = splitAudioBuffer(primaryBuffer, splitMode as "parts" | "duration", val);
     const format = "wav"; // Split output default lossless WAV for speed and zero-loss
     const results: SplitSegmentResult[] = [];
 
@@ -517,7 +525,7 @@ export async function executeToolTask(
   // 4. OTHER UTILITIES (Using Renderer Engine + DSP plan)
   // -------------------------------------------------------------
   let presetId: string | null = null;
-  const effectValues: Record<string, any> = {};
+  const effectValues: Record<string, EffectValue> = {};
   const exportConfig: Partial<ExportConfig> = {};
 
   const baseFileName = primaryFile?.name || "audio.wav";
@@ -525,7 +533,7 @@ export async function executeToolTask(
   switch (slug) {
     case "audio-converter": {
       presetId = "format-converter";
-      const fmt = settings["format"] || "wav";
+      const fmt = formatSetting();
       exportConfig.format = fmt;
       if (fmt === "wav") {
         exportConfig.wavBitDepth = (Number(settings["bitDepth"] ?? 24) || 24) as 16 | 24 | 32;
@@ -551,7 +559,7 @@ export async function executeToolTask(
       if (targetRate === 44100 || targetRate === 48000 || targetRate === 96000) {
         exportConfig.sampleRate = targetRate;
       }
-      exportConfig.format = settings["format"] || "wav";
+      exportConfig.format = formatSetting();
       break;
     }
 
@@ -565,17 +573,20 @@ export async function executeToolTask(
 
     case "audio-trimmer": {
       presetId = "trimmer-cutter";
-      const range = settings["timeRange"] || { start: 0, end: primaryBuffer.duration };
+      const range =
+        settings["timeRange"] && typeof settings["timeRange"] === "object" && "start" in settings["timeRange"]
+          ? (settings["timeRange"] as ToolTimeRange)
+          : { start: 0, end: primaryBuffer.duration };
       effectValues["trim-start"] = Math.max(0, Number(range.start ?? 0));
       effectValues["trim-end"] = Math.min(primaryBuffer.duration, Number(range.end ?? primaryBuffer.duration));
-      if (settings["format"]) exportConfig.format = settings["format"];
+      exportConfig.format = formatSetting();
       break;
     }
 
     case "reverse-audio": {
       presetId = "reverse";
       effectValues["reverse-enabled"] = true;
-      if (settings["format"]) exportConfig.format = settings["format"];
+      exportConfig.format = formatSetting();
       break;
     }
 
@@ -618,7 +629,7 @@ export async function executeToolTask(
     }
 
     case "bass-booster": {
-      const intensity = settings["intensity"] || "moderate";
+      const intensity = strSetting("intensity", "moderate");
       if (intensity === "light") presetId = "bass-boost-light";
       else if (intensity === "heavy") presetId = "bass-boost-heavy";
       else if (intensity === "extreme") presetId = "bass-boost-extreme";
@@ -628,7 +639,7 @@ export async function executeToolTask(
 
     case "vocal-remover": {
       presetId = "vocal-remover";
-      effectValues["mode"] = settings["mode"] || "remove-center";
+      effectValues["mode"] = strSetting("mode", "remove-center");
       effectValues["bass-retention"] = Number(settings["bassPreserve"] ?? 120);
       effectValues["reduction"] = Number(settings["reduction"] ?? 90);
       break;

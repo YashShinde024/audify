@@ -17,13 +17,21 @@ export function ToolPlayer({ url, duration, fileName }: ToolPlayerProps) {
   const [isMuted, setIsMuted] = useState(false);
   const [isLooping, setIsLooping] = useState(false);
   const [volume, setVolume] = useState(1);
+  const [renderedUrl, setRenderedUrl] = useState(url);
 
-  useEffect(() => {
+  // Reset player state during render when the source url changes
+  // (React-Docs pattern for adjusting state when a prop changes).
+  if (url !== renderedUrl) {
+    setRenderedUrl(url);
     setIsPlaying(false);
     setCurrentTime(0);
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.pause();
+  }
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      audio.pause();
     }
   }, [url]);
 

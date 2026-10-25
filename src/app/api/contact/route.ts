@@ -90,12 +90,14 @@ export function extractClientIp(request: Request): string {
   const realIp = request.headers.get("x-real-ip")?.trim();
   if (realIp && isValidIp(realIp)) return realIp;
 
-  // 2. Fall back to X-Forwarded-For: take first valid IP
+  // 2. Fall back to X-Forwarded-For.
+  // Clients can forge the first entries of this header to bypass rate limiting;
+  // only the LAST entry is appended by the nearest trusted hop, so prefer it.
   const forwardedFor = request.headers.get("x-forwarded-for");
   if (forwardedFor) {
     const parts = forwardedFor.split(",").map((p) => p.trim());
-    for (const part of parts) {
-      if (isValidIp(part)) return part;
+    for (let i = parts.length - 1; i >= 0; i--) {
+      if (isValidIp(parts[i])) return parts[i];
     }
   }
 

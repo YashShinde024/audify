@@ -1,13 +1,13 @@
 "use client";
 
 import React from "react";
-import type { ToolDefinition, ToolSetting } from "@/config/tools-registry";
+import type { ToolDefinition, ToolSetting, ToolSettingValue } from "@/config/tools-registry";
 import { ArrowCounterClockwise, Info } from "@phosphor-icons/react";
 
 interface ToolSettingsProps {
   tool: ToolDefinition;
-  values: Record<string, any>;
-  onChange: (id: string, value: any) => void;
+  values: Record<string, ToolSettingValue>;
+  onChange: (id: string, value: ToolSettingValue) => void;
   onReset: () => void;
   audioDuration?: number;
   disabled?: boolean;
@@ -70,7 +70,7 @@ export function ToolSettings({
                 </div>
                 <select
                   id={setting.id}
-                  value={val}
+                  value={val as string}
                   disabled={disabled}
                   onChange={(e) => {
                     const raw = e.target.value;
@@ -107,7 +107,7 @@ export function ToolSettings({
                     {setting.label}
                   </label>
                   <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary">
-                    {val}
+                    {String(val)}
                     {setting.unit ? ` ${setting.unit}` : ""}
                   </span>
                 </div>
@@ -117,7 +117,7 @@ export function ToolSettings({
                   min={min}
                   max={max}
                   step={step}
-                  value={val}
+                  value={val as number}
                   disabled={disabled}
                   onChange={(e) => onChange(setting.id, Number(e.target.value))}
                   className="w-full h-2 bg-raised border border-line rounded-lg appearance-none cursor-pointer accent-primary disabled:opacity-50"

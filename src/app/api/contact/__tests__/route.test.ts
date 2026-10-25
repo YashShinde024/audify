@@ -27,6 +27,29 @@ describe("Contact Endpoint Security & Rate Limiting", () => {
     expect(extractClientIp(emptyReq)).toBe("127.0.0.1");
   });
 
+  it("does not trust spoofed X-Forwarded-For entries (rate-limit bypass)", () => {
+    // Attacker injects fake IPs at the front of the chain; the last entry
+    // (appended by the nearest trusted hop) is the only reliable one.
+    const spoofedReq = new Request("http://localhost/api/contact", {
+      headers: {
+        "x-forwarded-for": "8.8.8.8, 1.1.1.1, 203.0.113.5",
+      },
+    });
+    expect(extractClientIp(spoofedReq)).toBe("203.0.113.5");
+
+    // Invalid last entry falls back to the previous valid one
+    const junkTailReq = new Request("http://localhost/api/contact", {
+      headers: { "x-forwarded-for": "203.0.113.5, not-an-ip" },
+    });
+    expect(extractClientIp(junkTailReq)).toBe("203.0.113.5");
+
+    // Fully spoofed chain with only invalid entries falls back to default
+    const invalidReq = new Request("http://localhost/api/contact", {
+      headers: { "x-forwarded-for": "garbage" },
+    });
+    expect(extractClientIp(invalidReq)).toBe("127.0.0.1");
+  });
+
   it("allows up to 5 requests in sliding window and returns 429 on 6th", async () => {
     const validPayload = {
       name: "Alex Vance",

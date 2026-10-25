@@ -10,12 +10,19 @@ export interface ToolSettingOption {
   value: string | number;
 }
 
+export interface ToolTimeRange {
+  start: number;
+  end: number;
+}
+
+export type ToolSettingValue = string | number | boolean | ToolTimeRange;
+
 export interface ToolSetting {
   id: string;
   label: string;
   description: string;
   type: "select" | "slider" | "toggle" | "time-range" | "file-list";
-  defaultValue: any;
+  defaultValue: ToolSettingValue;
   min?: number;
   max?: number;
   step?: number;

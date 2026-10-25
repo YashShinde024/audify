@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import type { ToolDefinition } from "@/config/tools-registry";
+import React, { useState, useRef } from "react";
+import type { ToolDefinition, ToolSettingValue } from "@/config/tools-registry";
 import { ToolUploader, type LoadedAudioFile } from "./tool-uploader";
 import { ToolSettings } from "./tool-settings";
 import { ToolPlayer } from "./tool-player";
@@ -36,8 +36,8 @@ type WorkspaceState = "idle" | "ready" | "processing" | "completed";
 
 export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
   const [files, setFiles] = useState<LoadedAudioFile[]>([]);
-  const [settings, setSettings] = useState<Record<string, any>>(() => {
-    const initial: Record<string, any> = {};
+  const [settings, setSettings] = useState<Record<string, ToolSettingValue>>(() => {
+    const initial: Record<string, ToolSettingValue> = {};
     tool.settings?.forEach((s) => {
       initial[s.id] = s.defaultValue;
     });
@@ -53,24 +53,17 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
 
   const isCancelledRef = useRef(false);
 
-  // Synchronize state when files are added or removed
-  useEffect(() => {
-    if (files.length === 0) {
-      setState("idle");
-      setResult(null);
-      setError(null);
-    } else if (state === "idle") {
-      setState("ready");
-    }
-  }, [files, state]);
+  // Derived state: no files => idle; files present with idle state => ready.
+  const displayState: WorkspaceState =
+    files.length === 0 ? "idle" : state === "idle" ? "ready" : state;
 
   // Handle settings change
-  const handleSettingChange = (id: string, value: any) => {
+  const handleSettingChange = (id: string, value: ToolSettingValue) => {
     setSettings((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleResetSettings = () => {
-    const initial: Record<string, any> = {};
+    const initial: Record<string, ToolSettingValue> = {};
     tool.settings?.forEach((s) => {
       initial[s.id] = s.defaultValue;
     });
@@ -104,9 +97,13 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
 
       setResult(res);
       setState("completed");
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (!isCancelledRef.current) {
-        setError(err?.message || "An unexpected error occurred during audio processing.");
+        setError(
+          err instanceof Error && err.message
+            ? err.message
+            : "An unexpected error occurred during audio processing."
+        );
       }
       setState("ready");
     }
@@ -154,9 +151,12 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
           files={files}
           onFilesChange={(newFiles) => {
             setFiles(newFiles);
-            if (newFiles.length === 0) setResult(null);
+            if (newFiles.length === 0) {
+              setResult(null);
+              setError(null);
+            }
           }}
-          disabled={state === "processing"}
+          disabled={displayState === "processing"}
         />
       </div>
 
@@ -175,7 +175,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
       )}
 
       {/* Ready / Configure Section */}
-      {files.length > 0 && state !== "completed" && (
+      {files.length > 0 && displayState !== "completed" && (
         <div className="space-y-6">
           <ToolSettings
             tool={tool}
@@ -183,17 +183,17 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
             onChange={handleSettingChange}
             onReset={handleResetSettings}
             audioDuration={primaryDuration}
-            disabled={state === "processing"}
+            disabled={displayState === "processing"}
           />
 
           {/* Action Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl border border-line bg-surface/60 backdrop-blur-sm">
             <div className="text-xs text-muted text-center sm:text-left">
-              <span className="font-semibold text-fg">Processing:</span> 100% Client-Side in Browser Memory · Zero Cloud Uploads
+              <span className="font-semibold text-fg">Processing:</span> 100% Client-Side in Browser Memory Â· Zero Cloud Uploads
             </div>
 
             <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-              {state === "processing" ? (
+              {displayState === "processing" ? (
                 <button
                   onClick={handleCancel}
                   className="px-5 py-2.5 rounded-xl border border-line hover:bg-raised text-sm font-medium text-muted hover:text-fg transition-colors"
@@ -216,7 +216,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
       )}
 
       {/* Processing State with Live Progress Bar */}
-      {state === "processing" && (
+      {displayState === "processing" && (
         <div className="p-8 rounded-2xl border border-primary/30 bg-primary/5 backdrop-blur-sm space-y-4 text-center">
           <div className="w-12 h-12 mx-auto rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
             <SpinnerGap className="w-6 h-6 animate-spin" />
@@ -238,7 +238,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
       )}
 
       {/* Completed Result State */}
-      {state === "completed" && result && (
+      {displayState === "completed" && result && (
         <div className="space-y-6">
           {/* Header Banner */}
           <div className="flex items-center gap-3 p-4 rounded-2xl bg-success/10 border border-success/30 text-success">
@@ -356,7 +356,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-fg truncate">{seg.name}</p>
                       <p className="text-xs text-muted font-mono">
-                        {seg.durationFormatted} · {seg.sizeFormatted} · WAV Lossless
+                        {seg.durationFormatted} Â· {seg.sizeFormatted} Â· WAV Lossless
                       </p>
                     </div>
 
@@ -492,7 +492,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
       <div className="pt-6 border-t border-line">
         <div className="p-4 rounded-xl border border-dashed border-line bg-surface/30 text-center space-y-1">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-muted/80">
-            Free Audio Utility Hub · Sponsored Area
+            Free Audio Utility Hub Â· Sponsored Area
           </p>
           <p className="text-xs text-muted">
             Audify Tools will always remain 100% free with no wait-walls or artificial processing limits.
