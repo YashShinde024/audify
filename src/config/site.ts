@@ -51,4 +51,39 @@ export const siteConfig = {
   maxFileSizeBytes: 10 * 1024 * 1024, // 10 MB
 } as const;
 
+/** Homepage metadata kept here so tests can assert SEO invariants without importing route components. */
+export const homeMetadata = {
+  title: "Audify — Sound, reimagined · In-Browser Audio Toolkit",
+  description:
+    "In-browser audio presets and tools by Nyxen × Xpert Melody — slowed + reverb, 8D audio, nightcore, compression and trimming. Files are edited locally.",
+  alternates: {
+    canonical: siteConfig.url,
+  },
+  openGraph: {
+    title: "Audify — Sound, reimagined · In-Browser Audio Toolkit",
+    description:
+      "In-browser audio presets and tools by Nyxen × Xpert Melody — slowed + reverb, 8D audio, nightcore, compression and trimming. Files are edited locally.",
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    type: "website",
+    images: [
+      {
+        url: `${siteConfig.url}${siteConfig.ogImage}`,
+        width: 1200,
+        height: 630,
+        alt: "Audify — Sound, reimagined by Nyxen × Xpert Melody",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Audify — Sound, reimagined · In-Browser Audio Toolkit",
+    description:
+      "In-browser audio presets and tools by Nyxen × Xpert Melody — slowed + reverb, 8D audio, nightcore, compression and trimming. Files are edited locally.",
+    creator: "@buildnyxen",
+    images: [`${siteConfig.url}${siteConfig.ogImage}`],
+  },
+};
+
+
 export type SiteConfig = typeof siteConfig;

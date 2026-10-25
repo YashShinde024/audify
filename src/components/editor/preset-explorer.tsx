@@ -11,7 +11,7 @@ import {
   Play,
   Square,
   Sparkle,
-  BookOpenText,
+
   X,
   Sliders,
   CheckCircle,
@@ -20,7 +20,6 @@ import {
   Info,
 } from "@phosphor-icons/react";
 import { presets, getPresetById } from "@/config/presets";
-import { presetArticleRegistry } from "@/config/blog-registry";
 import { getToolSlugForPreset } from "@/config/tools-registry";
 import { PresetIcon } from "@/components/icons/preset-icons";
 import { Button } from "@/components/ui/button";
@@ -779,9 +778,6 @@ export function PresetExplorer() {
               </div>
             </div>
 
-            {/* Blog Guide Link if Available */}
-            <BlogGuideDetail presetId={detailPreset.id} />
-
             {/* Modal Actions */}
             <div className="pt-3 border-t border-line flex flex-wrap items-center justify-between gap-3">
               <Button
@@ -835,23 +831,3 @@ export function PresetExplorer() {
   );
 }
 
-function BlogGuideDetail({ presetId }: { presetId: string }) {
-  const slug = presetArticleRegistry.find((a) => a.presetId === presetId)?.slug;
-  if (!slug) return null;
-
-  return (
-    <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 flex items-center justify-between text-xs">
-      <div className="flex items-center gap-2 text-fg">
-        <BookOpenText size={16} className="text-primary" />
-        <span>In-depth acoustic engineering guide available</span>
-      </div>
-      <Link
-        href={`/blog/${slug}`}
-        className="font-semibold text-primary hover:text-primary-hover flex items-center gap-1 text-[11px]"
-      >
-        <span>Read Guide</span>
-        <ArrowRight size={11} />
-      </Link>
-    </div>
-  );
-}

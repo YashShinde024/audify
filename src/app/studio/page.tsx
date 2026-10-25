@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { EditorShell } from "@/components/editor/editor-shell";
 import { StudioInitializer } from "@/components/editor/studio-initializer";
+import { AdBanner } from "@/components/advertising/ad-banner";
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 
@@ -26,6 +27,13 @@ export default function StudioPage() {
         <StudioInitializer />
       </Suspense>
       <EditorShell />
+      {/* Single non-obstructive ad below the editor workspace.
+          Placed outside all audio controls to avoid interfering with
+          upload, waveform, playback, processing, or export UX. */}
+      <div className="border-t border-line/50 py-6">
+        <AdBanner className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8" />
+      </div>
     </div>
   );
 }
+

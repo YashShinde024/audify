@@ -5,6 +5,7 @@ import { FaqClient } from "./faq-client";
 import { FAQ_DATA } from "./faq-data";
 import { siteConfig } from "@/config/site";
 import { ArrowRight, BookOpen, EnvelopeSimple, ShieldCheck } from "@phosphor-icons/react/dist/ssr";
+import { AdBanner } from "@/components/advertising/ad-banner";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions — Audify",
@@ -60,6 +61,8 @@ export default function FAQPage() {
           </section>
 
           {/* Quick Resource Directory */}
+          {/* Ad Placement: Between FAQ content and resource cards */}
+          <AdBanner className="mx-auto" />
           <section className="grid gap-4 sm:grid-cols-3 pt-6 border-t border-line">
             <div className="rounded-xl border border-line bg-surface p-5 flex flex-col justify-between gap-3">
               <div className="space-y-1.5">

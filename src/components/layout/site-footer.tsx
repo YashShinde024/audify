@@ -39,7 +39,7 @@ export function SiteFooter() {
               >
                 Xpert Melody
               </a>
-              . Built for musicians, producers, sound designers, and content creators. 100% in-browser processing with zero audio uploads.
+              . Built for musicians, producers, sound designers, and content creators. Audio processing runs entirely in your browser with zero audio uploads.
             </p>
 
             {/* Quick Action Badges */}

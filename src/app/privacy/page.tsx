@@ -248,7 +248,7 @@ export default function PrivacyPage() {
             </table>
           </div>
           <p className="text-xs">
-            We do not employ cross-site tracking cookies, behavioral ad-profiling tags, or commercial session-replay scripts. You can adjust your consent choices at any time via the Cookie Preferences link in our footer, or directly here:
+            This table lists cookies and storage set <em>by Audify itself</em>. When advertising is enabled (see Section 7), third-party advertising scripts loaded in ad containers may set their own cookies or client-side identifiers independently of Audify, subject to your consent preferences and regional settings. We do not embed web analytics, session-replay scripts, or behavioral profiling tags of our own. You can adjust your consent choices at any time via the Cookie Preferences link in our footer, or directly here:
           </p>
           <div className="pt-1">
             <CookiePreferencesButton className="px-3.5 py-1.5 rounded-xl border border-line bg-surface text-fg hover:border-primary font-medium shadow-xs" />
@@ -272,7 +272,21 @@ export default function PrivacyPage() {
               <strong className="text-fg">External Media Links (YouTube):</strong> Links to acoustic demonstrations, tutorials, and music tracks curated by Xpert Melody redirect to YouTube (Google LLC), where Google&apos;s independent privacy policy applies.
             </li>
             <li>
-              <strong className="text-fg">Sponsor Placements:</strong> Non-personalized sponsor notices are rendered in reserved, static containers with zero tracking pixels to prevent Cumulative Layout Shift (CLS).
+              <strong className="text-fg">Sponsor Placements (Advertising):</strong> In production environments where advertising is
+              explicitly enabled (via the{" "}
+              <code className="font-mono text-primary bg-surface px-1 py-0.5 rounded border border-line">NEXT_PUBLIC_ADS_ENABLED</code>{" "}
+              deployment flag), banner advertisement containers marked &quot;Advertisement&quot; are rendered on some pages and served by a
+              third-party advertising network (Adsterra). These placements:
+              <ul className="list-disc list-inside pl-2 pt-1.5 space-y-1">
+                <li>Never receive your audio files, audio buffers, filenames, or audio metadata — audio processing is fully local and advertising code has no access to it.</li>
+                <li>Load third-party JavaScript from the advertiser&apos;s servers, which can observe standard browser-level information (IP address, device characteristics, referrer, cookies) plausibly needed to serve ads, as with any advertising network.</li>
+                <li>May cause the advertising network to set its own cookies or local identifiers for ad delivery, frequency capping, and fraud prevention; these are the vendor&apos;s processing operations and are governed by the vendor&apos;s privacy policy, not ours.</li>
+              </ul>
+              <span className="block pt-1.5">
+                Advertising remains <strong>disabled by default</strong> — in development, test environments, and any deployment that has not
+                explicitly opted in. Where advertising is active, on-device privacy controls (browser ad-blockers, tracking protection, cookie clearing)
+                apply to these third-party containers as they would to any website&apos;s ads.
+              </span>
             </li>
           </ul>
         </section>

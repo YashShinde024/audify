@@ -143,7 +143,7 @@ const AEO_QUESTIONS: QuestionItem[] = [
     category: "File Management",
     question: "What audio formats can Audify import and export?",
     directAnswer:
-      "Audify can import MP3, WAV, FLAC, AAC, OGG, AIFF, and M4A audio files up to 10 MB. Finished audio can be exported as uncompressed 32-bit floating point WAV, standard 16-bit WAV, MP3 (at 128 kbps, 192 kbps, or 320 kbps), or AIFF.",
+      "Audify can import MP3, WAV, FLAC, AAC, OGG, and M4A audio files up to 10 MB. Finished audio can be exported as 16-bit, 24-bit, or 32-bit float WAV (lossless), MP3 (at 128, 192, 256, or 320 kbps), or 16-bit/24-bit AIFF.",
     technicalDetails:
       "Import decoding is performed by native browser decoders capable of unpacking compressed bitstreams into raw linear PCM. Export encoding to WAV is completely lossless. MP3 exports utilize a client-side LAME encoder executing inside a dedicated Web Worker to maintain UI responsiveness.",
     relatedToolHref: "/tools/format-converter",

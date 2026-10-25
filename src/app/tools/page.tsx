@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { ToolsClient } from "./tools-client";
+import { AdBanner } from "@/components/advertising/ad-banner";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -61,9 +62,17 @@ export default function ToolsPage() {
             lead="Edit, enhance, convert, and master audio tracks directly in your browser. Every tool runs 100% client-side in 32-bit float memory with instant preview and lossless export."
           />
 
+          {/* Ad Placement: Below page header, above tools grid */}
+          <AdBanner className="mx-auto" />
+
           <SectionSeam />
 
           <ToolsClient />
+
+          {/* Ad Placement: Below tools grid, at page bottom */}
+          <div className="pt-4 border-t border-line/50">
+            <AdBanner className="mx-auto" />
+          </div>
         </div>
       </div>
     </>

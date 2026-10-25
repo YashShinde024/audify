@@ -28,7 +28,7 @@ const steps: Step[] = [
     body: "Drag in any audio track up to 10 MB. Audify uses browser-native Web Audio to decode samples directly into client RAM—never uploading bytes to external servers.",
     specDetails: [
       { label: "Max Size", value: "10 MB per file" },
-      { label: "Inputs", value: "WAV, MP3, FLAC, OGG, AAC" },
+      { label: "Inputs", value: "WAV, MP3, FLAC, OGG, AAC, M4A" },
     ],
   },
   {

@@ -17,6 +17,7 @@ import {
   Lightning,
   Sparkle,
 } from "@phosphor-icons/react/dist/ssr";
+import { AdBanner } from "@/components/advertising/ad-banner";
 import { siteConfig } from "@/config/site";
 
 interface ToolPageProps {
@@ -157,6 +158,9 @@ export default async function ToolPage({ params }: ToolPageProps) {
           </div>
         </header>
 
+        {/* Ad Placement: Between header and interactive workspace */}
+        <AdBanner className="mx-auto max-w-4xl" />
+
         {/* Primary Interactive Workspace */}
         <section aria-label={`${tool.name} interactive workspace`}>
           <ToolWorkspace tool={tool} />
@@ -209,16 +213,6 @@ export default async function ToolPage({ params }: ToolPageProps) {
             </div>
 
             <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
-              {tool.articleSlug && (
-                <Link
-                  href={`/blog/${tool.articleSlug}`}
-                  className="px-4 py-2.5 rounded-xl border border-line hover:bg-raised text-xs font-semibold text-fg inline-flex items-center gap-1.5 transition-colors"
-                >
-                  <BookOpen className="w-4 h-4 text-primary" />
-                  <span>Audio Guide</span>
-                </Link>
-              )}
-
               <Link
                 href={tool.presetId ? `/studio?preset=${tool.presetId}` : "/studio"}
                 className="btn-gradient-primary px-5 py-2.5 rounded-xl text-white text-xs font-semibold inline-flex items-center gap-2 shadow-md"
@@ -229,6 +223,9 @@ export default async function ToolPage({ params }: ToolPageProps) {
             </div>
           </div>
         </section>
+
+        {/* Ad Placement: After educational content, before related tools */}
+        <AdBanner className="mx-auto max-w-4xl pt-8" />
 
         {/* Related Tools Directory Section */}
         <section className="max-w-4xl mx-auto pt-8 border-t border-line space-y-4">

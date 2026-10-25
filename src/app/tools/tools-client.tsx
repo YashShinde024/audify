@@ -8,7 +8,6 @@ import {
   Sliders,
   SlidersHorizontal,
   Sparkle,
-  BookOpenText,
   X,
   Waveform,
   CheckCircle,
@@ -18,7 +17,6 @@ import {
 import { PresetIcon } from "@/components/icons/preset-icons";
 import { Button } from "@/components/ui/button";
 import { presets } from "@/config/presets";
-import { presetArticleRegistry } from "@/config/blog-registry";
 import { PRESET_TO_TOOL_SLUG } from "@/config/tools-registry";
 import type { Preset } from "@/types/preset";
 import { cn } from "@/lib/utils";
@@ -206,14 +204,6 @@ export function ToolsClient() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const articleSlugMap = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const article of presetArticleRegistry) {
-      map.set(article.slug, article.slug);
-    }
-    return map;
-  }, []);
-
   const allTools = useMemo(() => {
     const list = presets.filter((p) => p.kind === "tool" || UTILITY_PRESET_IDS.has(p.id));
     return [...STANDALONE_TOOLS, ...list];
@@ -307,7 +297,6 @@ export function ToolsClient() {
       {filteredTools.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredTools.map((tool) => {
-            const hasArticle = articleSlugMap.has(tool.id);
             const toolSlug = PRESET_TO_TOOL_SLUG[tool.id];
             const targetHref = toolSlug ? `/tools/${toolSlug}` : `/studio?preset=${tool.id}`;
 
@@ -363,19 +352,7 @@ export function ToolsClient() {
                 </div>
 
                 {/* Card Action CTAs */}
-                <div className="mt-5 flex items-center justify-between gap-2 pt-3 border-t border-line/60">
-                  {hasArticle ? (
-                    <Link
-                      href={`/blog/${tool.id}`}
-                      className="inline-flex items-center gap-1 text-[11px] font-medium text-muted hover:text-fg transition-colors"
-                    >
-                      <BookOpenText className="h-3.5 w-3.5" />
-                      <span>Audio Guide</span>
-                    </Link>
-                  ) : (
-                    <div />
-                  )}
-
+                <div className="mt-5 flex items-center justify-end gap-2 pt-3 border-t border-line/60">
                   <div className="flex items-center gap-2">
                     {toolSlug ? (
                       <>

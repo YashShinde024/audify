@@ -1,10 +1,8 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site";
-import { presetArticleRegistry } from "@/config/blog-registry";
 import { getAllToolSlugs } from "@/config/tools-registry";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const blogGuideRoutes = presetArticleRegistry.map((entry) => `/blog/${entry.slug}`);
   const toolRoutes = getAllToolSlugs().map((slug) => `/tools/${slug}`);
 
   const routes = [
@@ -23,8 +21,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/privacy",
     "/terms",
     "/contact",
-    "/blog",
-    ...blogGuideRoutes,
   ];
 
   return routes.map((route) => {
@@ -52,9 +48,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     } else if (route === "/faq") {
       priority = 0.75;
       changeFrequency = "monthly";
-    } else if (route.startsWith("/blog/")) {
-      priority = 0.75;
-      changeFrequency = "weekly";
     } else if (route === "/privacy" || route === "/terms" || route === "/contact") {
       priority = 0.5;
       changeFrequency = "monthly";

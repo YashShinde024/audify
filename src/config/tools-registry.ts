@@ -49,7 +49,6 @@ export interface ToolDefinition {
     description: string;
     keywords: string[];
   };
-  articleSlug?: string;
 }
 
 export const TOOLS_REGISTRY: ToolDefinition[] = [
@@ -125,7 +124,6 @@ export const TOOLS_REGISTRY: ToolDefinition[] = [
         "Convert MP3, WAV, FLAC, OGG, and AAC to lossless WAV, broadcast AIFF, or 320k MP3 in your browser without uploading files to remote servers.",
       keywords: ["audio converter", "wav to mp3", "flac to wav", "online audio converter", "mp3 converter free"],
     },
-    articleSlug: "format-converter",
   },
   {
     slug: "sample-rate-converter",
@@ -213,7 +211,6 @@ export const TOOLS_REGISTRY: ToolDefinition[] = [
         "Downmix stereo tracks to mono using power-preserving summation. Prevent phase cancellation and acoustic clipping without uploading files.",
       keywords: ["stereo to mono converter", "convert stereo to mono online", "audio downmixer", "mono converter free"],
     },
-    articleSlug: "downmixer",
   },
 
   // -------------------------------------------------------------
@@ -258,7 +255,6 @@ export const TOOLS_REGISTRY: ToolDefinition[] = [
         "Cut and trim audio files with millisecond accuracy in your browser. Extract clips, ringtones, and podcast segments without quality loss.",
       keywords: ["audio trimmer", "audio cutter", "cut audio online", "mp3 trimmer", "trim audio free"],
     },
-    articleSlug: "trimmer-cutter",
   },
   {
     slug: "audio-merger",
@@ -397,7 +393,6 @@ export const TOOLS_REGISTRY: ToolDefinition[] = [
         "Reverse audio files backwards in your browser with sample-accurate Float32 inversion. Create backwards reverb risers and sound design effects.",
       keywords: ["reverse audio", "play audio backwards", "reverse mp3 online", "backwards audio maker"],
     },
-    articleSlug: "reverse",
   },
   {
     slug: "audio-fades",
@@ -442,7 +437,6 @@ export const TOOLS_REGISTRY: ToolDefinition[] = [
         "Add smooth fade-in and fade-out volume transitions to audio files online. Eliminate clicks and harsh track cutoffs in your browser.",
       keywords: ["audio fade in fade out", "fade audio online", "fade in mp3", "audio volume envelope"],
     },
-    articleSlug: "fade-in-out",
   },
 
   // -------------------------------------------------------------
@@ -524,7 +518,6 @@ export const TOOLS_REGISTRY: ToolDefinition[] = [
         "Compress audio dynamics online. Level vocals, smooth podcasts, and glue music mixes with threshold, ratio, attack, release, and makeup gain.",
       keywords: ["audio compressor", "dynamic range compression online", "compress audio free", "vocal compressor"],
     },
-    articleSlug: "compressor",
   },
   {
     slug: "audio-normalizer",
@@ -593,7 +586,6 @@ export const TOOLS_REGISTRY: ToolDefinition[] = [
         "Change audio track volume with clean decibel gain. Boost quiet files or reduce loud tracks with automatic limiter protection.",
       keywords: ["volume changer", "boost audio volume online", "make audio louder", "audio gain tool"],
     },
-    articleSlug: "volume-changer",
   },
   {
     slug: "audio-equalizer",
@@ -649,7 +641,6 @@ export const TOOLS_REGISTRY: ToolDefinition[] = [
         "Equalize audio tracks online with our 3-band parametric EQ. Adjust bass, mid presence, and treble air directly in your browser.",
       keywords: ["audio equalizer", "online equalizer", "equalize audio free", "parametric eq online"],
     },
-    articleSlug: "equalizer",
   },
   {
     slug: "bass-booster",
@@ -685,7 +676,6 @@ export const TOOLS_REGISTRY: ToolDefinition[] = [
         "Boost bass in your audio files online. Add deep punch and sub-bass warmth with automated peak limiter protection against clipping.",
       keywords: ["bass booster", "bass boost online", "boost bass in song", "bass booster free"],
     },
-    articleSlug: "bass-boost-heavy",
   },
   {
     slug: "vocal-remover",
@@ -741,7 +731,6 @@ export const TOOLS_REGISTRY: ToolDefinition[] = [
         "Remove vocals from songs online using Mid/Side center-channel phase subtraction with bass retention. Create karaoke tracks in your browser.",
       keywords: ["vocal remover", "remove vocals from song", "karaoke maker online", "vocal extractor free"],
     },
-    articleSlug: "vocal-remover",
   },
 
   // -------------------------------------------------------------

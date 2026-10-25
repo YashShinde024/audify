@@ -27,7 +27,6 @@ export const footerProductNav: NavItem[] = [
   { href: "/presets", label: "Presets Directory" },
   { href: "/effects", label: "DSP Effects" },
   { href: "/how-it-works", label: "Audio Guide" },
-  { href: "/blog", label: "Blog & Articles" },
 ];
 
 /** Company, knowledge and discovery navigation */

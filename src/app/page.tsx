@@ -7,43 +7,13 @@ import { PresetSignatures } from "@/components/marketing/preset-signatures";
 import { HowItSteps } from "@/components/marketing/how-it-works";
 import { TrustAndSpecs } from "@/components/marketing/trust-and-specs";
 import { FAQAccordion } from "@/components/marketing/faq-accordion";
-import { AdPlaceholder } from "@/components/advertising/ad-placeholder";
+import { AdBanner } from "@/components/advertising/ad-banner";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
-import { siteConfig } from "@/config/site";
+import { siteConfig, homeMetadata } from "@/config/site";
+import { FAQ_DATA } from "@/app/faq/faq-data";
 
-export const metadata: Metadata = {
-  title: "Audify — Sound, reimagined · In-Browser Audio DSP & Utilities Toolkit",
-  description:
-    "Audify by Nyxen × Xpert Melody. Comprehensive browser-native audio workstation: creative presets (slowed + reverb, 8D audio, nightcore) and precision audio tools (compressor, trimmer, vocal remover, converter). 100% client-side memory processing.",
-  alternates: {
-    canonical: siteConfig.url,
-  },
-  openGraph: {
-    title: "Audify — Sound, reimagined · In-Browser Audio DSP & Utilities Toolkit",
-    description:
-      "Audify by Nyxen × Xpert Melody. Comprehensive browser-native audio workstation: creative presets and precision audio tools. 100% client-side memory processing.",
-    url: siteConfig.url,
-    siteName: siteConfig.name,
-    type: "website",
-    images: [
-      {
-        url: `${siteConfig.url}/images/audify-og.png`,
-        width: 1200,
-        height: 630,
-        alt: "Audify — Sound, reimagined by Nyxen × Xpert Melody",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Audify — Sound, reimagined",
-    description:
-      "Comprehensive browser-native audio workstation by Nyxen × Xpert Melody. 100% in-browser processing.",
-    creator: "@buildnyxen",
-    images: [`${siteConfig.url}/images/audify-og.png`],
-  },
-};
+export const metadata: Metadata = homeMetadata;
 
 /**
  * Editorial Landing Page Structure:
@@ -60,6 +30,17 @@ export default function HomePage() {
     <>
       {/* Hero: Editorial Copy on left, macOS Browser Showcase with working Studio on right */}
       <Hero />
+
+      {/* Ad Placement 1: Below hero, above toolbox */}
+      <section
+        aria-label="Sponsorship advertisement"
+        className="border-b border-line/70 bg-canvas py-6 sm:py-8"
+      >
+        <AdBanner
+          className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
+          note="Audify remains completely free, supported by sponsor banners. Your audio never leaves your browser."
+        />
+      </section>
 
       {/* Section C: Expanded Audio Toolbox Showcase */}
       <section
@@ -123,15 +104,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Respectful, Layout-Shift-Free Banner Ad Placement */}
+      {/* Ad Placement 2: Between workflow steps and trust specs */}
       <section
         aria-label="Sponsorship advertisement"
-        className="border-b border-line/70 bg-canvas py-8 sm:py-10"
+        className="border-b border-line/70 bg-canvas py-6 sm:py-8"
       >
-        <AdPlaceholder
-          size="banner"
-          note="Audify remains completely free with no paywalls or user tracking thanks to unobtrusive sponsor support."
-        />
+        <AdBanner className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8" />
       </section>
 
       {/* Section F: Trust and Technical Specifications */}
@@ -183,7 +161,12 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10">
-            <FAQAccordion />
+            <FAQAccordion
+              items={FAQ_DATA.map(({ question, answerNode }) => ({
+                question,
+                answer: answerNode,
+              }))}
+            />
           </div>
         </div>
       </section>

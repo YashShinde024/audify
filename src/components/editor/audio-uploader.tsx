@@ -203,7 +203,7 @@ export function AudioUploader() {
           Drop your audio track to begin
         </h3>
         <p className="mt-1.5 text-xs text-muted max-w-sm leading-relaxed">
-          Supports <span className="font-semibold text-fg">WAV, MP3, FLAC, OGG, AAC</span> up to 10 MB.
+          Supports <span className="font-semibold text-fg">WAV, MP3, FLAC, OGG, AAC &amp; M4A</span> up to 10 MB.
           Processed 100% locally in your browser.
         </p>
 
