@@ -3,6 +3,7 @@ import {
   ADSTERRA_DESKTOP,
   ADSTERRA_MOBILE,
   isAdsEnabled,
+  isAdsConsentRequired,
   DESKTOP_AD_BREAKPOINT,
   __resetAdsDiagnosticForTest,
 } from "@/config/ads";
@@ -86,6 +87,35 @@ describe("isAdsEnabled gating", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     expect(isAdsEnabled()).toBe(true);
     expect(warn).not.toHaveBeenCalled();
+  });
+});
+
+describe("isAdsConsentRequired (conservative legal gate)", () => {
+  beforeEach(() => {
+    (globalThis as Record<string, unknown>).window = {};
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    delete (globalThis as Record<string, unknown>).window;
+  });
+
+  it("defaults to false: ad display is not consent-gated (mandatory display)", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_ADS_CONSENT_REQUIRED", "");
+    expect(isAdsConsentRequired()).toBe(false);
+  });
+
+  it("honors the conservative gate when explicitly enabled at build time", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_ADS_CONSENT_REQUIRED", "true");
+    expect(isAdsConsentRequired()).toBe(true);
+  });
+
+  it("is false for any value other than the literal \"true\"", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_ADS_CONSENT_REQUIRED", "1");
+    expect(isAdsConsentRequired()).toBe(false);
   });
 });
 

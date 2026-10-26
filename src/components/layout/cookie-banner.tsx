@@ -25,6 +25,9 @@ export const COOKIE_CONSENT_KEY = "audify-cookie-consent";
 export type { ConsentRecord as CookiePreferences };
 export const DEFAULT_PREFERENCES = { necessary: true, analytics: false, functional: false };
 
+// `advertising` is retained for record compatibility but is NOT toggleable in
+// the UI and does not gate ad display under default configuration
+// (see src/config/ads.ts → isAdsConsentRequired).
 const UNSET_PREFS: ConsentRecord = {
   necessary: true,
   analytics: false,
@@ -81,6 +84,10 @@ export function CookieBanner() {
     };
   }, [openPreferences]);
 
+  // Advertising display is not a toggleable preference. The record keeps an
+  // `advertising` value exclusively for the conservative consent-gating mode
+  // (NEXT_PUBLIC_ADS_CONSENT_REQUIRED=true): only an explicit "Accept all"
+  // click grants it there, and rejecting/custom preferences always save false.
   const saveConsent = useCallback((updated: ConsentRecord) => {
     persistConsent(updated);
     setEditDraft(updated);
@@ -93,6 +100,8 @@ export function CookieBanner() {
       necessary: true,
       analytics: true,
       functional: true,
+      // Explicit "Accept all" click: may grant the legacy advertising category
+      // used only by the conservative consent-gating mode.
       advertising: true,
       timestamp: Date.now(),
       version: CONSENT_VERSION,
@@ -144,10 +153,10 @@ export function CookieBanner() {
                   Your privacy, your choice
                 </h3>
                 <p className="text-xs text-muted leading-relaxed">
-                  We use essential storage to keep Audify working. Optional analytics
-                  and third-party advertising (Adsterra sponsor placements) are
-                  loaded <strong className="font-semibold text-fg">only with your consent</strong>.
-                  Read our{" "}
+                  Advertisements support Audify&apos;s free audio tools — advertising display
+                  is <strong className="font-semibold text-fg">part of the free service</strong>.
+                  Optional cookies (analytics, workstation cache) and tracking are
+                  managed separately. Read our{" "}
                   <Link
                     href="/privacy"
                     className="text-primary underline underline-offset-2 hover:text-primary-hover font-medium"
@@ -223,7 +232,7 @@ export function CookieBanner() {
             </div>
 
             {/* Categories */}
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {/* Category 1: Strictly Necessary */}
               <div className="rounded-xl border border-line/80 bg-canvas-subtle p-3.5 space-y-2">
                 <div className="flex items-center justify-between gap-2">
@@ -291,28 +300,21 @@ export function CookieBanner() {
                 </p>
               </div>
 
-              {/* Category 4: Advertising (third-party sponsor placements) */}
+              {/* Category 3: Advertising display notice (non-toggleable) */}
               <div className="rounded-xl border border-line/80 bg-canvas-subtle p-3.5 space-y-2">
                 <div className="flex items-center justify-between gap-2">
-                  <label htmlFor="pref-advertising" className="text-xs font-semibold text-fg cursor-pointer">
-                    Advertising
-                  </label>
-                  <input
-                    id="pref-advertising"
-                    type="checkbox"
-                    checked={editDraft.advertising}
-                    onChange={(e) =>
-                      setEditDraft((prev) => ({
-                        ...prev,
-                        advertising: e.target.checked,
-                      }))
-                    }
-                    className="h-4 w-4 rounded border-line text-primary focus:ring-primary cursor-pointer accent-primary"
-                  />
+                  <span className="text-xs font-semibold text-fg flex items-center gap-1.5">
+                    <Cookie size={14} className="text-primary" />
+                    <span>Advertising</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-mono font-medium text-primary px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">
+                    Part of service
+                  </span>
                 </div>
                 <p className="text-[11px] text-muted leading-relaxed">
-                  Allows third-party sponsor placements (Adsterra) to load. Withdrawal removes the
-                  ad frames; already-sent vendor requests cannot be recalled once made.
+                  Third-party sponsor placements (Adsterra) support Audify&apos;s free tools and
+                  display as part of the free service — not managed as an optional cookie.
+                  Your audio files are never sent to the ad network.
                 </p>
               </div>
             </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { isAdsEnabled, ADSTERRA_DESKTOP, ADSTERRA_MOBILE } from "@/config/ads";
+import { isAdsEnabled, isAdsConsentRequired, ADSTERRA_DESKTOP, ADSTERRA_MOBILE } from "@/config/ads";
 import { useConsent } from "@/lib/consent";
 import { AdsterraSlot, useMediaMatch, DESKTOP_AD_QUERY } from "./adsterra-slot";
 
@@ -34,22 +34,35 @@ interface AdBannerProps {
  * impression, so only the slot matching the current viewport is ever mounted;
  * crossing the breakpoint remounts the correct format and tears down the other one.
  *
- * When ads are disabled (development, missing env var, consent withheld, or slot disabled),
- * falls back to a neutral placeholder that reserves the exact same vertical space to prevent CLS.
+ * When ads are disabled (development, missing env var, a conservative
+ * consent gate where NEXT_PUBLIC_ADS_CONSENT_REQUIRED=true, or slot disabled),
+ * falls back to a neutral placeholder that reserves the exact same vertical
+ * space to prevent CLS.
  */
 export function AdBanner({ id, disabled = false, note, className }: AdBannerProps) {
   const consent = useConsent();
-  // Triple gate: slot-level toggle, site-wide env rollout switch, and user cookie consent.
-  // All three must be true. The consent read is reactive (useSyncExternalStore),
-  // so granting, changing, or withdrawing the "Advertising" category mounts/unmounts
-  // the third-party slot in the same render cycle.
-  const enabled = !disabled && isAdsEnabled() && consent.advertising;
+  // Advertising display is part of the free service: it renders by default in
+  // eligible production builds and is controlled by the site-level
+  // NEXT_PUBLIC_ADS_ENABLED kill switch, not by the cookie banner. Optional
+  // tracking consent (analytics/functional) remains user-controlled elsewhere.
+  // Legacy gate: when a confirmed vendor/jurisdiction requirement makes consent
+  // necessary (NEXT_PUBLIC_ADS_CONSENT_REQUIRED=true), the stored "advertising"
+  // choice is honored again; the gate is reactive, so a consent change in that
+  // mode mounts/unmounts the third-party slot in the same render cycle.
+  const consentGate = isAdsConsentRequired() ? consent.advertising : true;
+  const enabled = !disabled && isAdsEnabled() && consentGate;
   const isDesktop = useMediaMatch(DESKTOP_AD_QUERY);
 
   if (!enabled) {
     const w = isDesktop ? 728 : 320;
     const h = isDesktop ? 90 : 50;
-    const reason = disabled ? "slot-disabled" : isAdsEnabled() ? "consent" : "disabled";
+    const reason = disabled
+      ? "slot-disabled"
+      : isAdsEnabled()
+        ? isAdsConsentRequired()
+          ? "consent"
+          : "disabled"
+        : "disabled";
     return (
       <aside
         aria-label="Advertising slot (disabled)"

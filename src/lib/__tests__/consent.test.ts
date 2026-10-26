@@ -101,10 +101,24 @@ describe("consent storage", () => {
     unsubscribe();
   });
 
-  it("withdrawal persists advertising=false for subsequent gating", () => {
+  it("withdrawal persists advertising=false in the stored record", () => {
     saveConsent(fullConsent());
     saveConsent(fullConsent({ advertising: false, choice: "reject" }));
     expect(readConsent().advertising).toBe(false);
+    // Display gating no longer reads this value by default (ads are part of
+    // the free service); it is only honored under the conservative
+    // NEXT_PUBLIC_ADS_CONSENT_REQUIRED=true mode (see src/config/ads.ts).
+  });
+
+  it("rejects v2 records so the v3 policy re-prompts (mandatory-display migration)", () => {
+    // Users who previously declined (or were never granted) optional
+    // advertising consent must not inherit that stale choice as an ad
+    // blocker — display no longer reads it, and the version bump re-prompts.
+    stored({ necessary: true, analytics: true, functional: true, advertising: false, timestamp: 123, version: 2, choice: "reject" });
+    const consent = readConsent();
+    // Re-prompt trigger is the zeroed timestamp (UNSET), not a version field.
+    expect(consent.timestamp).toBe(0);
+    expect(consent.choice).toBe("reject");
   });
 
   it("saveConsent never lets callers unset necessary or stamp a wrong version", () => {

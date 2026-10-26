@@ -62,6 +62,28 @@ export function isAdsEnabled(): boolean {
 }
 
 /**
+ * Whether the "Advertising" consent category is honored before serving ads.
+ *
+ * Audify treats advertising display as part of the free service: ads render by
+ * default in eligible production builds and the cookie banner exposes no
+ * advertising toggle. Some vendors or jurisdictions, however, require explicit
+ * consent before advertising technology runs (e.g., personalized ads in the
+ * EEA/UK). Until the actual Adsterra integration is verified with the vendor,
+ * this conservative switch keeps the consent gate available:
+ *
+ *   - Omitted or "false" (default): ad display is not consent-gated.
+ *   - "true": the stored "advertising" consent must be granted before any
+ *     Adsterra script loads (previous behavior).
+ *
+ * It is a build-time flag like NEXT_PUBLIC_ADS_ENABLED and must be set to
+ * "true" by the operator when a legal/vendor gate is confirmed — not invented
+ * or assumed absent.
+ */
+export function isAdsConsentRequired(): boolean {
+  return process.env.NEXT_PUBLIC_ADS_CONSENT_REQUIRED === "true";
+}
+
+/**
  * Adsterra slot configuration.
  * Each slot uses the iframe format with its own unique key and script URL.
  * `atOptions` is set per-slot inside an isolated <script> to avoid global conflicts.

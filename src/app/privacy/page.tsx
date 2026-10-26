@@ -236,7 +236,7 @@ export default function PrivacyPage() {
                   <td className="p-3 font-mono font-medium text-fg">audify-cookie-consent</td>
                   <td className="p-3">LocalStorage</td>
                   <td className="p-3">
-                    Remembers your consent choices (essential, analytics, workstation cache, advertising),
+                    Remembers your consent choices (essential, analytics, workstation cache),
                     the time of your decision, and the consent-policy version. A policy update increments
                     the version and re-prompts the banner.
                   </td>
@@ -253,16 +253,14 @@ export default function PrivacyPage() {
           </div>
           <p className="text-xs">
             This table lists cookies and storage set <em>by Audify itself</em>. Third-party advertising
-            scripts (Adsterra sponsor placements, Section 7) load <strong>only after</strong> you grant
-            the &ldquo;Advertising&rdquo; consent category — before that, no ad script executes, no vendor
-            request is sent, and no third-party storage is written. If advertising consent is granted,
-            those scripts may set their own cookies or client-side identifiers independently of Audify.
-            Withdrawing the category (including re-saving preferences with it unchecked) removes the ad
-            frames and loader scripts on the current page and prevents later loads on subsequent pages;
-            however, any vendor data already sent during a period of valid consent cannot be recalled
-            from the third party&apos;s servers. We do not embed web analytics, session-replay scripts,
-            or behavioral profiling tags of our own beyond what you opt into. You can adjust your
-            choices at any time via the Cookie Preferences link in our footer, or directly here:
+            scripts (Adsterra sponsor placements, Section 7) load as part of the free service in
+            eligible production builds and are managed by the deployment-level{" "}
+            <code className="font-mono text-primary bg-surface px-1 py-0.5 rounded border border-line">NEXT_PUBLIC_ADS_ENABLED</code>{" "}
+            flag, not by an optional cookie preference. Those scripts may set their own cookies or
+            client-side identifiers independently of Audify. We do not embed web analytics,
+            session-replay scripts, or behavioral profiling tags of our own beyond what you opt
+            into. You can adjust your optional-cookie choices at any time via the Cookie Preferences
+            link in our footer, or directly here:
           </p>
           <div className="pt-1">
             <CookiePreferencesButton className="px-3.5 py-1.5 rounded-xl border border-line bg-surface text-fg hover:border-primary font-medium shadow-xs" />
@@ -297,9 +295,15 @@ export default function PrivacyPage() {
                 <li>May cause the advertising network to set its own cookies or local identifiers for ad delivery, frequency capping, and fraud prevention; these are the vendor&apos;s processing operations and are governed by the vendor&apos;s privacy policy, not ours.</li>
               </ul>
               <span className="block pt-1.5">
-                Advertising remains <strong>disabled by default</strong> — in development, test environments, and any deployment that has not
-                explicitly opted in. Where advertising is active, on-device privacy controls (browser ad-blockers, tracking protection, cookie clearing)
-                apply to these third-party containers as they would to any website&apos;s ads.
+                Advertising display is <strong>part of the free service</strong>: in eligible
+                production builds it is enabled by default and is not gated by the cookie banner;
+                optional analytics and workstation-cache cookies remain separately manageable.
+                Advertising is disabled by default in development and test environments. The
+                third-party network may use cookies or device identifiers for ad delivery, and it
+                is the operator&apos;s responsibility to confirm with the vendor how such
+                processing is permitted in regions where consent to personalized advertising is
+                legally required. On-device privacy controls (browser ad-blockers, tracking
+                protection, cookie clearing) continue to apply to these third-party containers.
               </span>
             </li>
           </ul>

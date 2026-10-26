@@ -17,7 +17,7 @@ import { useSyncExternalStore } from "react";
  */
 
 /** Bump when a material change makes prior consent invalid (re-prompts banner). */
-export const CONSENT_VERSION = 2;
+export const CONSENT_VERSION = 3;
 
 export const CONSENT_STORAGE_KEY = "audify-cookie-consent";
 const LEGACY_STORAGE_KEYS = ["audiomorph-cookie-consent"];
@@ -28,6 +28,12 @@ export interface ConsentRecord {
   necessary: true;
   analytics: boolean;
   functional: boolean;
+  /**
+   * DEPRECATED as a banner preference: advertising display is part of the free
+   * service and is no longer toggleable. The field is retained for record
+   * compatibility and for the conservative consent-gating mode
+   * (NEXT_PUBLIC_ADS_CONSENT_REQUIRED=true in src/config/ads.ts).
+   */
   advertising: boolean;
   timestamp: number;
   version: number;
@@ -46,9 +52,9 @@ export const DEFAULT_CONSENT: ConsentRecord = {
 
 /**
  * The record returned when no valid choice exists OR when the stored record is
- * from an older policy version. Advertising defaults to `false` everywhere —
- * optional categories are never preselected and are never treated as granted
- * implicitly.
+ * from an older policy version (v1/v2). Advertising display is not gated by
+ * this record under default configuration — no category is ever treated as
+ * granted implicitly, and optional categories are never preselected.
  */
 export const UNSET_CONSENT: ConsentRecord = {
   ...DEFAULT_CONSENT,
@@ -94,9 +100,10 @@ export function readConsent(): ConsentRecord {
     if (raw === null) return UNSET_CONSENT;
     const record = parseRecord(JSON.parse(raw));
     if (record && record.version >= CONSENT_VERSION) return record;
-    // Pre-v2 records lack the `advertising` category. Rather than assume it is
-    // granted, fall through: the new category requires explicit consent.
+    // Pre-v3 records were stored under prior copy (v2) or lacked categories (v1).
+    // Rather than inherit stale choices, fall through: current policy re-prompts.
     return UNSET_CONSENT;
+
   } catch {
     /* storage may be sandboxed or corrupted — fail closed, all optional off */
     return UNSET_CONSENT;
