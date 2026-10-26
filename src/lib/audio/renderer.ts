@@ -18,7 +18,6 @@ import {
   resolveProcessing,
 } from "./dsp-plan";
 import type {
-  BitcrusherSpec,
   CenterExtractorSpec,
   ChorusSpec,
   CompressorSpec,

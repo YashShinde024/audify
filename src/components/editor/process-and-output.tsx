@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import {
-  DownloadSimple,
   CircleNotch,
   CheckCircle,
   ArrowsClockwise,
@@ -21,6 +20,7 @@ import { getPresetById } from "@/config/presets";
 import { cn, formatBytes, formatTime } from "@/lib/utils";
 import { ExportPanel } from "./export-panel";
 import { MusicEditFacts } from "./music-facts";
+import { DownloadButton } from "@/components/ui/download-button";
 
 const easeOut = [0.2, 0.8, 0.2, 1] as const;
 
@@ -74,15 +74,7 @@ export function ProcessAndOutput() {
             </div>
           </div>
 
-          <a
-            href={processedResult.url}
-            download={processedResult.filename}
-            aria-label={`Download ${processedResult.filename}`}
-            className="btn-gradient-primary btn-sweep-offset-b inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-2 text-xs font-semibold text-white transition-all shadow-glow-wire hover:opacity-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary cursor-pointer active:scale-95"
-          >
-            <DownloadSimple size={15} weight="bold" />
-            <span>Download Master</span>
-          </a>
+          <DownloadButton url={processedResult.url} filename={processedResult.filename} />
         </div>
 
         {isStale && (

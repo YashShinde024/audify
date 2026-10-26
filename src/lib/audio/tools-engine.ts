@@ -4,13 +4,12 @@
  * Reuses the existing renderer, DSP utilities, and audio encoders.
  */
 
-import type { ToolDefinition, ToolSettingValue, ToolTimeRange } from "@/config/tools-registry";
+import type { ToolSettingValue, ToolTimeRange } from "@/config/tools-registry";
 import {
   measurePeak,
   measureRms,
   measureDcOffset,
   resampleChannels,
-  applyPeakNormalize,
 } from "./dsp-utils";
 import { renderProcessedAudio, type ProcessedAudioResult } from "./renderer";
 import type { EffectValue } from "@/types/preset";

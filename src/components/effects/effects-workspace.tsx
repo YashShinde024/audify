@@ -15,7 +15,6 @@ import {
   CheckCircle,
   CircleNotch,
   ArrowRight,
-  DownloadSimple,
   Waveform,
   WarningCircle,
   Sparkle,
@@ -29,6 +28,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { DownloadButton } from "@/components/ui/download-button";
 import { useEditorStore, selectIsResultStale } from "@/stores/editor-store";
 import { presets, getPresetById } from "@/config/presets";
 import { generateStudioSampleAudioFile } from "@/lib/sample-audio";
@@ -1204,15 +1204,13 @@ export function EffectsWorkspace() {
               </Button>
             ) : processedResult ? (
               <div className="flex items-center gap-2">
-                <Button asChild size="sm" variant="outline" className="text-xs">
-                  <a
-                    href={processedResult.url}
-                    download={`audify-${file?.name || "master"}`}
-                  >
-                    <DownloadSimple size={13} />
-                    <span>Download Master</span>
-                  </a>
-                </Button>
+                <DownloadButton
+                url={processedResult.url}
+                filename={`audify-${file?.name || "master"}`}
+                label="Download Master"
+                variant="outline"
+                size="sm"
+              />
                 <Button
                   size="sm"
                   onClick={() => void processAudio()}

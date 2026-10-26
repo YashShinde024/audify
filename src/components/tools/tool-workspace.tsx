@@ -15,6 +15,10 @@ import {
   formatDurationMs,
 } from "@/lib/audio/tools-engine";
 import {
+  downloadFile as platformDownload,
+  triggerDownload,
+} from "@/lib/download";
+import {
   DownloadSimple,
   ArrowCounterClockwise,
   CheckCircle,
@@ -125,12 +129,9 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
   };
 
   const downloadFile = (url: string, filename: string) => {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    void platformDownload(url, filename).catch(() => {
+      triggerDownload(url, filename);
+    });
   };
 
   const handleCopyJson = (json: string) => {
@@ -315,7 +316,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
 
                   <button
                     onClick={() => downloadFile(result.result.url, result.result.filename)}
-                    className="btn-gradient-primary btn-sweep-offset-a flex-1 sm:flex-initial px-7 py-3 rounded-xl font-semibold text-sm text-white inline-flex items-center justify-center gap-2"
+                    className="btn-gradient-primary btn-sweep-offset-a flex-1 sm:flex-initial px-7 py-3 rounded-xl font-semibold text-sm text-white inline-flex items-center justify-center gap-2 active:scale-95 transition-transform"
                   >
                     <DownloadSimple className="w-4 h-4" />
                     <span>Download Output</span>
@@ -341,7 +342,8 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
                       setTimeout(() => downloadFile(seg.url, seg.name), i * 300);
                     });
                   }}
-                  className="px-4 py-2 rounded-xl bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 text-xs font-semibold transition-colors"
+                  className="px-4 py-2 rounded-xl bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 text-xs font-semibold transition-colors active:scale-95"
+                  title="Each segment will be saved as a separate file by your browser"
                 >
                   Download All ({result.segments.length})
                 </button>
@@ -356,7 +358,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-fg truncate">{seg.name}</p>
                       <p className="text-xs text-muted font-mono">
-                        {seg.durationFormatted} Â· {seg.sizeFormatted} Â· WAV Lossless
+                        {seg.durationFormatted} · {seg.sizeFormatted} · WAV Lossless
                       </p>
                     </div>
 
@@ -364,7 +366,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
                       <audio src={seg.url} controls className="h-8 w-full max-w-[200px] xs:w-auto" />
                       <button
                         onClick={() => downloadFile(seg.url, seg.name)}
-                        className="px-3.5 py-1.5 rounded-lg bg-surface hover:bg-raised border border-line text-xs font-semibold text-fg inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                        className="px-3.5 py-1.5 rounded-lg bg-surface hover:bg-raised border border-line text-xs font-semibold text-fg inline-flex items-center gap-1.5 transition-colors cursor-pointer active:scale-95"
                       >
                         <DownloadSimple className="w-3.5 h-3.5" />
                         <span>Save</span>
@@ -405,10 +407,10 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
                     <span>{copiedJson ? "Copied!" : "Copy JSON"}</span>
                   </button>
                   <button
-                    onClick={() => {
-                      const blob = new Blob([result.rawJson], { type: "application/json" });
-                      const url = URL.createObjectURL(blob);
-                      downloadFile(url, `${result.report.fileName}-metadata.json`);
+                    onClick={async () => {
+                      const url = URL.createObjectURL(new Blob([result.rawJson], { type: "application/json" }));
+                      await platformDownload(url, `${result.report.fileName}-metadata.json`);
+                      setTimeout(() => URL.revokeObjectURL(url), 60_000);
                     }}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-line bg-surface hover:bg-raised text-xs font-medium text-fg transition-colors cursor-pointer"
                   >
