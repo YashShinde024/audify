@@ -158,8 +158,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
           </div>
         </header>
 
-        {/* Ad Placement: Between header and interactive workspace */}
-        <AdBanner className="mx-auto max-w-4xl" />
+        {/* Ad Placement 1: Between header and interactive workspace */}
+        <AdBanner id="tool-header-workspace" className="mx-auto max-w-4xl" />
 
         {/* Primary Interactive Workspace */}
         <section aria-label={`${tool.name} interactive workspace`}>
@@ -224,8 +224,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
           </div>
         </section>
 
-        {/* Ad Placement: After educational content, before related tools */}
-        <AdBanner className="mx-auto max-w-4xl pt-8" />
+        {/* Ad Placement 2: After educational content, before related tools */}
+        <AdBanner id="tool-mid-educational" className="mx-auto max-w-4xl pt-8" />
 
         {/* Related Tools Directory Section */}
         <section className="max-w-4xl mx-auto pt-8 border-t border-line space-y-4">
@@ -263,6 +263,11 @@ export default async function ToolPage({ params }: ToolPageProps) {
             ))}
           </div>
         </section>
+
+        {/* Ad Placement 3: Bottom of page, after related tools */}
+        <div className="pt-6 border-t border-line/60">
+          <AdBanner id="tool-bottom-related" className="mx-auto max-w-4xl" />
+        </div>
       </div>
     </div>
   );

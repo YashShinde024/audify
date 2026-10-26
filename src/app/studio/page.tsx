@@ -31,7 +31,10 @@ export default function StudioPage() {
           Placed outside all audio controls to avoid interfering with
           upload, waveform, playback, processing, or export UX. */}
       <div className="border-t border-line/50 py-6">
-        <AdBanner className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8" />
+        <AdBanner
+          id="studio-workspace-bottom"
+          className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
+        />
       </div>
     </div>
   );

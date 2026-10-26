@@ -40,7 +40,21 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
     loading?: boolean;
     leftIcon?: ReactNode;
     rightIcon?: ReactNode;
+    /**
+     * Phase variant for the rotating conic-gradient sweep on `primary`
+     * buttons. Assign deliberately to grouped CTAs so neighboring buttons do
+     * not animate in lockstep. Values map to `btn-sweep-*` modifier classes
+     * defined in globals.css; "forward" (the default brand behavior) applies
+     * no modifier class at all.
+     */
+    sweep?: "forward" | "reverse" | "offset-a" | "offset-b" | "static";
   };
+
+/** Maps a sweep value to its modifier class; "forward" omits the class. */
+function sweepClass(sweep?: ButtonProps["sweep"]): string | undefined {
+  if (!sweep || sweep === "forward") return undefined;
+  return `btn-sweep-${sweep}`;
+}
 
 export function Button({
   className,
@@ -50,6 +64,7 @@ export function Button({
   loading = false,
   leftIcon,
   rightIcon,
+  sweep,
   children,
   disabled,
   ...props
@@ -57,7 +72,7 @@ export function Button({
   if (asChild) {
     return (
       <Slot
-        className={cn(buttonVariants({ variant, size }), className)}
+        className={cn(buttonVariants({ variant, size }), sweepClass(sweep), className)}
         {...props}
       >
         {children}
@@ -67,7 +82,7 @@ export function Button({
 
   return (
     <button
-      className={cn(buttonVariants({ variant, size }), className)}
+      className={cn(buttonVariants({ variant, size }), sweepClass(sweep), className)}
       disabled={disabled || loading}
       {...props}
     >

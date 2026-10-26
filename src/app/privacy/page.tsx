@@ -235,7 +235,11 @@ export default function PrivacyPage() {
                 <tr>
                   <td className="p-3 font-mono font-medium text-fg">audify-cookie-consent</td>
                   <td className="p-3">LocalStorage</td>
-                  <td className="p-3">Remembers your cookie and privacy choices (essential vs. all).</td>
+                  <td className="p-3">
+                    Remembers your consent choices (essential, analytics, workstation cache, advertising),
+                    the time of your decision, and the consent-policy version. A policy update increments
+                    the version and re-prompts the banner.
+                  </td>
                   <td className="p-3">180 days</td>
                 </tr>
                 <tr>
@@ -248,7 +252,17 @@ export default function PrivacyPage() {
             </table>
           </div>
           <p className="text-xs">
-            This table lists cookies and storage set <em>by Audify itself</em>. When advertising is enabled (see Section 7), third-party advertising scripts loaded in ad containers may set their own cookies or client-side identifiers independently of Audify, subject to your consent preferences and regional settings. We do not embed web analytics, session-replay scripts, or behavioral profiling tags of our own. You can adjust your consent choices at any time via the Cookie Preferences link in our footer, or directly here:
+            This table lists cookies and storage set <em>by Audify itself</em>. Third-party advertising
+            scripts (Adsterra sponsor placements, Section 7) load <strong>only after</strong> you grant
+            the &ldquo;Advertising&rdquo; consent category — before that, no ad script executes, no vendor
+            request is sent, and no third-party storage is written. If advertising consent is granted,
+            those scripts may set their own cookies or client-side identifiers independently of Audify.
+            Withdrawing the category (including re-saving preferences with it unchecked) removes the ad
+            frames and loader scripts on the current page and prevents later loads on subsequent pages;
+            however, any vendor data already sent during a period of valid consent cannot be recalled
+            from the third party&apos;s servers. We do not embed web analytics, session-replay scripts,
+            or behavioral profiling tags of our own beyond what you opt into. You can adjust your
+            choices at any time via the Cookie Preferences link in our footer, or directly here:
           </p>
           <div className="pt-1">
             <CookiePreferencesButton className="px-3.5 py-1.5 rounded-xl border border-line bg-surface text-fg hover:border-primary font-medium shadow-xs" />

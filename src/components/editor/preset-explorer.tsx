@@ -380,7 +380,7 @@ export function PresetExplorer() {
                 Active in Studio: {getPresetById(selectedPresetId)?.name}
               </span>
             )}
-            <Button asChild size="sm" className="h-8 rounded-lg btn-gradient-primary text-white text-xs font-semibold px-3.5 shadow-glow-wire hover:opacity-95 cursor-pointer">
+            <Button asChild size="sm" sweep="offset-a" className="h-8 rounded-lg btn-gradient-primary text-white text-xs font-semibold px-3.5 shadow-glow-wire hover:opacity-95 cursor-pointer">
               <Link href="/studio">
                 <span>Go to Studio</span>
                 <ArrowRight size={12} />
@@ -817,7 +817,7 @@ export function PresetExplorer() {
                     setDetailPresetId(null);
                     handleApplyPreset(detailPreset.id);
                   }}
-                  className="h-8 rounded-lg btn-gradient-primary text-white text-xs font-semibold px-3.5 shadow-glow-wire hover:opacity-95 cursor-pointer active:scale-95"
+                  className="h-8 rounded-lg btn-gradient-primary btn-sweep-offset-b text-white text-xs font-semibold px-3.5 shadow-glow-wire hover:opacity-95 cursor-pointer active:scale-95"
                 >
                   <span>Open in Studio</span>
                   <ArrowRight size={13} />

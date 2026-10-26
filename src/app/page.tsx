@@ -37,6 +37,7 @@ export default function HomePage() {
         className="border-b border-line/70 bg-canvas py-6 sm:py-8"
       >
         <AdBanner
+          id="home-below-hero"
           className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
           note="Audify remains completely free, supported by sponsor banners. Your audio never leaves your browser."
         />
@@ -62,6 +63,17 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <CapabilitiesOverview />
         </div>
+      </section>
+
+      {/* Ad Placement: Between capabilities overview and preset signatures */}
+      <section
+        aria-label="Sponsorship advertisement"
+        className="border-b border-line/70 bg-canvas py-6 sm:py-8"
+      >
+        <AdBanner
+          id="home-capabilities-presets"
+          className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
+        />
       </section>
 
       {/* Signature Presets */}
@@ -109,7 +121,10 @@ export default function HomePage() {
         aria-label="Sponsorship advertisement"
         className="border-b border-line/70 bg-canvas py-6 sm:py-8"
       >
-        <AdBanner className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8" />
+        <AdBanner
+          id="home-mid-workflow"
+          className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
+        />
       </section>
 
       {/* Section F: Trust and Technical Specifications */}
@@ -136,6 +151,17 @@ export default function HomePage() {
 
           <TrustAndSpecs />
         </div>
+      </section>
+
+      {/* Ad Placement 3: Between specifications and FAQ */}
+      <section
+        aria-label="Sponsorship advertisement"
+        className="border-b border-line/70 bg-canvas py-6 sm:py-8"
+      >
+        <AdBanner
+          id="home-pre-faq"
+          className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
+        />
       </section>
 
       {/* Section G: FAQ & Final CTA */}
@@ -201,6 +227,7 @@ export default function HomePage() {
             <Button
               asChild
               size="lg"
+              sweep="offset-b"
               className="h-12 px-7 rounded-xl btn-gradient-primary text-white font-medium shadow-glow-wire group"
             >
               <Link href="/studio">

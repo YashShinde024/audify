@@ -204,7 +204,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
                 <button
                   onClick={handleProcess}
                   disabled={files.length === 0}
-                  className="btn-gradient-primary w-full sm:w-auto px-7 py-3 rounded-xl font-semibold text-sm text-white inline-flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="btn-gradient-primary btn-sweep-reverse w-full sm:w-auto px-7 py-3 rounded-xl font-semibold text-sm text-white inline-flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Sparkle className="w-4 h-4" />
                   <span>Process Audio</span>
@@ -315,7 +315,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
 
                   <button
                     onClick={() => downloadFile(result.result.url, result.result.filename)}
-                    className="btn-gradient-primary flex-1 sm:flex-initial px-7 py-3 rounded-xl font-semibold text-sm text-white inline-flex items-center justify-center gap-2"
+                    className="btn-gradient-primary btn-sweep-offset-a flex-1 sm:flex-initial px-7 py-3 rounded-xl font-semibold text-sm text-white inline-flex items-center justify-center gap-2"
                   >
                     <DownloadSimple className="w-4 h-4" />
                     <span>Download Output</span>

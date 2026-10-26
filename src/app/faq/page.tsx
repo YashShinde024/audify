@@ -53,6 +53,9 @@ export default function FAQPage() {
             lead="Direct, verified answers about Audify's in-browser audio engine, audio format support, preset routing, export headroom, and privacy protections."
           />
 
+          {/* Ad Placement 1: Below page header, above FAQ search & accordion */}
+          <AdBanner id="faq-header-accordion" className="mx-auto" />
+
           <SectionSeam />
 
           {/* Interactive Search & Filterable Accordion */}
@@ -61,8 +64,8 @@ export default function FAQPage() {
           </section>
 
           {/* Quick Resource Directory */}
-          {/* Ad Placement: Between FAQ content and resource cards */}
-          <AdBanner className="mx-auto" />
+          {/* Ad Placement 2: Between FAQ content and resource cards */}
+          <AdBanner id="faq-accordion-resources" className="mx-auto" />
           <section className="grid gap-4 sm:grid-cols-3 pt-6 border-t border-line">
             <div className="rounded-xl border border-line bg-surface p-5 flex flex-col justify-between gap-3">
               <div className="space-y-1.5">

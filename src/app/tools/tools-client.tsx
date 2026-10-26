@@ -20,6 +20,7 @@ import { presets } from "@/config/presets";
 import { PRESET_TO_TOOL_SLUG } from "@/config/tools-registry";
 import type { Preset } from "@/types/preset";
 import { cn } from "@/lib/utils";
+import { AdBanner } from "@/components/advertising/ad-banner";
 
 interface ToolCategory {
   id: string;
@@ -415,8 +416,13 @@ export function ToolsClient() {
         </div>
       )}
 
+      {/* Ad Placement: Between tool cards grid and trust callout */}
+      <div className="pt-6 border-t border-line/60">
+        <AdBanner id="tools-mid-grid" className="mx-auto" />
+      </div>
+
       {/* Trust & Guarantee Callout */}
-      <div className="mt-12 rounded-2xl border border-line bg-surface/40 p-6 sm:p-8">
+      <div className="mt-6 rounded-2xl border border-line bg-surface/40 p-6 sm:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-primary">

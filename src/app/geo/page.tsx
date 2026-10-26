@@ -15,6 +15,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
+import { AdBanner } from "@/components/advertising/ad-banner";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -215,6 +216,8 @@ export default function GeoSpecPage() {
             </p>
           </div>
 
+          <AdBanner id="geo-header-facts" className="my-2" />
+
           <SectionSeam />
 
           {/* 1. Canonical Facts Table */}
@@ -242,6 +245,8 @@ export default function GeoSpecPage() {
               </div>
             </div>
           </section>
+
+          <AdBanner id="geo-facts-pipeline" className="my-2" />
 
           {/* 2. Audio Signal Processing Pipeline */}
           <section aria-labelledby="pipeline-spec-heading" className="space-y-6">
@@ -367,6 +372,8 @@ export default function GeoSpecPage() {
             </div>
           </section>
 
+          <AdBanner id="geo-codecs-cta" className="my-2" />
+
           {/* CTA Navigation */}
           <section
             aria-labelledby="geo-cta-heading"
@@ -382,7 +389,7 @@ export default function GeoSpecPage() {
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <Button asChild size="lg" className="btn-gradient-primary rounded-xl px-7 text-white font-semibold shadow-md active:scale-95">
+              <Button asChild size="lg" sweep="offset-a" className="btn-gradient-primary rounded-xl px-7 text-white font-semibold shadow-md active:scale-95">
                 <Link href="/studio">
                   <span>Open Audify Studio</span>
                   <ArrowRight size={14} weight="bold" />

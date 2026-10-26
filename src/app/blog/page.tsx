@@ -52,7 +52,7 @@ export default function BlogIndexPage() {
             </Link>
             <Link
               href="/studio"
-              className="btn-gradient-primary inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-white shadow-sm"
+              className="btn-gradient-primary btn-sweep-reverse inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-white shadow-sm"
             >
               <Waveform size={15} weight="bold" />
               <span>Open Audify Studio</span>

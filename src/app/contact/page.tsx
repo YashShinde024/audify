@@ -12,6 +12,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { siteConfig } from "@/config/site";
+import { AdBanner } from "@/components/advertising/ad-banner";
 import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
@@ -38,6 +39,9 @@ export default function ContactPage() {
           title="Let’s talk sound."
           lead="Have a question, found an issue, or want to work together? Send us a message."
         />
+
+        {/* Ad Placement 1: Below page header, above contact layout */}
+        <AdBanner id="contact-header-grid" className="mx-auto" />
 
         <SectionSeam />
 
@@ -69,6 +73,25 @@ export default function ContactPage() {
                   <ShieldCheck size={14} className="text-primary shrink-0" />
                   <span>Private and confidential · Zero marketing lists</span>
                 </div>
+              </div>
+
+              {/* What happens next */}
+              <div className="pt-3 border-t border-line space-y-2.5">
+                <p className="text-[11px] font-mono uppercase tracking-wider text-faint">What happens next</p>
+                <ol className="space-y-2 text-xs text-muted">
+                  {[
+                    "Your message lands in our direct inbox.",
+                    "We review it against the studio roadmap and FAQ.",
+                    "You get a personal reply — no bots, no ticket queue.",
+                  ].map((step, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-line bg-canvas font-mono text-[9px] font-bold text-primary">
+                        {i + 1}
+                      </span>
+                      <span className="leading-relaxed">{step}</span>
+                    </li>
+                  ))}
+                </ol>
               </div>
             </div>
 
@@ -140,6 +163,11 @@ export default function ContactPage() {
           <div className="lg:col-span-7">
             <ContactForm />
           </div>
+        </div>
+
+        {/* Ad Placement 2: Bottom of page, below contact directory */}
+        <div className="pt-8 border-t border-line/60">
+          <AdBanner id="contact-bottom" className="mx-auto" />
         </div>
       </div>
     </div>

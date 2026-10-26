@@ -247,8 +247,15 @@ export async function POST(request: Request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: process.env.CONTACT_FROM_EMAIL || "Audify Contact <onboarding@resend.dev>",
-          to: process.env.CONTACT_TO_EMAIL || "hello@nyxen.in",
+          // Verified project sender identity. nyxen.in must be a verified
+          // domain in the Resend dashboard for this to deliver; override with
+          // CONTACT_FROM_EMAIL if a different verified sender is preferred.
+          from: process.env.CONTACT_FROM_EMAIL || "Audify Contact <support@nyxen.in>",
+          to: process.env.CONTACT_TO_EMAIL || "support@nyxen.in",
+          // The visitor's address goes on Reply-To only — never used as the
+          // envelope sender — so replies land in the team's mailbox while the
+          // outgoing identity remains the project's own verified domain.
+          reply_to: email,
           subject: `[Audify] ${topic}: ${name}`,
           text: `Name: ${name}\nEmail: ${email}\nTopic: ${topic}\nAudio Format: ${audioFormat || "N/A"}\n\n${message}`,
         }),

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { EffectsWorkspace } from "@/components/effects/effects-workspace";
+import { AdBanner } from "@/components/advertising/ad-banner";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -29,11 +30,19 @@ export default function EffectsPage() {
           lead="Direct parameter control over browser-native Web Audio nodes. Adjust, audition, and process your audio client-side with 32-bit float accuracy."
         />
 
+        {/* Ad Placement 1: Below page header, before effects workspace */}
+        <AdBanner id="effects-top" className="mx-auto" />
+
         <SectionSeam />
 
         <Suspense fallback={null}>
           <EffectsWorkspace />
         </Suspense>
+
+        {/* Ad Placement 2: Bottom of page, below effects workspace */}
+        <div className="pt-8 border-t border-line/60">
+          <AdBanner id="effects-bottom" className="mx-auto" />
+        </div>
       </div>
     </div>
   );

@@ -356,6 +356,27 @@ html.dark .text-wire-gradient {
   pointer-events: none;
 }
 
+/* Deterministic sweep variants — desynchronize neighboring rotation so grouped
+   CTAs do not pulse in unison. All variants share the same keyframes and color
+   story; they differ only in direction and phase. "static" keeps the brand
+   conic field without continuous motion (used where motion would distract).
+   Reduced-motion users get an unanimated layer via the global block below. */
+.btn-sweep-reverse::before {
+  animation-direction: reverse;
+}
+.btn-sweep-offset-a::before {
+  animation-delay: -1.33s;
+  animation-duration: 4.6s;
+}
+.btn-sweep-offset-b::before {
+  animation-delay: -2.55s;
+  animation-duration: 5.4s;
+}
+.btn-sweep-static::before {
+  animation: none;
+  transform: translate(-50%, -50%) rotate(140deg) !important;
+}
+
 html.dark .btn-gradient-primary,
 html.dark .btn-rotating-gradient {
   background-color: #5b00d6 !important;

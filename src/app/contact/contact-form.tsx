@@ -8,6 +8,7 @@ import {
   WarningCircle,
   Info,
   CircleNotch,
+  CaretDown,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { contactFormLimiter } from "@/lib/rate-limiter";
@@ -138,8 +139,8 @@ export function ContactForm() {
               <Info size={15} className="shrink-0 mt-0.5" />
               <span>
                 Processed in local simulation mode (outbound email delivery provider is not configured). For urgent questions, email{" "}
-                <a href="mailto:hello@nyxen.in" className="underline font-semibold text-fg">
-                  hello@nyxen.in
+                <a href="mailto:support@nyxen.in" className="underline font-semibold text-fg">
+                  support@nyxen.in
                 </a>{" "}
                 directly.
               </span>
@@ -240,28 +241,36 @@ export function ContactForm() {
           />
         </div>
 
-        {/* Reason for Contact */}
-        <div>
-          <label htmlFor="contact-topic" className="block text-xs font-semibold text-fg mb-1">
-            Reason for Contact <span className="text-primary font-bold" aria-hidden="true">*</span>
-          </label>
-          <select
-            id="contact-topic"
-            required
-            aria-required="true"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            disabled={submitting}
-            className="h-9 w-full rounded-xl border border-line bg-canvas px-2.5 text-xs text-fg focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary transition-colors cursor-pointer disabled:opacity-60"
-          >
-            <option value="General Question">General Question</option>
-            <option value="Technical Support">Technical Support (DSP / Browser)</option>
-            <option value="Feedback">Feedback &amp; Sound Suggestions</option>
-            <option value="Partnership">Partnership &amp; Music Collaboration</option>
-            <option value="Bug Report / Issue">Bug Report / DSP Glitch</option>
-            <option value="New Preset Request">New Preset Request</option>
-          </select>
-        </div>
+          {/* Reason for Contact — custom-styled dropdown */}
+          <div>
+            <label htmlFor="contact-topic" className="block text-xs font-semibold text-fg mb-1">
+              Reason for Contact <span className="text-primary font-bold" aria-hidden="true">*</span>
+            </label>
+            <div className="relative">
+              <select
+                id="contact-topic"
+                required
+                aria-required="true"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                disabled={submitting}
+                className="h-9 w-full appearance-none rounded-xl border border-line bg-canvas pl-3 pr-9 text-xs text-fg cursor-pointer focus:border-primary focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary transition-colors disabled:opacity-60 hover:border-line-strong"
+              >
+                <option value="General Question">General Question</option>
+                <option value="Technical Support">Technical Support (DSP / Browser)</option>
+                <option value="Feedback">Feedback &amp; Sound Suggestions</option>
+                <option value="Partnership">Partnership &amp; Music Collaboration</option>
+                <option value="Bug Report / Issue">Bug Report / DSP Glitch</option>
+                <option value="New Preset Request">New Preset Request</option>
+              </select>
+              <CaretDown
+                size={12}
+                weight="bold"
+                aria-hidden="true"
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted"
+              />
+            </div>
+          </div>
 
         {/* Optional Environment / Audio Details */}
         <div>

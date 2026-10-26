@@ -23,6 +23,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { Logo } from "@/components/layout/logo";
 import { Button } from "@/components/ui/button";
+import { AdBanner } from "@/components/advertising/ad-banner";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -258,7 +259,7 @@ export default function AboutPage() {
             <Button
               asChild
               size="lg"
-              className="btn-gradient-primary rounded-xl px-6 h-11 text-white font-semibold shadow-md active:scale-95 group"
+              className="btn-gradient-primary btn-sweep-reverse rounded-xl px-6 h-11 text-white font-semibold shadow-md active:scale-95 group"
             >
               <Link href="/studio">
                 <span>Launch Audify Studio</span>
@@ -288,17 +289,20 @@ export default function AboutPage() {
               className="rounded-xl px-4 h-11 text-muted hover:text-fg font-medium"
             >
               <a
-                href="https://nyxen.in"
+                href="https://yashshinde.in"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5"
               >
-                <span>About Nyxen Studio</span>
+                <span>Developed by Yash Shinde</span>
                 <ArrowUpRight size={13} />
               </a>
             </Button>
           </div>
         </section>
+
+        {/* Ad Placement 1: Below hero action row */}
+        <AdBanner id="about-intro-action" className="mx-auto" />
 
         {/* ========================================================= */}
         {/* SECTION 2: TELEMETRY & CAPABILITIES BENTO STRIP           */}
@@ -444,6 +448,9 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
+
+        {/* Ad Placement 2: Between architecture telemetry and studio story */}
+        <AdBanner id="about-principles-tech" className="mx-auto" />
 
         {/* ========================================================= */}
         {/* SECTION 4: ABOUT NYXEN — INDEPENDENT DIGITAL STUDIO       */}
@@ -648,6 +655,12 @@ export default function AboutPage() {
         {/* SECTION 5: CREATIVE SOUND PARTNERSHIP                     */}
         {/* ========================================================= */}
         <section aria-labelledby="partnership-heading" className="space-y-4">
+          <AdBanner
+            id="about-partnership"
+            className="mx-auto"
+            note="Audify stays free for creators — placement supported."
+          />
+
           <div className="space-y-1">
             <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted">
               Creative Sound Partner
@@ -895,6 +908,9 @@ export default function AboutPage() {
           </div>
         </section>
 
+        {/* Ad Placement 4: Between specifications/channels and final CTA */}
+        <AdBanner id="about-specs-cta" className="mx-auto" />
+
         {/* ========================================================= */}
         {/* SECTION 9: FINAL IMMERSIVE STUDIO INVITATION              */}
         {/* ========================================================= */}
@@ -919,7 +935,7 @@ export default function AboutPage() {
             <Button
               asChild
               size="lg"
-              className="btn-gradient-primary rounded-xl px-7 h-12 text-white font-semibold shadow-md active:scale-95 group"
+              className="btn-gradient-primary btn-sweep-offset-a rounded-xl px-7 h-12 text-white font-semibold shadow-md active:scale-95 group"
             >
               <Link href="/studio">
                 <span>Open Audify Studio</span>
@@ -936,10 +952,20 @@ export default function AboutPage() {
             </Button>
           </div>
 
-          <div className="pt-6 border-t border-line/60 flex items-center justify-center gap-1.5 text-xs text-faint font-mono">
+          <div className="pt-6 border-t border-line/60 flex flex-wrap items-center justify-center gap-1.5 text-xs text-faint font-mono">
             <span>Audify by Nyxen</span>
             <span aria-hidden="true">×</span>
             <span>Xpert Melody</span>
+            <span aria-hidden="true">·</span>
+            <a
+              href="https://yashshinde.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 hover:text-fg transition-colors"
+            >
+              <span>Developed by Yash Shinde</span>
+              <ArrowUpRight size={11} />
+            </a>
           </div>
         </section>
       </div>

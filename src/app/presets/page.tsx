@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PresetExplorer } from "@/components/editor/preset-explorer";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
+import { AdBanner } from "@/components/advertising/ad-banner";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -28,9 +29,17 @@ export default function PresetsPage() {
           lead="Explore ready-made treatments, preview the difference, and make the sound yours."
         />
 
+        {/* Ad Placement 1: Below page header, before preset explorer */}
+        <AdBanner id="presets-top" className="mx-auto" />
+
         <SectionSeam />
 
         <PresetExplorer />
+
+        {/* Ad Placement 2: Bottom of page, below preset explorer */}
+        <div className="pt-8 border-t border-line/60">
+          <AdBanner id="presets-bottom" className="mx-auto" />
+        </div>
       </div>
     </div>
   );

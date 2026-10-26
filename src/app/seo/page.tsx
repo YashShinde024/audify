@@ -17,6 +17,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
+import { AdBanner } from "@/components/advertising/ad-banner";
 import { siteConfig } from "@/config/site";
 import { TOOLS_REGISTRY } from "@/config/tools-registry";
 import { presets } from "@/config/presets";
@@ -202,6 +203,8 @@ export default function SeoDirectoryPage() {
             </div>
           </div>
 
+          <AdBanner id="seo-header-specs" className="my-2" />
+
           <SectionSeam />
 
           {/* 1. Core Architecture Bento Strip */}
@@ -315,6 +318,8 @@ export default function SeoDirectoryPage() {
               ))}
             </div>
           </section>
+
+          <AdBanner id="seo-tools-presets" className="my-2" />
 
           {/* 3. Audio Presets Overview */}
           <section aria-labelledby="presets-overview-heading" className="space-y-6">
@@ -458,6 +463,8 @@ export default function SeoDirectoryPage() {
             </div>
           </section>
 
+          <AdBanner id="seo-presets-faqs" className="my-2" />
+
           {/* 6. Real Product FAQ */}
           <section aria-labelledby="faq-heading" className="space-y-6">
             <div className="space-y-1">
@@ -484,6 +491,8 @@ export default function SeoDirectoryPage() {
             </div>
           </section>
 
+          <AdBanner id="seo-bottom-cta" className="my-2" />
+
           {/* 7. Conversion CTA */}
           <section
             aria-labelledby="cta-heading"
@@ -499,7 +508,7 @@ export default function SeoDirectoryPage() {
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <Button asChild size="lg" className="btn-gradient-primary rounded-xl px-7 text-white font-semibold shadow-md active:scale-95">
+              <Button asChild size="lg" sweep="offset-b" className="btn-gradient-primary rounded-xl px-7 text-white font-semibold shadow-md active:scale-95">
                 <Link href="/studio">
                   <span>Open Audify Studio</span>
                   <ArrowRight size={14} weight="bold" />

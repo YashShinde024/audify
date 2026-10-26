@@ -11,100 +11,79 @@ import {
   Info,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
+import {
+  CONSENT_VERSION,
+  useConsent,
+  saveConsent as persistConsent,
+  type ConsentRecord,
+  type ConsentChoice,
+} from "@/lib/consent";
 
+/** Kept for backwards compatibility with any future consumers. */
 export const COOKIE_CONSENT_KEY = "audify-cookie-consent";
-const LEGACY_COOKIE_KEY = "audiomorph-cookie-consent";
 
-export interface CookiePreferences {
-  necessary: boolean; // Always true
-  analytics: boolean;
-  functional: boolean;
-  timestamp: number;
-  choice: "all" | "reject" | "custom";
-}
+export type { ConsentRecord as CookiePreferences };
+export const DEFAULT_PREFERENCES = { necessary: true, analytics: false, functional: false };
 
-const DEFAULT_PREFERENCES: CookiePreferences = {
+const UNSET_PREFS: ConsentRecord = {
   necessary: true,
   analytics: false,
   functional: false,
+  advertising: false,
   timestamp: 0,
+  version: CONSENT_VERSION,
   choice: "reject",
 };
 
 export function CookieBanner() {
+  // Reactive consent snapshot (useSyncExternalStore). The banner never mirrors
+  // the store into local state via an effect; persistence state flows one way
+  // and this component renders from it directly.
+  const consent = useConsent();
+  const hasCurrentValidChoice =
+    consent.timestamp > 0 && consent.version >= CONSENT_VERSION;
+
   const [isVisible, setIsVisible] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
-  const [preferences, setPreferences] = useState<CookiePreferences>(() => {
-    if (typeof window === "undefined") return DEFAULT_PREFERENCES;
-    try {
-      const stored = localStorage.getItem(COOKIE_CONSENT_KEY) || localStorage.getItem(LEGACY_COOKIE_KEY);
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          if (typeof parsed === "object" && parsed !== null) {
-            return {
-              necessary: true,
-              analytics: Boolean(parsed.analytics),
-              functional: Boolean(parsed.functional),
-              timestamp: Number(parsed.timestamp) || Date.now(),
-              choice: parsed.choice || "custom",
-            };
-          }
-        } catch {
-          const isAll = stored === "all";
-          return {
-            necessary: true,
-            analytics: isAll,
-            functional: isAll,
-            timestamp: Date.now(),
-            choice: isAll ? "all" : "reject",
-          };
-        }
-      }
-    } catch {
-      // LocalStorage unavailable in strict sandbox
-    }
-    return DEFAULT_PREFERENCES;
-  });
+  // Local draft for the preferences panel checkboxes; seeded from the store
+  // only when the panel is opened (an event handler, not an effect).
+  const [editDraft, setEditDraft] = useState<ConsentRecord>(UNSET_PREFS);
   const bannerRef = useRef<HTMLElement>(null);
 
-  // Initialize and check for stored consent
+  // Show the banner once on mount only when no valid, current-version choice
+  // exists (version bumps re-prompt consent). Delayed so first paint and the
+  // audio graph settle smoothly. Withdrawal after save collapses the banner
+  // and re-prompts only via the footer's Cookie Settings control.
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(COOKIE_CONSENT_KEY) || localStorage.getItem(LEGACY_COOKIE_KEY);
-      if (!stored) {
-        // First visit: Delay entry slightly so first paint & audio graph settle smoothly
-        const timer = setTimeout(() => setIsVisible(true), 1200);
-        return () => clearTimeout(timer);
-      }
-    } catch {
-      // LocalStorage unavailable in strict sandbox
+    if (hasCurrentValidChoice) {
+      // Valid saved choice: keep the banner hidden for this session.
+      return;
     }
-  }, []);
+    const timer = window.setTimeout(() => setIsVisible(true), 1200);
+    return () => window.clearTimeout(timer);
+  }, [hasCurrentValidChoice]);
 
-  // Listen for global custom events to reopen preferences from the footer or legal pages
+  /** Opens the preferences panel, seeding the checkbox draft from the store. */
+  const openPreferences = useCallback(() => {
+    setEditDraft(hasCurrentValidChoice ? consent : UNSET_PREFS);
+    setIsVisible(true);
+    setShowPreferences(true);
+  }, [hasCurrentValidChoice, consent]);
+
+  // Footer / legal-page reopen control (dispatches a custom event).
   useEffect(() => {
-    const handleOpen = () => {
-      setIsVisible(true);
-      setShowPreferences(true);
-    };
-
-    window.addEventListener("open-cookie-preferences", handleOpen);
-    window.addEventListener("audify-open-cookie-preferences", handleOpen);
+    window.addEventListener("open-cookie-preferences", openPreferences);
+    window.addEventListener("audify-open-cookie-preferences", openPreferences);
 
     return () => {
-      window.removeEventListener("open-cookie-preferences", handleOpen);
-      window.removeEventListener("audify-open-cookie-preferences", handleOpen);
+      window.removeEventListener("open-cookie-preferences", openPreferences);
+      window.removeEventListener("audify-open-cookie-preferences", openPreferences);
     };
-  }, []);
+  }, [openPreferences]);
 
-  const saveConsent = useCallback((updated: CookiePreferences) => {
-    try {
-      localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(updated));
-    } catch {
-      // ignore
-    }
-    setPreferences(updated);
+  const saveConsent = useCallback((updated: ConsentRecord) => {
+    persistConsent(updated);
+    setEditDraft(updated);
     setIsVisible(false);
     setShowPreferences(false);
   }, []);
@@ -114,8 +93,10 @@ export function CookieBanner() {
       necessary: true,
       analytics: true,
       functional: true,
+      advertising: true,
       timestamp: Date.now(),
-      choice: "all",
+      version: CONSENT_VERSION,
+      choice: "all" as ConsentChoice,
     });
   };
 
@@ -124,16 +105,19 @@ export function CookieBanner() {
       necessary: true,
       analytics: false,
       functional: false,
+      advertising: false,
       timestamp: Date.now(),
+      version: CONSENT_VERSION,
       choice: "reject",
     });
   };
 
   const handleSaveCustom = () => {
     saveConsent({
-      ...preferences,
+      ...editDraft,
       necessary: true,
-      timestamp: Date.now(),
+      timestamp: dateNow(),
+      version: CONSENT_VERSION,
       choice: "custom",
     });
   };
@@ -160,8 +144,10 @@ export function CookieBanner() {
                   Your privacy, your choice
                 </h3>
                 <p className="text-xs text-muted leading-relaxed">
-                  We use essential storage to keep Audify working. If optional analytics or other non-essential
-                  technologies are enabled, you can choose whether to allow them. Read our{" "}
+                  We use essential storage to keep Audify working. Optional analytics
+                  and third-party advertising (Adsterra sponsor placements) are
+                  loaded <strong className="font-semibold text-fg">only with your consent</strong>.
+                  Read our{" "}
                   <Link
                     href="/privacy"
                     className="text-primary underline underline-offset-2 hover:text-primary-hover font-medium"
@@ -194,6 +180,7 @@ export function CookieBanner() {
 
               <Button
                 size="sm"
+                sweep="offset-b"
                 onClick={handleAcceptAll}
                 className="rounded-xl px-5 text-xs font-semibold cursor-pointer shadow-glow-wire"
               >
@@ -216,10 +203,11 @@ export function CookieBanner() {
                 </span>
                 <div>
                   <h3 id="cookie-preferences-title" className="text-sm font-semibold text-fg">
-                    Privacy & Storage Preferences
+                    Privacy &amp; Storage Preferences
                   </h3>
                   <p className="text-[11px] text-faint">
-                    Configure which local browser storage technologies you authorize Audify to use.
+                    Configure which storage technologies and third-party scripts you authorize Audify
+                    to use (consent policy v{CONSENT_VERSION}).
                   </p>
                 </div>
               </div>
@@ -235,7 +223,7 @@ export function CookieBanner() {
             </div>
 
             {/* Categories */}
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {/* Category 1: Strictly Necessary */}
               <div className="rounded-xl border border-line/80 bg-canvas-subtle p-3.5 space-y-2">
                 <div className="flex items-center justify-between gap-2">
@@ -248,8 +236,8 @@ export function CookieBanner() {
                   </span>
                 </div>
                 <p className="text-[11px] text-muted leading-relaxed">
-                  Required for core workstation UI, dark/light theme persistence (<code>audify-theme</code>), and saving
-                  your consent choices.
+                  Required for core workstation UI, dark/light theme persistence (
+                  <code>audify-theme</code>), and saving your consent choices.
                 </p>
               </div>
 
@@ -257,14 +245,14 @@ export function CookieBanner() {
               <div className="rounded-xl border border-line/80 bg-canvas-subtle p-3.5 space-y-2">
                 <div className="flex items-center justify-between gap-2">
                   <label htmlFor="pref-analytics" className="text-xs font-semibold text-fg cursor-pointer">
-                    Analytics & Diagnostics
+                    Analytics &amp; Diagnostics
                   </label>
                   <input
                     id="pref-analytics"
                     type="checkbox"
-                    checked={preferences.analytics}
+                    checked={editDraft.analytics}
                     onChange={(e) =>
-                      setPreferences((prev) => ({
+                      setEditDraft((prev) => ({
                         ...prev,
                         analytics: e.target.checked,
                       }))
@@ -273,8 +261,8 @@ export function CookieBanner() {
                   />
                 </div>
                 <p className="text-[11px] text-muted leading-relaxed">
-                  Anonymous Web Audio compatibility statistics and render performance telemetry to diagnose DSP crashes.
-                  Currently opt-in.
+                  Anonymous Web Audio compatibility statistics and render performance telemetry to
+                  diagnose DSP crashes. Currently opt-in.
                 </p>
               </div>
 
@@ -287,9 +275,9 @@ export function CookieBanner() {
                   <input
                     id="pref-functional"
                     type="checkbox"
-                    checked={preferences.functional}
+                    checked={editDraft.functional}
                     onChange={(e) =>
-                      setPreferences((prev) => ({
+                      setEditDraft((prev) => ({
                         ...prev,
                         functional: e.target.checked,
                       }))
@@ -298,7 +286,33 @@ export function CookieBanner() {
                   />
                 </div>
                 <p className="text-[11px] text-muted leading-relaxed">
-                  Saves custom DSP presets, slider positions, and frequency curves between studio sessions in your browser.
+                  Saves custom DSP presets, slider positions, and frequency curves between studio
+                  sessions in your browser.
+                </p>
+              </div>
+
+              {/* Category 4: Advertising (third-party sponsor placements) */}
+              <div className="rounded-xl border border-line/80 bg-canvas-subtle p-3.5 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <label htmlFor="pref-advertising" className="text-xs font-semibold text-fg cursor-pointer">
+                    Advertising
+                  </label>
+                  <input
+                    id="pref-advertising"
+                    type="checkbox"
+                    checked={editDraft.advertising}
+                    onChange={(e) =>
+                      setEditDraft((prev) => ({
+                        ...prev,
+                        advertising: e.target.checked,
+                      }))
+                    }
+                    className="h-4 w-4 rounded border-line text-primary focus:ring-primary cursor-pointer accent-primary"
+                  />
+                </div>
+                <p className="text-[11px] text-muted leading-relaxed">
+                  Allows third-party sponsor placements (Adsterra) to load. Withdrawal removes the
+                  ad frames; already-sent vendor requests cannot be recalled once made.
                 </p>
               </div>
             </div>
@@ -307,8 +321,9 @@ export function CookieBanner() {
             <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 flex items-start gap-2.5 text-[11px] text-muted leading-normal">
               <Info size={16} className="text-primary shrink-0 mt-0.5" />
               <span>
-                <strong>Zero Audio Transmission:</strong> Regardless of your cookie choices, your audio files and rendered
-                waveforms are processed 100% locally in your client device memory and are never transmitted to any server.
+                <strong>Zero Audio Transmission:</strong> Regardless of your cookie choices, your
+                audio files and rendered waveforms are processed locally in your client device
+                memory and are never transmitted to any server, including to advertising networks.
               </span>
             </div>
 
@@ -339,6 +354,7 @@ export function CookieBanner() {
                 </button>
                 <Button
                   size="sm"
+                  sweep="offset-b"
                   onClick={handleSaveCustom}
                   className="rounded-xl px-4 text-xs font-semibold cursor-pointer shadow-glow-wire"
                 >
@@ -351,4 +367,8 @@ export function CookieBanner() {
       </div>
     </aside>
   );
+}
+
+function dateNow(): number {
+  return typeof window !== "undefined" ? Date.now() : 0;
 }

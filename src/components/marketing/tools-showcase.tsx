@@ -194,7 +194,7 @@ export function ToolsShowcase() {
             Explore our complete directory of audio tools including parametric EQ, sub rumble cut, bitcrushing, chorus modulation, and BPM detection.
           </p>
         </div>
-        <Button asChild size="lg" className="relative z-10 h-10 px-5 rounded-xl btn-gradient-primary text-white text-xs font-medium shrink-0 shadow-glow-wire group">
+        <Button asChild size="lg" sweep="offset-a" className="relative z-10 h-10 px-5 rounded-xl btn-gradient-primary text-white text-xs font-medium shrink-0 shadow-glow-wire group">
           <Link href="/tools">
             <span>Browse All Audio Tools</span>
             <ArrowRight className="ml-1.5 h-3.5 w-3.5 btn-arrow transition-transform duration-200" />

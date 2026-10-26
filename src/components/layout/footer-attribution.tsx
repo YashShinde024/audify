@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Heart, MusicNotes } from "@phosphor-icons/react";
+import { Heart, MusicNotes, Code } from "@phosphor-icons/react";
 import { siteConfig } from "@/config/site";
 
 const ATTRIBUTIONS = [
@@ -19,6 +19,13 @@ const ATTRIBUTIONS = [
     icon: MusicNotes,
     iconColor: "text-primary",
     url: siteConfig.youtubeUrl,
+  },
+  {
+    prefix: "Crafted by",
+    name: "Yash Shinde",
+    icon: Code,
+    iconColor: "text-violet",
+    url: "https://yashshinde.in",
   },
 ];
 

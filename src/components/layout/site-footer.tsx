@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { footerCompanyNav, footerProductNav, legalNav } from "@/config/navigation";
+import { XLogo, YoutubeLogo, InstagramLogo } from "@phosphor-icons/react/dist/ssr";
+import {
+  footerCompanyNav,
+  footerProductNav,
+  footerNyxenNav,
+  legalNav,
+} from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { Logo } from "./logo";
 import { FooterAttribution } from "./footer-attribution";
@@ -7,11 +13,22 @@ import { CookiePreferencesButton } from "./cookie-preferences-button";
 
 const currentYear = new Date().getFullYear();
 
+const SOCIAL_LINKS = [
+  { label: "X / Twitter", href: "https://x.com/buildnyxen", icon: XLogo, hover: "hover:text-fg" },
+  { label: "YouTube", href: siteConfig.youtubeUrl, icon: YoutubeLogo, hover: "hover:text-red-500" },
+  {
+    label: "Instagram",
+    href: "https://instagram.com/buildnyxen",
+    icon: InstagramLogo,
+    hover: "hover:text-pink-500",
+  },
+];
+
 export function SiteFooter() {
   return (
     <footer className="mt-12 sm:mt-20 border-t border-line bg-canvas">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4 lg:gap-12">
+        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-5 lg:gap-12">
           {/* Brand Column */}
           <div className="sm:col-span-2 space-y-3">
             <Link href="/" className="inline-flex items-center select-none" aria-label="Audify homepage">
@@ -42,6 +59,26 @@ export function SiteFooter() {
               . Built for musicians, producers, sound designers, and content creators. Audio processing runs entirely in your browser with zero audio uploads.
             </p>
 
+            {/* Social channels */}
+            <div className="flex items-center gap-1.5 pt-1">
+              {SOCIAL_LINKS.map((social) => {
+                const Icon = social.icon;
+                return (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    title={social.label}
+                    className={`inline-flex h-8 w-8 items-center justify-center rounded-full border border-line bg-surface text-muted transition-colors ${social.hover} hover:border-line-strong`}
+                  >
+                    <Icon size={15} weight="fill" />
+                  </a>
+                );
+              })}
+            </div>
+
             {/* Quick Action Badges */}
             <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
               <Link
@@ -64,7 +101,7 @@ export function SiteFooter() {
             {/* Product Column */}
             <nav aria-label="Footer product navigation">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-fg">
-                Studio &amp; Directory
+                Studio &amp; Tools
               </h3>
               <ul className="mt-3 space-y-1 sm:space-y-2">
                 {footerProductNav.map((item) => (
@@ -75,6 +112,33 @@ export function SiteFooter() {
                     >
                       {item.label}
                     </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            {/* Nyxen Product Suite Column (external) */}
+            <nav aria-label="Footer Nyxen product suite navigation (external links)">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-fg">
+                Nyxen Products
+              </h3>
+              <ul className="mt-3 space-y-1 sm:space-y-2">
+                {footerNyxenNav.map((item) => (
+                  <li key={item.href}>
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-center gap-1 py-1 sm:py-0 text-xs text-muted transition-colors hover:text-fg active:text-fg min-h-[34px] sm:min-h-0"
+                    >
+                      {item.label}
+                      <span
+                        aria-hidden="true"
+                        className="text-[9px] text-faint group-hover:text-accent transition-colors"
+                      >
+                        ↗
+                      </span>
+                    </a>
                   </li>
                 ))}
               </ul>

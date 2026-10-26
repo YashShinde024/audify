@@ -16,6 +16,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader, SectionSeam } from "@/components/marketing/page-header";
 import { Button } from "@/components/ui/button";
+import { AdBanner } from "@/components/advertising/ad-banner";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -242,9 +243,65 @@ export default function AeoAnswersPage() {
 
           <SectionSeam />
 
+          <AdBanner id="aeo-header-qa" className="my-2" />
+
           {/* Q&A Articles Section */}
           <section aria-label="Technical Audio Answers" className="space-y-8">
-            {AEO_QUESTIONS.map((item, idx) => (
+            {AEO_QUESTIONS.slice(0, 4).map((item) => (
+              <article
+                key={item.id}
+                id={item.id}
+                className="surface-card rounded-2xl border border-line p-6 sm:p-8 space-y-5 transition-all duration-200 hover:border-violet/40 hover:shadow-md"
+              >
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono text-[10px] uppercase font-bold text-violet bg-violet/10 border border-violet/20 px-2 py-0.5 rounded-md">
+                      {item.category}
+                    </span>
+                    <span className="font-mono text-[11px] text-faint">
+                      Anchor: #{item.id}
+                    </span>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold tracking-tight text-fg">
+                    {item.question}
+                  </h3>
+                </div>
+
+                {/* Direct Answer Box */}
+                <div className="rounded-xl border border-violet/30 bg-violet/5 p-4 sm:p-5 space-y-1.5">
+                  <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-violet">
+                    Direct Answer
+                  </div>
+                  <p className="text-sm text-fg font-medium leading-relaxed">
+                    {item.directAnswer}
+                  </p>
+                </div>
+
+                {/* Technical Deep Dive */}
+                <div className="space-y-1.5 text-xs text-muted leading-relaxed">
+                  <div className="text-[10px] font-mono uppercase tracking-wider font-semibold text-faint">
+                    Technical Architecture &amp; Signal Details
+                  </div>
+                  <p>{item.technicalDetails}</p>
+                </div>
+
+                {/* Tool Bridge Link */}
+                <div className="pt-4 border-t border-line/60 flex items-center justify-between text-xs">
+                  <span className="font-mono text-[11px] text-muted">Audify Engine Verification</span>
+                  <Link
+                    href={item.relatedToolHref}
+                    className="inline-flex items-center gap-1.5 font-semibold text-violet hover:underline underline-offset-4"
+                  >
+                    <span>{item.relatedToolLabel}</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                </div>
+              </article>
+            ))}
+
+            <AdBanner id="aeo-mid-benchmarks" className="my-4" />
+
+            {AEO_QUESTIONS.slice(4).map((item) => (
               <article
                 key={item.id}
                 id={item.id}
@@ -297,6 +354,8 @@ export default function AeoAnswersPage() {
             ))}
           </section>
 
+          <AdBanner id="aeo-bottom-cta" className="my-2" />
+
           {/* CTA Footer */}
           <section
             aria-labelledby="aeo-cta-heading"
@@ -312,7 +371,7 @@ export default function AeoAnswersPage() {
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <Button asChild size="lg" className="btn-gradient-primary rounded-xl px-7 text-white font-semibold shadow-md active:scale-95">
+              <Button asChild size="lg" sweep="reverse" className="btn-gradient-primary rounded-xl px-7 text-white font-semibold shadow-md active:scale-95">
                 <Link href="/studio">
                   <span>Launch Audify Studio</span>
                   <ArrowRight size={14} weight="bold" />

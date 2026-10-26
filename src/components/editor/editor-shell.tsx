@@ -8,7 +8,6 @@ import { ProcessAndOutput } from "./process-and-output";
 import { MusicEditFacts } from "./music-facts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { AdPlaceholder } from "@/components/advertising/ad-placeholder";
 import { useEditorStore } from "@/stores/editor-store";
 import { getPresetById } from "@/config/presets";
 import {
@@ -325,14 +324,6 @@ export function EditorShell() {
             </div>
           </div>
         )}
-
-        {/* Respectful Ad Slot placed cleanly below the entire editing experience */}
-        <div className="mt-14 border-t border-line pt-8">
-          <AdPlaceholder
-            size="banner"
-            note="Unobtrusive banner placement strictly below all workspace controls"
-          />
-        </div>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft, Clock, CalendarBlank, ListNumbers, ShieldCheck } from "@phosphor-icons/react";
-import { cn } from "@/lib/utils";
+import { AdBanner } from "@/components/advertising/ad-banner";
 
 export interface LegalSectionItem {
   id: string;
@@ -34,6 +34,8 @@ export function LegalPageLayout({
   otherDocumentLink,
   children,
 }: LegalPageLayoutProps) {
+  const docPrefix = eyebrow.toLowerCase().includes("terms") ? "terms" : "privacy";
+
   return (
     <div className="min-h-full bg-canvas py-8 sm:py-12 lg:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-12">
@@ -96,6 +98,9 @@ export function LegalPageLayout({
           </nav>
         )}
 
+        {/* Top Legal Ad Placement */}
+        <AdBanner id={`${docPrefix}-top`} className="my-2" />
+
         {/* 2-Column Desktop Document Layout with Sticky Table of Contents */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           {/* Desktop Sticky Table of Contents (Col 1-4) */}
@@ -133,6 +138,9 @@ export function LegalPageLayout({
           {/* Main Legal Document Body (Col 5-12) */}
           <main className="lg:col-span-8 min-w-0 space-y-8">
             {children}
+
+            {/* Bottom Legal Ad Placement */}
+            <AdBanner id={`${docPrefix}-bottom`} className="my-4" />
 
             {/* Document Verification & Assistance Footer */}
             <footer className="mt-12 pt-8 border-t border-line space-y-4 text-xs text-muted">

@@ -46,6 +46,14 @@ export const discoveryNav: NavItem[] = [
   { href: "/geo", label: "Generative Engine Spec" },
 ];
 
+/** Nyxen product suite links in footer */
+export const footerNyxenNav: NavItem[] = [
+  { href: "https://nyxen.in", label: "Nyxen Studio" },
+  { href: "https://rankly.nyxen.in", label: "Rankly — SEO Intelligence" },
+  { href: "https://nychat.nyxen.in", label: "NyChat — Private Chat" },
+  { href: "https://venzai.tech", label: "Venz AI — Prompt Suite" },
+];
+
 /** Legal and policy links. */
 export const legalNav: NavItem[] = [
   { href: "/privacy", label: "Privacy Policy" },

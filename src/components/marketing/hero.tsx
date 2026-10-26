@@ -55,6 +55,7 @@ export function Hero() {
             <Button
               asChild
               size="lg"
+              sweep="forward"
               className="h-12 px-7 rounded-xl btn-gradient-primary text-white font-medium shadow-glow-wire group"
             >
               <Link href="/tools" aria-label="Explore Audio Tools">

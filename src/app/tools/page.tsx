@@ -63,7 +63,7 @@ export default function ToolsPage() {
           />
 
           {/* Ad Placement: Below page header, above tools grid */}
-          <AdBanner className="mx-auto" />
+          <AdBanner id="tools-top" className="mx-auto" />
 
           <SectionSeam />
 
@@ -71,7 +71,7 @@ export default function ToolsPage() {
 
           {/* Ad Placement: Below tools grid, at page bottom */}
           <div className="pt-4 border-t border-line/50">
-            <AdBanner className="mx-auto" />
+            <AdBanner id="tools-bottom" className="mx-auto" />
           </div>
         </div>
       </div>
