@@ -141,4 +141,87 @@ describe("consent storage", () => {
     expect(readConsent().advertising).toBe(false);
     expect(() => saveConsent(fullConsent())).not.toThrow();
   });
+
+  it("persists the saved choice across simulated reloads and later sessions", () => {
+    // Route navigation, refreshes, and browser restarts all arrive as a fresh
+    // process with the same underlying storage — verify the record survives.
+    saveConsent(fullConsent({ choice: "custom", advertising: false }));
+    const first = readConsent();
+    expect(first.choice).toBe("custom");
+    expect(first.advertising).toBe(false);
+
+    // Simulate an entirely new page load (nothing in memory, same storage).
+    expect(readConsent().choice).toBe("custom");
+    expect(readConsent().timestamp).toBe(first.timestamp);
+  });
+
+  it("storage exceptions do not crash reads or writes", () => {
+    const throwingStorage = {
+      getItem: () => {
+        throw new Error("quota");
+      },
+      setItem: () => {
+        throw new Error("quota");
+      },
+      removeItem: () => {
+        throw new Error("quota");
+      },
+      clear: () => {
+        throw new Error("quota");
+      },
+    };
+    (globalThis as Record<string, unknown>).window = {
+      localStorage: throwingStorage,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    };
+    expect(() => saveConsent(fullConsent())).not.toThrow();
+    expect(readConsent().choice).toBe("reject"); // UNSET fallback
+    expect(readConsent().analytics).toBe(false);
+  });
+
+  it("non-object and wrong-field records are treated as unset", () => {
+    storage.set(CONSENT_STORAGE_KEY, JSON.stringify("just-a-string"));
+    expect(readConsent().choice).toBe("reject");
+    storage.set(CONSENT_STORAGE_KEY, "[1,2,3]");
+    expect(readConsent().choice).toBe("reject");
+    storage.set(CONSENT_STORAGE_KEY, "{}");
+    // Malformed record lacks a version: parseRecord falls back to version 1,
+    // below CONSENT_VERSION, so the policy re-prompts (fail closed).
+    expect(readConsent().timestamp).toBe(0);
+    expect(readConsent().choice).toBe("reject");
+  });
+
+  it("a storage event for another key does not disturb consent notifications", () => {
+    let notified = 0;
+    const unsubscribe = subscribeConsent(() => {
+      notified += 1;
+    });
+    // Simulate a background-tab write of an unrelated key (e.g. theme).
+    const handler = eventListeners.values().next().value as
+      ((evt: unknown) => void) | undefined;
+    handler?.({
+      type: "storage",
+      key: "audify-theme",
+      newValue: "dark",
+      oldValue: null,
+    } as unknown as StorageEvent);
+    expect(notified).toBe(0);
+    // Events for the consent key (or a clear(), key === null) DO notify.
+    handler?.({
+      type: "storage",
+      key: CONSENT_STORAGE_KEY,
+      newValue: JSON.stringify(fullConsent()),
+      oldValue: null,
+    } as unknown as StorageEvent);
+    expect(notified).toBe(1);
+    unsubscribe();
+  });
+
+  it("future-version records (advanced readers) are still honored, not wiped", () => {
+    stored({ ...fullConsent(), version: CONSENT_VERSION + 1 });
+    const consent = readConsent();
+    expect(consent.advertising).toBe(true);
+    expect(consent.choice).toBe("all");
+  });
 });
