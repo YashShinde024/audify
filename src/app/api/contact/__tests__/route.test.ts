@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { afterEach, describe, it, expect, beforeEach, vi } from "vitest";
 import { POST, _resetRateLimiter, extractClientIp } from "../route";
 
 describe("Contact Endpoint Security & Rate Limiting", () => {
@@ -189,5 +189,109 @@ describe("Contact Endpoint Security & Rate Limiting", () => {
     const json = await res.json();
     expect(json.delivered).toBe(false);
     expect(json.simulated).toBe(true);
+  });
+});
+
+describe("Contact Endpoint Delivery States", () => {
+  beforeEach(() => {
+    _resetRateLimiter();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  const validPayload = {
+    name: "Alex Vance",
+    email: "alex@example.com",
+    topic: "General Inquiry",
+    message: "Delivery state verification for the contact dispatch route.",
+  };
+
+  const postOnce = (ip: string) =>
+    POST(
+      new Request("http://localhost/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-real-ip": ip },
+        body: JSON.stringify(validPayload),
+      }),
+    );
+
+  type FetchInput = Parameters<typeof fetch>[0];
+  type FetchInit = Parameters<typeof fetch>[1];
+
+  it("reports delivered=true when the Resend provider accepts (2xx)", async () => {
+    vi.stubEnv("RESEND_API_KEY", "re_test-placeholder-key");
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response(null, { status: 200 }));
+
+    const res = await postOnce("203.0.113.21");
+    const json = await res.json();
+    expect(json.delivered).toBe(true);
+    expect(json.simulated).toBe(false);
+
+    const [url, init] = fetchMock.mock.calls[0] as [FetchInput, FetchInit];
+    expect(String(url)).toBe("https://api.resend.com/emails");
+    const body = JSON.parse(String(init?.body));
+    // Recipient/sender from env or route defaults; visitor address must be
+    // reply_to only — never the envelope sender.
+    expect(body.reply_to).toBe("alex@example.com");
+    expect(String(body.text)).toContain("alex@example.com");
+  });
+
+  it("reports delivered=false when the Resend provider errors (non-2xx), without crashing or leaking", async () => {
+    vi.stubEnv("RESEND_API_KEY", "re_test-placeholder-key");
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(null, { status: 422 }),
+    );
+
+    const res = await postOnce("203.0.113.22");
+    expect(res.status).toBe(200); // request itself succeeded; delivery failed
+    const json = await res.json();
+    expect(json.delivered).toBe(false);
+    expect(json.simulated).toBe(false);
+    expect(json.message).toContain("provider failed");
+  });
+
+  it("reports delivered=false when the provider call times out / throws", async () => {
+    vi.stubEnv("RESEND_API_KEY", "re_test-placeholder-key");
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(
+      new DOMException("The operation timed out.", "AbortError"),
+    );
+
+    const res = await postOnce("203.0.113.23");
+    const json = await res.json();
+    expect(json.success).toBe(true);
+    expect(json.delivered).toBe(false);
+    expect(json.simulated).toBe(false);
+  });
+
+  it("reports simulated=true when no provider is configured", async () => {
+    vi.stubEnv("RESEND_API_KEY", "");
+    vi.stubEnv("CONTACT_WEBHOOK_URL", "");
+    const fetchMock = vi.spyOn(globalThis, "fetch");
+
+    const res = await postOnce("203.0.113.24");
+    const json = await res.json();
+    expect(json.simulated).toBe(true);
+    expect(json.delivered).toBe(false);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("falls back to the webhook provider when Resend is unconfigured", async () => {
+    vi.stubEnv("RESEND_API_KEY", "");
+    vi.stubEnv("CONTACT_WEBHOOK_URL", "https://hooks.example.org/audify");
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(null, { status: 204 }),
+    );
+
+    const res = await postOnce("203.0.113.25");
+    const json = await res.json();
+    expect(json.delivered).toBe(true);
+    expect(json.simulated).toBe(false);
   });
 });

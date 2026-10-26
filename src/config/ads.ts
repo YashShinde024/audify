@@ -26,7 +26,22 @@
  * We enforce this via CSS breakpoints — never rendering both simultaneously.
  */
 
-/** Whether ads are enabled globally. */
+/**
+ * Whether ads are enabled globally.
+ *
+ * NEXT_PUBLIC_* variables are inlined into the client bundle at BUILD TIME, so
+ * this flag can only change with a fresh production build, never at runtime.
+ * A missing flag in production elicits a one-time diagnostic warning so an
+ * operator checking the console can distinguish "disabled by configuration"
+ * from "consent withheld" or "vendor failure" (see AdsterraSlot).
+ */
+let warnedDisabledInProduction = false;
+
+/** Test hook: clears the once-per-session diagnostic flag (namespaced, no-op in app code). */
+export function __resetAdsDiagnosticForTest(): void {
+  warnedDisabledInProduction = false;
+}
+
 export function isAdsEnabled(): boolean {
   // Never in SSR (safety net — components are 'use client' anyway)
   if (typeof window === "undefined") return false;
@@ -34,8 +49,16 @@ export function isAdsEnabled(): boolean {
   // Disabled in development and test environments
   if (process.env.NODE_ENV !== "production") return false;
 
-  // Explicit opt-in via environment variable
-  return process.env.NEXT_PUBLIC_ADS_ENABLED === "true";
+  const enabled = process.env.NEXT_PUBLIC_ADS_ENABLED === "true";
+  if (!enabled && !warnedDisabledInProduction) {
+    warnedDisabledInProduction = true;
+    console.warn(
+      "[ads] Advertising is DISABLED in this production build: " +
+        "NEXT_PUBLIC_ADS_ENABLED is not set to \"true\" (or was absent at build time). " +
+        "Set it on the deployment platform and rebuild to enable Adsterra placements.",
+    );
+  }
+  return enabled;
 }
 
 /**
@@ -57,6 +80,9 @@ export interface AdsterraSlotConfig {
 }
 
 /** Desktop leaderboard: 728×90 */
+/** Breakpoint (px) at which the 728×90 leaderboard is used instead of the 320×50 banner. */
+export const DESKTOP_AD_BREAKPOINT = 768;
+
 export const ADSTERRA_DESKTOP: AdsterraSlotConfig = {
   key: "3efbea48694b2953dacbfc9353168b60",
   format: "iframe",

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useMemo, useSyncExternalStore } from "react";
 import type { AdsterraSlotConfig } from "@/config/ads";
+import { DESKTOP_AD_BREAKPOINT } from "@/config/ads";
 
 interface AdsterraSlotProps {
   /** Slot configuration from config/ads.ts */
@@ -68,6 +69,8 @@ export function AdsterraSlot({ config, className }: AdsterraSlotProps) {
       // The component may have unmounted while the queue drained.
       if (!container.isConnected || container.childElementCount > 0) return;
 
+      container.dataset.adState = "pending";
+
       const optionsScript = document.createElement("script");
       optionsScript.type = "text/javascript";
       optionsScript.textContent = `atOptions = ${JSON.stringify({
@@ -85,14 +88,45 @@ export function AdsterraSlot({ config, className }: AdsterraSlotProps) {
       // this point no other slot's pair can interleave until onload resolves.
       loaderScript.async = false;
 
+      let settled = false;
       container.appendChild(optionsScript);
       container.appendChild(loaderScript);
 
+      // Diagnostics: distinguish "vendor script never loaded" (onerror or
+      // timeout — network/DNS/extension/CSP style failure) from "script loaded
+      // but produced no visible ad frame" (unfilled inventory or provider-side
+      // non-approval). No user data is logged — only the slot key fragment.
       await new Promise<void>((resolve) => {
-        loaderScript.onload = () => resolve();
-        loaderScript.onerror = () => resolve();
+        const settle = (state: "loaded" | "error" | "timeout") => {
+          if (settled) return;
+          settled = true;
+          container.dataset.adState = state;
+          if (state === "error") {
+            console.warn(
+              `[ads] Adsterra loader FAILED to load (${config.width}x${config.height} slot, key ${config.key.slice(0, 6)}…). ` +
+                "Likely causes: network/DNS filtering, blocking extensions, or a wrong script URL. No ad frame was created.",
+            );
+          } else if (state === "timeout") {
+            console.warn(
+              `[ads] Adsterra loader did not signal load within 10s (${config.width}x${config.height} slot, key ${config.key.slice(0, 6)}…).`,
+            );
+          } else {
+            const producedFrame =
+              container.querySelector("iframe") !== null ||
+              container.querySelector("img") !== null;
+            if (!producedFrame) {
+              console.info(
+                `[ads] Adsterra loader loaded but produced no ad frame yet (${config.width}x${config.height} slot, key ${config.key.slice(0, 6)}…). ` +
+                  "This is typically an unfilled/inventory response or provider-side approval pending — not a code failure.",
+              );
+            }
+          }
+          resolve();
+        };
+        loaderScript.onload = () => settle("loaded");
+        loaderScript.onerror = () => settle("error");
         // Hard cap in case the vendor script never fires onload.
-        window.setTimeout(resolve, 8000);
+        window.setTimeout(() => settle("timeout"), 10000);
       });
     }).then(() => setReady(true));
   }, [config.key, config.format, config.height, config.width, config.scriptSrc]);
@@ -139,4 +173,4 @@ export function useMediaMatch(query: string): boolean {
 }
 
 /** Media queries mirrored by AdBanner for its two supplied banner formats. */
-export const DESKTOP_AD_QUERY = "(min-width: 768px)";
+export const DESKTOP_AD_QUERY = `(min-width: ${DESKTOP_AD_BREAKPOINT}px)`;
