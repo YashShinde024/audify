@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/about",
     "/how-it-works",
     "/faq",
+    "/help/performance",
     "/privacy",
     "/terms",
     "/contact",
@@ -45,7 +46,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     } else if (route === "/about" || route === "/how-it-works") {
       priority = 0.8;
       changeFrequency = "monthly";
-    } else if (route === "/faq") {
+    } else if (route === "/faq" || route === "/help/performance") {
       priority = 0.75;
       changeFrequency = "monthly";
     } else if (route === "/privacy" || route === "/terms" || route === "/contact") {

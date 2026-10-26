@@ -2,8 +2,9 @@ import Link from "next/link";
 import { XLogo, YoutubeLogo, InstagramLogo } from "@phosphor-icons/react/dist/ssr";
 import {
   footerCompanyNav,
-  footerProductNav,
+  footerLearnNav,
   footerNyxenNav,
+  footerProductNav,
   legalNav,
 } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
@@ -28,7 +29,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-12 sm:mt-20 border-t border-line bg-canvas">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-5 lg:gap-12">
+        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-6 lg:gap-10">
           {/* Brand Column */}
           <div className="sm:col-span-2 space-y-3">
             <Link href="/" className="inline-flex items-center select-none" aria-label="Audify homepage">
@@ -105,6 +106,25 @@ export function SiteFooter() {
               </h3>
               <ul className="mt-3 space-y-1 sm:space-y-2">
                 {footerProductNav.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center py-1 sm:py-0 text-xs text-muted transition-colors hover:text-fg active:text-fg min-h-[34px] sm:min-h-0"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            {/* Learning & Discovery Column */}
+            <nav aria-label="Footer learning and discovery navigation">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-fg">
+                Learn
+              </h3>
+              <ul className="mt-3 space-y-1 sm:space-y-2">
+                {footerLearnNav.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}

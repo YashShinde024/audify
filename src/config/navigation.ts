@@ -29,11 +29,16 @@ export const footerProductNav: NavItem[] = [
   { href: "/how-it-works", label: "Audio Guide" },
 ];
 
-/** Company, knowledge and discovery navigation */
+/** Company and legal navigation in footer */
 export const footerCompanyNav: NavItem[] = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
+];
+
+/** Learning content and discovery navigation in footer */
+export const footerLearnNav: NavItem[] = [
   { href: "/faq", label: "FAQ" },
+  { href: "/help/performance", label: "Performance Help" },
   { href: "/seo", label: "Audio Tool Index" },
   { href: "/aeo", label: "Answer Engine FAQ" },
   { href: "/geo", label: "Architecture Spec" },
