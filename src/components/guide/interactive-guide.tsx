@@ -26,6 +26,7 @@ import {
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { AdBanner } from "@/components/advertising/ad-banner";
 
 // -------------------------------------------------------------
 // 1. SIGNAL PIPELINE NODES
@@ -1212,6 +1213,11 @@ export function InteractiveAudioGuide() {
           ))}
         </div>
       </section>
+
+      {/* Ad Placement: Before bottom guide CTA */}
+      <div className="py-2">
+        <AdBanner id="how-it-works-mid" className="mx-auto" />
+      </div>
 
       {/* ========================================================= */}
       {/* BOTTOM ACTION CTA */}

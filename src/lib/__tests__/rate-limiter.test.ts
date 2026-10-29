@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { studioDspLimiter, contactFormLimiter } from "../rate-limiter";
+import { studioDspLimiter, contactFormLimiter, toolDspLimiter } from "../rate-limiter";
 
 describe("Rate Limiter", () => {
   beforeEach(() => {
     studioDspLimiter.reset();
     contactFormLimiter.reset();
+    toolDspLimiter.reset();
   });
 
   it("permits initial DSP render requests", () => {
@@ -22,6 +23,15 @@ describe("Rate Limiter", () => {
     expect(check2.allowed).toBe(false);
     expect(check2.retryAfterMs).toBeGreaterThan(0);
     expect(check2.reason).toContain("Please wait");
+  });
+
+  it("safeguards tool tasks from rapid client CPU execution", () => {
+    const check1 = toolDspLimiter.check();
+    expect(check1.allowed).toBe(true);
+
+    const check2 = toolDspLimiter.check();
+    expect(check2.allowed).toBe(false);
+    expect(check2.retryAfterMs).toBeGreaterThan(0);
   });
 
   it("permits initial contact form dispatch and blocks rapid succession", () => {

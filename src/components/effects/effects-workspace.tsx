@@ -34,6 +34,7 @@ import { presets, getPresetById } from "@/config/presets";
 import { generateStudioSampleAudioFile } from "@/lib/sample-audio";
 import { supportedExtensions, validateAudioFile, fileSizeError } from "@/lib/audio-file";
 import { formatBytes, formatTime, cn } from "@/lib/utils";
+import { AdBanner } from "@/components/advertising/ad-banner";
 
 export function EffectsWorkspace() {
   const router = useRouter();
@@ -493,6 +494,11 @@ export function EffectsWorkspace() {
           </div>
         )}
       </section>
+
+      {/* Ad Placement: Mid-page sponsor banner in effects workstation */}
+      <div className="py-2">
+        <AdBanner id="effects-mid-controls" className="mx-auto" />
+      </div>
 
       {/* ── 2. Effect Presets Quick Bar & Group Filters ──────────────── */}
       <div className="space-y-3">

@@ -189,6 +189,25 @@ export function ProcessAndOutput() {
       transition={{ duration: 0.24, ease: easeOut }}
       className="space-y-5 rounded-2xl border border-line bg-surface p-4 sm:p-5 shadow-sm min-w-0 overflow-hidden"
     >
+      {/* Mobile Top Quick-Render Bar for direct access without scrolling past export parameters */}
+      {!isProcessing && (
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-primary/20 bg-primary/5 p-3 lg:hidden">
+          <div className="min-w-0">
+            <span className="text-xs font-semibold text-fg block truncate">Quick Render</span>
+            <span className="text-[10px] text-muted block truncate">{presetName}</span>
+          </div>
+          <Button
+            size="sm"
+            disabled={!canProcess}
+            onClick={() => void processAudio()}
+            className="shrink-0 rounded-full shadow-glow-wire px-4 text-xs cursor-pointer"
+          >
+            <Waveform size={14} weight="duotone" className="mr-1.5" />
+            <span>Render Master</span>
+          </Button>
+        </div>
+      )}
+
       {!isProcessing && (
         <div className="min-w-0 overflow-hidden">
           <ExportPanel />

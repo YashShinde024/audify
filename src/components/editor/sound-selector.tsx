@@ -68,6 +68,8 @@ export function SoundSelector() {
   const deleteCustomPreset = useEditorStore((s) => s.deleteCustomPreset);
   const renameCustomPreset = useEditorStore((s) => s.renameCustomPreset);
   const importCustomPresets = useEditorStore((s) => s.importCustomPresets);
+  const processAudio = useEditorStore((s) => s.processAudio);
+  const isProcessing = useEditorStore((s) => s.isProcessing);
 
   const handleExportCustomPresets = () => {
     if (customPresets.length === 0) return;
@@ -859,6 +861,27 @@ export function SoundSelector() {
           </div>
         </div>
       )}
+
+      {/* Mobile Render Shortcut: Allows immediate rendering right from the presets/sliders rack */}
+      <div className="pt-3 border-t border-line/70 lg:hidden flex items-center justify-between gap-3 bg-canvas-subtle/50 -mx-4 sm:-mx-5 -mb-4 sm:-mb-5 p-4 rounded-b-2xl">
+        <div className="min-w-0">
+          <span className="text-xs font-semibold text-fg block truncate">
+            {selectedPreset?.name || "Ready to Render"}
+          </span>
+          <span className="text-[10px] text-muted block truncate">
+            1-tap Web Audio DSP render
+          </span>
+        </div>
+        <Button
+          size="sm"
+          onClick={() => void processAudio()}
+          disabled={isProcessing}
+          className="shrink-0 rounded-full shadow-glow-wire px-4 text-xs cursor-pointer"
+        >
+          <Waveform size={14} weight="duotone" className="mr-1.5" />
+          <span>{isProcessing ? "Rendering…" : "Render Master"}</span>
+        </Button>
+      </div>
     </section>
   );
 }

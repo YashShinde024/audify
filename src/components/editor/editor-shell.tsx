@@ -21,9 +21,12 @@ import {
   Waveform,
   ShieldCheck,
   Cpu,
+  DownloadSimple,
 } from "@phosphor-icons/react";
 import { cn, formatBytes, formatTime } from "@/lib/utils";
 import { supportedExtensions, validateAudioFile, fileSizeError } from "@/lib/audio-file";
+import { AdBanner } from "@/components/advertising/ad-banner";
+import { downloadFile } from "@/lib/download";
 
 export function EditorShell() {
   const replaceInputRef = useRef<HTMLInputElement>(null);
@@ -39,6 +42,8 @@ export function EditorShell() {
   const selectedPresetId = useEditorStore((s) => s.selectedPresetId);
   const selectFile = useEditorStore((s) => s.selectFile);
   const clearFile = useEditorStore((s) => s.clearFile);
+  const processAudio = useEditorStore((s) => s.processAudio);
+  const cancelProcessing = useEditorStore((s) => s.cancelProcessing);
 
   const selectedPreset = getPresetById(selectedPresetId ?? "slowed-reverb");
   const percent = Math.round(Math.min(1, Math.max(0, processingProgress)) * 100);
@@ -195,6 +200,11 @@ export function EditorShell() {
                 </p>
               </div>
             </div>
+
+            {/* Ad Placement: In studio below capabilities overview */}
+            <div className="pt-2">
+              <AdBanner id="studio-empty-capabilities" className="mx-auto" />
+            </div>
           </div>
         )}
 
@@ -233,7 +243,7 @@ export function EditorShell() {
 
         {/* STATE C: LOADED-AUDIO WORKSTATION */}
         {file && !isDecoding && (
-          <div className="space-y-5 min-w-0">
+          <div className="space-y-5 min-w-0 pb-20 lg:pb-0">
             {/* Active Track Metadata & Quick Context Bar */}
             <div className="rounded-xl border border-line bg-surface/80 px-4 py-2.5 text-xs flex flex-wrap items-center justify-between gap-3 shadow-xs min-w-0 overflow-hidden">
               <div className="flex items-center gap-2.5 min-w-0">
@@ -272,6 +282,11 @@ export function EditorShell() {
             {/* 1. HERO TRACK WAVEFORM & AUDITION DECK (Full-Width, Uncramped) */}
             <div className="w-full min-w-0">
               <AudioPlayer />
+            </div>
+
+            {/* Ad Placement: In studio between waveform player and controls */}
+            <div className="py-1">
+              <AdBanner id="studio-mid-workspace" className="mx-auto" />
             </div>
 
             {/* Mobile / Tablet View Switcher (Only visible on screens < 1024px) */}
@@ -322,6 +337,95 @@ export function EditorShell() {
                 <ProcessAndOutput />
               </div>
             </div>
+
+            {/* Sticky Mobile Floating Action Dock (Always visible on mobile when audio file is loaded) */}
+            <aside
+              aria-label="Mobile Studio Navigation & Render Action"
+              className="fixed bottom-0 inset-x-0 z-40 lg:hidden border-t border-line/80 bg-surface/95 dark:bg-[#111016]/95 backdrop-blur-xl px-4 py-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-2xl transition-all"
+            >
+              <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
+                {/* View switcher & status pill */}
+                <div className="flex items-center gap-2 min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => setMobileView((v) => (v === "dsp" ? "export" : "dsp"))}
+                    className="flex items-center gap-1.5 rounded-lg border border-line bg-raised/70 px-2.5 py-1.5 text-xs font-medium text-fg hover:bg-canvas-subtle transition-colors cursor-pointer shrink-0"
+                    title={mobileView === "dsp" ? "Switch to Mastering & Export" : "Switch to DSP Presets"}
+                  >
+                    {mobileView === "dsp" ? (
+                      <>
+                        <Cpu size={14} className="text-primary" />
+                        <span>Export</span>
+                      </>
+                    ) : (
+                      <>
+                        <SlidersHorizontal size={14} className="text-primary" />
+                        <span>DSP</span>
+                      </>
+                    )}
+                  </button>
+
+                  <div className="truncate">
+                    <span className="text-[11px] font-semibold text-fg block truncate">
+                      {isProcessing ? (
+                        <span className="text-primary font-mono animate-pulse">Rendering ({percent}%)</span>
+                      ) : processedResult ? (
+                        <span className="text-emerald-500 font-medium">Master Ready</span>
+                      ) : (
+                        selectedPreset?.name || "Ready"
+                      )}
+                    </span>
+                    <span className="text-[10px] text-muted block truncate font-mono">
+                      {file.name}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Primary Mobile Action */}
+                <div className="flex items-center gap-2 shrink-0">
+                  {isProcessing ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={cancelProcessing}
+                      className="h-8 px-3 text-xs border-line hover:border-error/40 text-muted hover:text-error"
+                    >
+                      <CircleNotch size={14} className="animate-spin text-primary mr-1" />
+                      <span>Cancel</span>
+                    </Button>
+                  ) : processedResult ? (
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => void processAudio()}
+                        title="Re-render master"
+                        className="h-8 px-2 text-xs"
+                      >
+                        <ArrowsClockwise size={13} />
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => void downloadFile(processedResult.url, processedResult.fileName)}
+                        className="h-8 px-3.5 text-xs font-semibold rounded-full shadow-glow-wire bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer"
+                      >
+                        <DownloadSimple size={14} weight="bold" className="mr-1" />
+                        <span>Save</span>
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      size="sm"
+                      onClick={() => void processAudio()}
+                      className="h-8 px-4 text-xs font-semibold rounded-full shadow-glow-wire cursor-pointer"
+                    >
+                      <Waveform size={14} weight="duotone" className="mr-1.5" />
+                      <span>Render Master</span>
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </aside>
           </div>
         )}
       </div>

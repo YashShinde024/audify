@@ -125,6 +125,11 @@ export default function FAQPage() {
               </Link>
             </div>
           </section>
+
+          {/* Ad Placement 3: Bottom of FAQ page */}
+          <div className="pt-4 border-t border-line/60">
+            <AdBanner id="faq-bottom" className="mx-auto" />
+          </div>
         </div>
       </div>
     </>

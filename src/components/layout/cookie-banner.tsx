@@ -54,17 +54,36 @@ export function CookieBanner() {
   const bannerRef = useRef<HTMLElement>(null);
 
   // Show the banner once on mount only when no valid, current-version choice
-  // exists (version bumps re-prompt consent). Delayed so first paint and the
-  // audio graph settle smoothly. Withdrawal after save collapses the banner
-  // and re-prompts only via the footer's Cookie Settings control.
+  // exists (version bumps re-prompt consent) and the user has not dismissed it
+  // for this browser session. Delayed so first paint and audio graph settle smoothly.
   useEffect(() => {
     if (hasCurrentValidChoice) {
       // Valid saved choice: keep the banner hidden for this session.
       return;
     }
+    try {
+      if (typeof window !== "undefined" && window.sessionStorage.getItem("audify-consent-dismissed") === "true") {
+        return;
+      }
+    } catch {
+      /* ignore storage access restrictions */
+    }
     const timer = window.setTimeout(() => setIsVisible(true), 1200);
     return () => window.clearTimeout(timer);
   }, [hasCurrentValidChoice]);
+
+  /** Soft-dismiss the banner for this session without forcing a local cache write */
+  const handleDismiss = useCallback(() => {
+    try {
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem("audify-consent-dismissed", "true");
+      }
+    } catch {
+      /* ignore */
+    }
+    setIsVisible(false);
+    setShowPreferences(false);
+  }, []);
 
   /** Opens the preferences panel, seeding the checkbox draft from the store. */
   const openPreferences = useCallback(() => {
@@ -143,7 +162,17 @@ export function CookieBanner() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
         {!showPreferences ? (
           /* ── Main Compact Horizontal Bar ────────────────────────────── */
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pr-8 lg:pr-10">
+            {/* Top-Right Dismiss Icon */}
+            <button
+              type="button"
+              onClick={handleDismiss}
+              aria-label="Dismiss cookie notice for this session"
+              className="absolute right-0 top-0 p-1.5 rounded-lg text-muted hover:text-fg hover:bg-canvas-subtle transition-colors cursor-pointer"
+            >
+              <X size={16} />
+            </button>
+
             <div className="flex items-start gap-3.5 max-w-3xl min-w-0">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 text-primary">
                 <Cookie size={20} weight="duotone" />
@@ -153,23 +182,31 @@ export function CookieBanner() {
                   Your privacy, your choice
                 </h3>
                 <p className="text-xs text-muted leading-relaxed">
-                  Advertisements support Audify&apos;s free audio tools — advertising display
-                  is <strong className="font-semibold text-fg">part of the free service</strong>.
-                  Optional cookies (analytics, workstation cache) and tracking are
-                  managed separately. Read our{" "}
+                  Advertisements support Audify&apos;s free audio workstation — audio files are processed
+                  100% locally in your browser and are never uploaded. Optional cookies (analytics, workstation cache)
+                  are completely optional. Read our{" "}
                   <Link
                     href="/privacy"
                     className="text-primary underline underline-offset-2 hover:text-primary-hover font-medium"
                   >
                     Privacy Policy
                   </Link>{" "}
-                  to learn more.
+                  for details.
                 </p>
               </div>
             </div>
 
             {/* Actions: Distinct, balanced, accessible */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0 pt-1 lg:pt-0">
+              <button
+                type="button"
+                onClick={handleDismiss}
+                className="inline-flex items-center justify-center px-3 py-2 text-xs font-medium rounded-xl border border-line/60 text-muted hover:text-fg hover:bg-canvas-subtle transition-colors cursor-pointer"
+                title="Dismiss without saving cookies to browser cache"
+              >
+                Dismiss
+              </button>
+
               <button
                 type="button"
                 onClick={() => setShowPreferences(true)}
@@ -340,6 +377,14 @@ export function CookieBanner() {
               </Link>
 
               <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                <button
+                  type="button"
+                  onClick={handleDismiss}
+                  className="px-3 py-1.5 text-xs rounded-xl border border-line/60 text-muted hover:text-fg hover:bg-canvas-subtle transition-colors cursor-pointer"
+                  title="Dismiss without saving"
+                >
+                  Dismiss
+                </button>
                 <button
                   type="button"
                   onClick={handleRejectOptional}

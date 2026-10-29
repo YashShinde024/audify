@@ -74,10 +74,23 @@ class SlidingWindowLimiter {
 
 /**
  * Global Studio DSP Rate Limiter:
+ * Safeguards client device CPU and memory from thread lock / OOM crashes.
  * Allows max 8 renders per 60 seconds with minimum 1.5s interval between clicks.
  */
 export const studioDspLimiter = new SlidingWindowLimiter({
   maxRequests: 8,
+  windowMs: 60_000,
+  minIntervalMs: 1500,
+});
+
+/**
+ * Global Audio Tools Rate Limiter:
+ * Protects client CPU thread pool and memory from rapid batch runs or spam clicks
+ * across dedicated audio tools (converter, trimmer, volume normalizer, stem tasks).
+ * Allows max 10 tool tasks per 60 seconds with minimum 1.5s interval.
+ */
+export const toolDspLimiter = new SlidingWindowLimiter({
+  maxRequests: 10,
   windowMs: 60_000,
   minIntervalMs: 1500,
 });

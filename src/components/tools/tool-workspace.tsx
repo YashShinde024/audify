@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useRef } from "react";
 import type { ToolDefinition, ToolSettingValue } from "@/config/tools-registry";
@@ -18,6 +18,7 @@ import {
   downloadFile as platformDownload,
   triggerDownload,
 } from "@/lib/download";
+import { toolDspLimiter } from "@/lib/rate-limiter";
 import {
   DownloadSimple,
   ArrowCounterClockwise,
@@ -77,6 +78,14 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
   // Start processing
   const handleProcess = async () => {
     if (files.length === 0) return;
+
+    // Rate-limiting safeguard to prevent client device thread lock & excessive memory allocations
+    const rateCheck = toolDspLimiter.check();
+    if (!rateCheck.allowed) {
+      setError(rateCheck.reason || "Client device CPU safeguard: please wait a moment before executing audio tools again.");
+      return;
+    }
+
     setError(null);
     setState("processing");
     setProgress(5);
