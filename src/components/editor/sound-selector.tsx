@@ -20,6 +20,7 @@ import {
   Export,
   UploadSimple,
   PencilSimple,
+  Waveform,
 } from "@phosphor-icons/react";
 import { presetCategories, presets, getPresetById } from "@/config/presets";
 import { PresetIcon } from "@/components/icons/preset-icons";
@@ -106,7 +107,6 @@ export function SoundSelector() {
     setActiveTab("saved");
   };
 
-  const isProcessing = useEditorStore((s) => s.isProcessing);
   const naturalPrompt = useEditorStore((s) => s.naturalPrompt);
   const setNaturalPrompt = useEditorStore((s) => s.setNaturalPrompt);
   const applyNaturalPrompt = useEditorStore((s) => s.applyNaturalPrompt);

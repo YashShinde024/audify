@@ -11,6 +11,7 @@ import {
   Info,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
+import { SoundSettings } from "@/components/ui/sound-settings";
 import {
   CONSENT_VERSION,
   useConsent,
@@ -336,6 +337,9 @@ export function CookieBanner() {
                   sessions in your browser.
                 </p>
               </div>
+
+              {/* Audio Notification Setting */}
+              <SoundSettings />
 
               {/* Category 3: Advertising display notice (non-toggleable) */}
               <div className="rounded-xl border border-line/80 bg-canvas-subtle p-3.5 space-y-2">

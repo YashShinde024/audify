@@ -21,9 +21,21 @@ describe("sitemap", () => {
     expect(stripped.some((u) => u.startsWith("/tools/"))).toBe(true);
   });
 
-  it("excludes every blog route (blog is intentionally noindex)", () => {
+  it("includes the blog index and the published editorial article", () => {
     const blogRoutes = stripped.filter((u) => u.startsWith("/blog"));
-    expect(blogRoutes).toEqual([]);
+    expect(blogRoutes).toContain("/blog");
+    expect(blogRoutes).toContain("/blog/what-is-audify-browser-audio-workstation");
+  });
+
+  it("does not attach dynamic fake timestamps to static routes, but preserves real article dates", () => {
+    const entries = sitemap();
+    const studioEntry = entries.find((e) => e.url === `${siteConfig.url}/studio`);
+    expect(studioEntry?.lastModified).toBeUndefined();
+
+    const articleEntry = entries.find(
+      (e) => e.url === `${siteConfig.url}/blog/what-is-audify-browser-audio-workstation`
+    );
+    expect(articleEntry?.lastModified).toBeInstanceOf(Date);
   });
 });
 

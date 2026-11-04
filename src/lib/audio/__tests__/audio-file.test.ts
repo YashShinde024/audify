@@ -29,6 +29,12 @@ describe("isSupportedAudioFile", () => {
     }
   });
 
+  it("accepts supported extensions when OS leaves MIME type empty or generic octet-stream", () => {
+    expect(isSupportedAudioFile(makeFile({ name: "track.mp3", type: "" }))).toBe(true);
+    expect(isSupportedAudioFile(makeFile({ name: "track.wav", type: "" }))).toBe(true);
+    expect(isSupportedAudioFile(makeFile({ name: "track.flac", type: "application/octet-stream" }))).toBe(true);
+  });
+
   it("rejects text-like MIME types even with a supported extension", () => {
     expect(
       isSupportedAudioFile(makeFile({ name: "song.mp3", type: "text/plain" })),

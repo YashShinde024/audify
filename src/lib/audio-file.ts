@@ -25,9 +25,15 @@ export type AudioFileValidation =
 
 export function isSupportedAudioFile(file: File): boolean {
   const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
-  const mimeOk = file.type.startsWith("audio/");
   const extOk = supportedExtensions.includes(extension as SupportedExtension);
-  return mimeOk && extOk;
+  if (!extOk) return false;
+
+  // Accept files when MIME is audio/*, application/octet-stream, or empty string (common in OS drag-and-drop).
+  // Explicitly reject non-audio MIME types (e.g. text/plain, image/png, application/pdf).
+  if (file.type && !file.type.startsWith("audio/") && file.type !== "application/octet-stream") {
+    return false;
+  }
+  return true;
 }
 
 /** Client-side validation only — no upload happens in this frontend task. */

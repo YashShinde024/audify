@@ -19,6 +19,7 @@ import {
   triggerDownload,
 } from "@/lib/download";
 import { toolDspLimiter } from "@/lib/rate-limiter";
+import { playCompletionSound } from "@/lib/audio/completion-sound";
 import {
   DownloadSimple,
   ArrowCounterClockwise,
@@ -110,6 +111,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
 
       setResult(res);
       setState("completed");
+      void playCompletionSound("tool-" + tool.slug + "-" + Date.now());
     } catch (err: unknown) {
       if (!isCancelledRef.current) {
         setError(

@@ -25,6 +25,7 @@ import type {
   ExportSampleRate,
 } from "@/types/export";
 import { cn } from "@/lib/utils";
+import { SoundSettings } from "@/components/ui/sound-settings";
 
 const FORMATS: Array<{ id: ExportFormat; label: string; hint: string }> = [
   { id: "wav", label: "WAV", hint: "Lossless PCM" },
@@ -346,6 +347,12 @@ export function ExportPanel() {
                 onChange={(e) => setExportConfig({ outputFilename: e.target.value })}
                 className="w-full rounded-lg border border-line bg-raised px-2.5 py-1.5 font-mono text-xs text-fg placeholder:text-faint focus:border-primary focus:outline-none"
               />
+            
+            </div>
+
+            {/* Completion Sound Preference */}
+            <div className="pt-2 border-t border-line/50">
+              <SoundSettings variant="inline" />
             </div>
           </div>
         )}

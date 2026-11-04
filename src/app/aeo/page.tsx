@@ -20,7 +20,7 @@ import { AdBanner } from "@/components/advertising/ad-banner";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Answer Engine Guide & Technical Audio FAQ — Audify",
+  title: "Answer Engine Guide & Technical Audio FAQ",
   description:
     "Direct, fact-checked answers to common audio editing, Web Audio DSP, binaural panning, slowed reverb, and format conversion questions.",
   keywords: [
@@ -160,6 +160,39 @@ const AEO_QUESTIONS: QuestionItem[] = [
       "Because Audify relies on your device's CPU and RAM rather than remote cloud servers, processing speed scales with your local hardware. High-end multi-core desktop processors can render a 4-minute track in under 5 seconds via OfflineAudioContext.",
     relatedToolHref: "/how-it-works",
     relatedToolLabel: "Read Architecture Guide",
+  },
+  {
+    id: "is-audify-free",
+    category: "Cost & Licensing",
+    question: "Is Audify free to use and does it require an account?",
+    directAnswer:
+      "Yes, Audify is 100% free to use with no account, login, or payment required. Every creative preset, audio utility, and export option is immediately available in your browser.",
+    technicalDetails:
+      "Because all audio decoding and DSP transformations execute locally on client hardware rather than remote cloud server clusters, Audify has zero cloud compute costs per audio rendering session. The free service is sustained by unobtrusive sponsor banner advertising.",
+    relatedToolHref: "/about",
+    relatedToolLabel: "Learn About Audify & Nyxen Studio",
+  },
+  {
+    id: "what-audio-effects-available",
+    category: "Preset & Tool Matrix",
+    question: "What audio effects and utilities are available in Audify?",
+    directAnswer:
+      "Audify includes 9 signature acoustic presets (including Slowed + Reverb, Nightcore, Daycore, 8D Audio, Bass Boost, Lo-Fi Tape, Cathedral Reverb, 432 Hz tuning, and Underwater) plus 15 dedicated standalone utilities for trimming, merging, splitting, resampling, and format conversion.",
+    technicalDetails:
+      "All effects are constructed from native Web Audio nodes with 32-bit floating-point linear PCM processing and look-ahead peak limiting locked to a -0.3 dBFS ceiling to prevent digital distortion.",
+    relatedToolHref: "/presets",
+    relatedToolLabel: "Browse Presets & Tools Catalog",
+  },
+  {
+    id: "why-is-audio-processing-slow",
+    category: "Device Performance",
+    question: "Why might audio processing be slow on certain devices?",
+    directAnswer:
+      "Audio processing speed depends entirely on your local device CPU and available memory, not internet connection speed. Older mobile phones or devices under heavy memory load take longer to render complex DSP graphs than modern multi-core desktops.",
+    technicalDetails:
+      "Audify uses OfflineAudioContext and client-side Web Workers for offline audio rendering and MP3 encoding. Closing background browser tabs or exporting as uncompressed 16-bit WAV instead of MP3 will significantly speed up processing on resource-constrained devices.",
+    relatedToolHref: "/help/performance",
+    relatedToolLabel: "Read Performance Troubleshooting Guide",
   },
 ];
 

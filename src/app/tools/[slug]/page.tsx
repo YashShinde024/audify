@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: ToolPageProps): Promise<Metad
   const canonicalUrl = `${siteConfig.url}/tools/${tool.slug}`;
 
   return {
-    title: tool.seo.title,
+    title: { absolute: tool.seo.title },
     description: tool.seo.description,
     keywords: tool.seo.keywords,
     alternates: {

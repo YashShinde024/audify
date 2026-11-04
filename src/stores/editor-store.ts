@@ -13,6 +13,7 @@ import type { EffectValue, EffectValues, Preset, PresetCategoryId, SavedCustomPr
 import { DEFAULT_EXPORT_CONFIG, type ExportConfig, type ExportProfile } from "@/types/export";
 import { computeRenderSignature } from "@/lib/audio/dsp-plan";
 import { studioDspLimiter } from "@/lib/rate-limiter";
+import { playCompletionSound } from "@/lib/audio/completion-sound";
 import {
   loadSavedCustomPresets,
   persistCustomPresets,
@@ -473,6 +474,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         currentTime: 0,
         showAfter: true,
       });
+
+      // Play completion chime when master render succeeds (if enabled by user)
+      void playCompletionSound("studio-run-" + runId);
     } catch (err) {
       if (runId !== activeRunId || (err instanceof Error && err.name === "ProcessingCancelledError")) {
         if (runId === activeRunId) {

@@ -406,7 +406,7 @@ export function EditorShell() {
                       </Button>
                       <Button
                         size="sm"
-                        onClick={() => void downloadFile(processedResult.url, processedResult.fileName)}
+                        onClick={() => void downloadFile(processedResult.url, processedResult.filename)}
                         className="h-8 px-3.5 text-xs font-semibold rounded-full shadow-glow-wire bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer"
                       >
                         <DownloadSimple size={14} weight="bold" className="mr-1" />
