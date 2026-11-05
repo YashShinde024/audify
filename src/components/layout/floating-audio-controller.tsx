@@ -56,7 +56,7 @@ export function FloatingAudioController() {
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="fixed bottom-3 right-3 sm:bottom-5 sm:right-5 z-40 select-none max-w-[calc(100vw-1.5rem)]">
+    <div className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] right-3 sm:bottom-5 sm:right-5 z-40 select-none max-w-[calc(100vw-1.5rem)]">
       {/* ── Expanded Volume & Control Popover ────────────────────────── */}
       {expanded ? (
         <div

@@ -130,11 +130,11 @@ const NYXEN_SOCIALS: NyxenSocial[] = [
   },
   {
     platform: "Product Hunt",
-    handle: "@buildnyxen",
-    url: "https://www.producthunt.com/@buildnyxen",
-    description: "Community launches, release updates, public upvotes, and honest user feedback discussions.",
-    badge: "Launches & Votes",
-    accentBorder: "hover:border-amber-500/40",
+    handle: "Audify on Product Hunt",
+    url: siteConfig.productHuntUrl,
+    description: "Featured audio workstation launch. Read community reviews, share feedback, and upvote the project.",
+    badge: "Featured Product",
+    accentBorder: "hover:border-[#FF6154]/50",
     type: "producthunt",
   },
   {
@@ -876,7 +876,9 @@ export default function AboutPage() {
                           <YoutubeLogo size={18} weight="fill" className="text-red-500" />
                         )}
                         {social.type === "producthunt" && (
-                          <span className="text-xs font-black text-amber-600 dark:text-amber-400">P</span>
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FF6154] text-white text-[10px] font-black leading-none">
+                            P
+                          </span>
                         )}
                         {social.type === "web" && <Globe size={18} />}
                       </div>

@@ -19,3 +19,4 @@ export * from "./audio/analysis";
 export * from "./audio/encoders";
 export * from "./audio/renderer";
 export * from "./audio/prompt-matcher";
+export * from "./audio/export-filename";

@@ -32,6 +32,7 @@ The custom WAV encoder writes canonical RIFF chunk structures directly into an `
 
 MP3 encoding is handled via bundled `lamejs`:
 - Encodes interleaved 16-bit PCM samples into an MPEG Audio Layer III bitstream.
+- **Sample Rate Auto-Conforming:** MP3 standards strictly constrain sample rates to $\le 48\text{ kHz}$ (32, 44.1, 48 kHz). Audify's rendering pipeline automatically conforms high-resolution buffers (such as 88.2 kHz or 96 kHz) to 44.1 kHz or 48 kHz before MP3 encoding to prevent encoder aborts.
 - **Constant Bitrate (CBR):**
   - **320 kbps:** Maximum quality, transparent reproduction.
   - **192 kbps:** High quality, balanced file size.
@@ -39,7 +40,26 @@ MP3 encoding is handled via bundled `lamejs`:
 
 ---
 
-## 4. Export Configuration Interface
+## 4. Standardized Export Filename Convention
+
+All audio outputs generated across Audify (Studio presets, Audio Utilities, standalone Tools, and partitioned Batch/Split downloads) follow a unified, deterministic naming standard implemented in [`src/lib/audio/export-filename.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/lib/audio/export-filename.ts):
+
+$$\mathbf{Audify\text{-}\{edit\text{-}type\}\text{-}\{song\text{-}name\}.\{extension\}}$$
+
+### Specifications
+1. **Brand Prefix:** Always starts with `Audify-`. If the input filename already begins with `Audify-`, the prefix is deduplicated.
+2. **Standard Edit Type:** Formatted in Title-Case hyphenated notation:
+   - Presets: `Audify-Slowed-Reverb-Midnight-Drive.wav`, `Audify-Nightcore-Track-01.mp3`, `Audify-8D-Audio-Summer-Breeze.wav`
+   - Utilities & Tools: `Audify-Audio-Normalizer-Podcast-Ep1.wav`, `Audify-Audio-Merger-Full-Set.wav`, `Audify-Audio-Trimmer-Sample-A.mp3`
+   - Custom adjustments: `Audify-Custom-Edit-Recording-02.wav`
+3. **Partitioned / Split Parts:** Partitioned exports append zero-padded part numbers:
+   - `Audify-Audio-Splitter-Live-Set-Part-01.wav`
+   - `Audify-Audio-Splitter-Live-Set-Part-02.wav`
+4. **Sanitization:** Removes existing file extensions, replaces whitespace and reserved filesystem characters (`<>:"/\|?*`) with hyphens, collapses consecutive hyphens, and bounds stems to 64 characters for broad OS compatibility.
+
+---
+
+## 5. Export Configuration Interface
 
 The Studio export panel (`src/components/editor/export-panel.tsx`) allows users to select:
 1. **Container Format:** `WAV`, `AIFF`, or `MP3`.

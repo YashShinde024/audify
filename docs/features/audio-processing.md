@@ -44,8 +44,19 @@ Implemented using W3C `BiquadFilterNode`:
 - **Low-pass:** 400 Hz (Underwater), 3.5 kHz (Lo-Fi Tape), 8 kHz (Muffled).
 - **High-pass:** 80 Hz (Rumble Cut), 300 Hz (Telephone Voice), 5 Hz (DC Offset).
 - **Peaking / Notch:** Parametric EQ bands for bass boost, vocal clarity, and de-harshing.
+- **Nyquist Boundary Protection:** All filter cutoff and damping frequencies are automatically clamped to `Math.min(20000, ctx.sampleRate * 0.495)`. This prevents filter instability, non-finite coefficient generation, and `DOMException` failures on low sample rates (e.g. 22.05 kHz or 32 kHz).
 
-### D. Look-Ahead Soft-Knee Peak Limiter
+### D. Spatial & Stereo Field Processing
+- **Haas Precedence Delay:** True equal-power crossfaded Haas delay architecture. Left channel remains direct dry while right channel blends delayed signal with complementary dry/wet gains (`dryGain = 1 - mix`, `delayGain = mix`), eliminating the historical +3.5 dB right-channel level bias.
+- **Stereo Widener:** Mid-side expansion with dynamic RMS energy preservation ($1/\sqrt{0.5 + 0.5 \times \text{width}^2}$ for $\text{width} > 1.0$), ensuring wide stereo widening does not create unconstrained gain spikes or inter-channel phase cancellation.
+- **8D Audio:** Continuous smooth sinusoidal panning envelope ($0.15\text{ Hz}$) across the binaural stereo panorama.
+
+### E. Bass Processing & Dynamic Headroom Staging
+Audify's bass enhancement presets apply resonant low-shelving boosts at 50–65 Hz. To prevent heavy (+10.5 dB) and extreme (+15.0 dB) boosts from driving the output limiter into severe 12–15 dB dynamic pumping and low-frequency distortion:
+- **Calibrated Headroom Offsets:** Negative trim gain is staged prior to the output limiter (`bass-boost-mod`: −1.0 dB, `bass-boost-heavy`: −2.5 dB, `bass-boost-extreme`: −4.5 dB).
+- **Transient Preservation:** Musical kick drums and sub-bass fundamentals remain impactful and undistorted without squashing mid-range vocal clarity.
+
+### F. Look-Ahead Soft-Knee Peak Limiter
 To prevent sample-level distortion on heavy bass boosts or aggressive gain boosts, Audify employs a sliding-window soft-knee peak limiter ([`src/lib/audio/dsp-utils.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/lib/audio/dsp-utils.ts)):
 - **Linear Region:** For inputs $|x| \le 0.90$ (−0.92 dBFS), the signal passes unaffected.
 - **Soft-Knee Compression:** For signals exceeding $0.90$, excess energy is compressed using a hyperbolic tangent ($\tanh$) transfer curve.

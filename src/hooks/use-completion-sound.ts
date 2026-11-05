@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useSyncExternalStore, useCallback } from "react";
 import {
   isCompletionSoundEnabled,
   setCompletionSoundEnabled,
@@ -8,30 +8,28 @@ import {
   COMPLETION_SOUND_EVENT,
 } from "@/lib/audio/completion-sound";
 
+function subscribe(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener(COMPLETION_SOUND_EVENT, callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener(COMPLETION_SOUND_EVENT, callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+function getSnapshot(): boolean {
+  return isCompletionSoundEnabled();
+}
+
+function getServerSnapshot(): boolean {
+  return false;
+}
+
 export function useCompletionSoundPreference() {
-  const [enabled, setEnabledState] = useState(false);
-
-  useEffect(() => {
-    // Read initial preference on mount
-    setEnabledState(isCompletionSoundEnabled());
-
-    const handlePreferenceChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ enabled: boolean }>;
-      if (typeof customEvent.detail?.enabled === "boolean") {
-        setEnabledState(customEvent.detail.enabled);
-      } else {
-        setEnabledState(isCompletionSoundEnabled());
-      }
-    };
-
-    window.addEventListener(COMPLETION_SOUND_EVENT, handlePreferenceChange);
-    return () => {
-      window.removeEventListener(COMPLETION_SOUND_EVENT, handlePreferenceChange);
-    };
-  }, []);
+  const enabled = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const setEnabled = useCallback((value: boolean) => {
-    setEnabledState(value);
     setCompletionSoundEnabled(value);
   }, []);
 
@@ -45,4 +43,3 @@ export function useCompletionSoundPreference() {
     preview,
   };
 }
-

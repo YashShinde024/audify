@@ -82,6 +82,17 @@ export function SiteFooter() {
 
             {/* Quick Action Badges */}
             <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+              <a
+                href={siteConfig.productHuntUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#FF6154]/30 bg-[#FF6154]/10 px-3 py-1.5 text-[11px] font-medium text-fg hover:border-[#FF6154]/60 hover:bg-[#FF6154]/20 transition-colors shadow-xs"
+              >
+                <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#FF6154] text-white font-bold text-[9px] leading-none">
+                  P
+                </span>
+                <span>Product Hunt</span>
+              </a>
               <Link
                 href="/about"
                 className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-[11px] font-medium text-muted hover:text-accent hover:border-accent/40 transition-colors"
@@ -180,6 +191,22 @@ export function SiteFooter() {
                     </Link>
                   </li>
                 ))}
+                <li>
+                  <a
+                    href={siteConfig.productHuntUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-1 py-1 sm:py-0 text-xs text-muted transition-colors hover:text-[#FF6154] active:text-[#FF6154] min-h-[34px] sm:min-h-0"
+                  >
+                    <span>Product Hunt</span>
+                    <span
+                      aria-hidden="true"
+                      className="text-[9px] text-faint group-hover:text-[#FF6154] transition-colors"
+                    >
+                      ↗
+                    </span>
+                  </a>
+                </li>
                 {legalNav.map((item) => (
                   <li key={item.href}>
                     <Link

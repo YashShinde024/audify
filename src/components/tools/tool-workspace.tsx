@@ -345,7 +345,7 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
           {/* 2. SPLIT SEGMENTS RESULT */}
           {result.kind === "split" && (
             <div className="space-y-5 p-6 rounded-2xl border border-line bg-surface/60 backdrop-blur-sm">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h4 className="text-base font-semibold text-fg">Generated Audio Segments</h4>
                   <p className="text-xs text-muted">

@@ -37,9 +37,10 @@ Audify is a high-performance, local-first in-browser audio digital signal proces
 - **100% Client-Side DSP Architecture:** Zero server file uploads. All decoding, biquad filtering, convolution reverb synthesis, and binary encoding run directly in browser memory using the W3C Web Audio API and `OfflineAudioContext`.
 - **62 Studio-Grade Audio Modules:**
   - *Trending & Spatial:* Slowed + Reverb, Nightcore, Daycore, 8D Audio (sinusoidal orbital panning), Lo-Fi Tape saturation, 432 Hz sacred Verdi tuning.
-  - *Bass & Dynamics:* 4 calibrated tiers (Light +3.5 dB, Moderate +7.0 dB, Heavy +10.5 dB, Extreme +15.0 dB) with dynamic digital headroom protection.
+  - *Bass & Dynamics:* 4 calibrated tiers (Light +3.5 dB, Moderate +7.0 dB, Heavy +10.5 dB, Extreme +15.0 dB) with dynamic digital headroom protection and pre-limiter trim staging.
   - *Acoustic Rooms & Halls:* Bathroom, Small Room, Medium Room, Large Hall, Church Hall, Cathedral, Vocal Plate.
-  - *Mixing & Mastering:* 3-band parametric EQ, Treble Air, Stereo Widener (Haas effect), Slapback Echo, Ping-Pong Delay, Telephone Bandpass, Underwater Filter, Vocal Clarity, De-Harsh, Sample-Peak Normalizer.
+  - *Mixing & Mastering:* 3-band parametric EQ, Treble Air, Balanced Stereo Widener (Haas effect with energy normalization), Slapback Echo, Ping-Pong Delay, Telephone Bandpass, Underwater Filter, Vocal Clarity, De-Harsh, Sample-Peak Normalizer.
+- **Deterministic Export Filename Standardization:** All generated audio files follow the strict global naming pattern `Audify-{edit-type}-{song-name}.{extension}` (e.g. `Audify-Slowed-Reverb-Song.wav`, `Audify-Audio-Splitter-Track-Part-01.wav`) with sanitization and prefix deduplication.
 - **15 Standalone Task-Oriented Audio Tools (`/tools/[slug]`):**
   - Audio Merger & Joiner (multi-track sequential stitching with custom silence gaps and automatic sample rate alignment)
   - Audio Splitter (parts-based and fixed-interval audio partitioner)

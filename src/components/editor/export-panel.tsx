@@ -26,6 +26,7 @@ import type {
 } from "@/types/export";
 import { cn } from "@/lib/utils";
 import { SoundSettings } from "@/components/ui/sound-settings";
+import { formatExportFilename } from "@/lib/audio/export-filename";
 
 const FORMATS: Array<{ id: ExportFormat; label: string; hint: string }> = [
   { id: "wav", label: "WAV", hint: "Lossless PCM" },
@@ -342,7 +343,11 @@ export function ExportPanel() {
               <input
                 id="export-custom-name"
                 type="text"
-                placeholder={`audify-${presetSlug}-${baseName}.${exportConfig.format}`}
+                placeholder={formatExportFilename({
+                  editType: presetSlug,
+                  originalFileName: baseName,
+                  extension: exportConfig.format,
+                })}
                 value={exportConfig.outputFilename}
                 onChange={(e) => setExportConfig({ outputFilename: e.target.value })}
                 className="w-full rounded-lg border border-line bg-raised px-2.5 py-1.5 font-mono text-xs text-fg placeholder:text-faint focus:border-primary focus:outline-none"

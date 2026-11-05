@@ -14,6 +14,7 @@ import {
 import { renderProcessedAudio, type ProcessedAudioResult } from "./renderer";
 import type { EffectValue } from "@/types/preset";
 import { encodeWav, encodeAiff, encodeMp3 } from "./encoders";
+import { formatExportFilename } from "./export-filename";
 import { getAudioContext } from "./decoding";
 import { detectAudioBpm } from "./analysis";
 import type { ExportConfig, ExportFormat } from "@/types/export";
@@ -443,8 +444,11 @@ export async function executeToolTask(
       320
     );
 
-    const baseName = primaryFile?.name.replace(/\.[^/.]+$/, "") || "merged-audio";
-    const outFileName = `${baseName}-merged.${format}`;
+    const outFileName = formatExportFilename({
+      editType: "audio-merger",
+      originalFileName: primaryFile?.name,
+      extension: format,
+    });
 
     onProgress?.(100, "Merge complete!");
 
@@ -489,8 +493,6 @@ export async function executeToolTask(
     const format = "wav"; // Split output default lossless WAV for speed and zero-loss
     const results: SplitSegmentResult[] = [];
 
-    const baseName = primaryFile?.name.replace(/\.[^/.]+$/, "") || "audio";
-
     for (let i = 0; i < rawSegments.length; i++) {
       checkCancel();
       const seg = rawSegments[i];
@@ -500,7 +502,12 @@ export async function executeToolTask(
       const { blob, url } = encodeBufferToBlob(seg.buffer, format, 16);
       results.push({
         id: `seg-${i + 1}`,
-        name: `${baseName}-part-${i + 1}.wav`,
+        name: formatExportFilename({
+          editType: "audio-splitter",
+          originalFileName: primaryFile?.name,
+          extension: "wav",
+          partIndex: i + 1,
+        }),
         blob,
         url,
         duration: seg.buffer.duration,

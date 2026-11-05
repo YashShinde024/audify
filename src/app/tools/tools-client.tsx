@@ -287,9 +287,9 @@ export function ToolsClient() {
       </div>
 
       {/* Active Category Lead */}
-      <div className="flex items-center justify-between border-b border-line/60 pb-3 text-xs text-muted">
-        <span>{activeCategoryObj.tagline}</span>
-        <span className="font-mono text-[11px] text-muted">
+      <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between border-b border-line/60 pb-3 text-xs text-muted">
+        <span className="leading-relaxed">{activeCategoryObj.tagline}</span>
+        <span className="shrink-0 font-mono text-[11px] text-muted self-start sm:self-auto">
           {filteredTools.length} {filteredTools.length === 1 ? "tool" : "tools"} available
         </span>
       </div>
@@ -304,7 +304,7 @@ export function ToolsClient() {
             return (
               <article
                 key={tool.id}
-                className="group relative flex flex-col justify-between rounded-2xl border border-line/80 bg-surface/60 p-5 transition-all duration-200 hover:border-line-strong hover:bg-surface hover:shadow-lg hover:shadow-black/5"
+                className="group relative flex flex-col justify-between rounded-2xl border border-line/80 bg-surface/60 p-4 sm:p-5 transition-all duration-200 hover:border-line-strong hover:bg-surface hover:shadow-lg hover:shadow-black/5"
               >
                 <div>
                   {/* Card Header: Icon + Category Badge */}
@@ -353,14 +353,14 @@ export function ToolsClient() {
                 </div>
 
                 {/* Card Action CTAs */}
-                <div className="mt-5 flex items-center justify-end gap-2 pt-3 border-t border-line/60">
-                  <div className="flex items-center gap-2">
+                <div className="mt-4 sm:mt-5 flex items-center justify-between gap-2 pt-3 border-t border-line/60">
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
                     {toolSlug ? (
                       <>
                         <Button
                           asChild
                           size="sm"
-                          className="h-8 rounded-lg btn-gradient-primary text-white text-xs font-medium px-3.5 group/btn"
+                          className="flex-1 sm:flex-initial h-8 rounded-lg btn-gradient-primary text-white text-xs font-medium px-3.5 group/btn"
                         >
                           <Link href={`/tools/${toolSlug}`} aria-label={`Open ${tool.name} tool`}>
                             <span>Open Tool</span>
@@ -370,7 +370,7 @@ export function ToolsClient() {
                         {tool.kind === "preset" && (
                           <Link
                             href={`/studio?preset=${tool.id}`}
-                            className="text-[11px] text-muted hover:text-fg font-medium transition-colors hidden sm:inline-block px-1"
+                            className="text-[11px] text-muted hover:text-fg font-medium transition-colors px-2 py-1 rounded-md hover:bg-raised border border-line/60 sm:border-transparent text-center"
                             title="Open in Audify Studio"
                           >
                             Studio
@@ -381,7 +381,7 @@ export function ToolsClient() {
                       <Button
                         asChild
                         size="sm"
-                        className="h-8 rounded-lg btn-gradient-primary text-white text-xs font-medium px-3.5 group/btn"
+                        className="flex-1 sm:flex-initial h-8 rounded-lg btn-gradient-primary text-white text-xs font-medium px-3.5 group/btn"
                       >
                         <Link href={`/studio?preset=${tool.id}`} aria-label={`Open ${tool.name} in Audify Studio`}>
                           <span>Open in Studio</span>

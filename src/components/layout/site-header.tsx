@@ -232,9 +232,9 @@ export function SiteHeader() {
           </nav>
 
           {/* Right: Controls & Fast Launch Studio CTA */}
-          <div className="flex items-center gap-2">
-            {/* Completion Sound Chime Quick Toggle */}
-            <SoundToggle />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Completion Sound Chime Quick Toggle (visible on tablet/desktop, accessible via mobile drawer) */}
+            <SoundToggle className="hidden sm:inline-flex" />
 
             {/* Theme Toggle (Adapts Light & Dark Mode according to user choice) */}
             <ThemeToggle />
@@ -243,12 +243,12 @@ export function SiteHeader() {
             <Link
               href="/studio"
               className={cn(
-                "btn-gradient-primary group relative inline-flex items-center gap-1.5 rounded-full px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold text-white",
+                "btn-gradient-primary group relative inline-flex items-center gap-1.5 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold text-white",
                 "cursor-pointer select-none"
               )}
             >
-              <span className="hidden xs:inline">Open Studio</span>
-              <span className="xs:hidden">Studio</span>
+              <span className="hidden sm:inline">Open Studio</span>
+              <span className="sm:hidden">Studio</span>
               <ArrowRight
                 size={13}
                 weight="bold"
@@ -385,8 +385,29 @@ export function SiteHeader() {
                 <SoundSettings variant="inline" />
               </div>
 
+              {/* Product Hunt & Community Link */}
+              <div className="mt-4 pt-3.5 border-t border-line">
+                <a
+                  href="https://www.producthunt.com/products/audify-4"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between rounded-xl border border-line bg-canvas/80 hover:bg-raised p-2.5 text-xs transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FF6154] text-white font-bold text-[10px] leading-none shrink-0 shadow-xs">
+                      P
+                    </span>
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-fg">Audify on Product Hunt</span>
+                      <span className="text-[10px] text-muted">Join the community discussion &amp; upvote</span>
+                    </div>
+                  </div>
+                  <span className="font-mono text-xs text-primary font-medium">↗</span>
+                </a>
+              </div>
+
               {/* Mobile Drawer Footer */}
-              <div className="mt-5 pt-3.5 border-t border-line flex items-center justify-between text-[11px] text-muted">
+              <div className="mt-4 pt-3 border-t border-line flex items-center justify-between text-[11px] text-muted">
                 <span>Audify by Nyxen × Xpert Melody</span>
                 <span className="font-mono text-primary font-medium">100% Client-Side DSP</span>
               </div>

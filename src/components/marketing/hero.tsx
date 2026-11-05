@@ -3,6 +3,7 @@ import { ArrowRight, Faders } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button";
 import { HeroVisual } from "./hero-visual";
 import { SonicCanvas } from "./sonic-canvas";
+import { siteConfig } from "@/config/site";
 
 /**
  * The Stage.
@@ -26,15 +27,31 @@ export function Hero() {
       <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[0.92fr_1.08fr] lg:items-center lg:gap-12 lg:px-8 lg:py-20">
         {/* Left: Editorial Content */}
         <div className="max-w-xl">
-          {/* Compact brand attribution eyebrow */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-line/80 bg-surface/80 px-3.5 py-1 text-xs font-medium text-muted backdrop-blur-md shadow-xs">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-            </span>
-            <span className="tracking-wide">
-              Audify by Nyxen <span className="text-primary font-semibold">×</span> Xpert Melody
-            </span>
+          {/* Compact brand attribution eyebrow & Product Hunt badge */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex items-center gap-2 rounded-full border border-line/80 bg-surface/80 px-3.5 py-1 text-xs font-medium text-muted backdrop-blur-md shadow-xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              </span>
+              <span className="tracking-wide">
+                Audify by Nyxen <span className="text-primary font-semibold">×</span> Xpert Melody
+              </span>
+            </div>
+
+            <a
+              href={siteConfig.productHuntUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Audify on Product Hunt"
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#FF6154]/30 bg-[#FF6154]/10 hover:bg-[#FF6154]/20 hover:border-[#FF6154]/60 px-3 py-1 text-xs font-medium text-fg backdrop-blur-md shadow-xs transition-colors group"
+            >
+              <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#FF6154] text-white font-bold text-[9px] leading-none">
+                P
+              </span>
+              <span className="font-semibold text-[#FF6154]">Product Hunt</span>
+              <span className="text-muted text-[11px] group-hover:text-fg transition-colors">Featured</span>
+            </a>
           </div>
 
           {/* Art-directed headline */}

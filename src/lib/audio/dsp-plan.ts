@@ -340,12 +340,15 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
       break;
     case "bass-boost-mod":
       filters.push({ type: "lowshelf", frequency: 85, gain: num("bass", 7) });
+      outputGainDb = -1.0;
       break;
     case "bass-boost-heavy":
       filters.push({ type: "lowshelf", frequency: 75, gain: num("bass", 10.5) });
+      outputGainDb = -2.5;
       break;
     case "bass-boost-extreme":
       filters.push({ type: "lowshelf", frequency: 65, gain: num("bass", 15) });
+      outputGainDb = -4.5;
       break;
     case "equalizer": {
       const low = num("bass", 0);
@@ -368,6 +371,7 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
     }
     case "nightcore":
       filters.push({ type: "highshelf", frequency: 10000, gain: num("treble", 4) });
+      outputGainDb = -1.0;
       break;
     case "daycore":
       filters.push({ type: "lowshelf", frequency: 90, gain: num("bass", 4) });
@@ -395,6 +399,7 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
       filters.push({ type: "lowpass", frequency: 520, q: 0.707 });
       filters.push({ type: "lowpass", frequency: 520, q: 0.707 });
       filters.push({ type: "lowshelf", frequency: 160, gain: num("bass", 6) });
+      outputGainDb = -2.0;
       reverbSpec = reverb(wet, 2.4, 0.8, 0.02);
       break;
     case "telephone-voice":
@@ -403,11 +408,13 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
       filters.push({ type: "lowpass", frequency: 3200, q: 0.707 });
       filters.push({ type: "lowpass", frequency: 3200, q: 0.707 });
       saturation = num("saturation", 40);
+      removeDc = true;
       break;
     case "lofi-tape":
       filters.push({ type: "highshelf", frequency: 6500, gain: num("treble", -3) });
       filters.push({ type: "lowpass", frequency: 9500, q: 0.6 });
       saturation = num("saturation", 50);
+      removeDc = true;
       break;
 
     case "tape-warmth": {
@@ -417,6 +424,7 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
         filters.push({ type: "lowshelf", frequency: 100, gain: subWarmth });
       }
       filters.push({ type: "lowpass", frequency: 14000, q: 0.6 });
+      removeDc = true;
       break;
     }
 
@@ -430,6 +438,7 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
       if (air !== 0) {
         filters.push({ type: "highshelf", frequency: 13000, gain: air });
       }
+      removeDc = true;
       break;
     }
 
@@ -440,6 +449,7 @@ export function resolveProcessing(presetId: string | null, values: EffectValues)
       filters.push({ type: "lowpass", frequency: cutoff, q: 1.2 });
       filters.push({ type: "lowpass", frequency: cutoff, q: 0.707 });
       saturation = clamp(num("saturation", 35), 0, 60);
+      removeDc = true;
       break;
     }
 

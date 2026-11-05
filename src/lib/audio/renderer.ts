@@ -39,6 +39,7 @@ import {
   sanitizeChannels,
 } from "./dsp-utils";
 import { encodeAiff, encodeMp3, encodeWav } from "./encoders";
+import { formatExportFilename } from "./export-filename";
 
 export interface ProcessedAudioResult {
   blob: Blob;
@@ -216,9 +217,26 @@ export function createPcmBuffer(channels: Float32Array[], sampleRate: number): A
       buffer = null;
     }
   }
+  if (!buffer && typeof OfflineAudioContext !== "undefined") {
+    try {
+      const context = new OfflineAudioContext(channels.length, 1, sampleRate);
+      buffer = context.createBuffer(channels.length, length, sampleRate);
+    } catch {
+      buffer = null;
+    }
+  }
   if (!buffer) {
-    const context = new OfflineAudioContext(channels.length, 1, sampleRate);
-    buffer = context.createBuffer(channels.length, length, sampleRate);
+    // Pure JS mock fallback for Node/testing environments without Web Audio globals
+    const mockChannelCopies = channels.map((c) => new Float32Array(c));
+    return {
+      numberOfChannels: channels.length,
+      length,
+      sampleRate,
+      duration: length / sampleRate,
+      getChannelData: (c: number) => mockChannelCopies[c] ?? new Float32Array(length),
+      copyFromChannel: () => {},
+      copyToChannel: () => {},
+    } as unknown as AudioBuffer;
   }
 
   for (let channel = 0; channel < channels.length; channel++) {
@@ -258,10 +276,11 @@ export function connectFilters(
   specs: FilterSpec[]
 ): AudioNode {
   let node = input;
+  const maxSafeFreq = Math.min(20000, ctx.sampleRate * 0.495);
   for (const spec of specs) {
     const filter = ctx.createBiquadFilter();
     filter.type = spec.type;
-    filter.frequency.value = clampNumber(spec.frequency, 20, 20000);
+    filter.frequency.value = clampNumber(spec.frequency, 20, maxSafeFreq);
     if (spec.q != null) filter.Q.value = clampNumber(spec.q, 0.0001, 40);
     if (spec.gain != null) filter.gain.value = clampNumber(spec.gain, -40, 40);
     node.connect(filter);
@@ -301,7 +320,8 @@ export function buildReverbBranch(
 
   const damping = ctx.createBiquadFilter();
   damping.type = "lowpass";
-  damping.frequency.value = clampNumber(16000 - spec.damping * 12000, 2500, 18000);
+  const maxSafeDampingFreq = Math.min(18000, ctx.sampleRate * 0.495);
+  damping.frequency.value = clampNumber(16000 - spec.damping * 12000, 2500, maxSafeDampingFreq);
   damping.Q.value = 0.707;
   highPass.connect(damping);
 
@@ -386,10 +406,13 @@ export function buildWidthBranch(ctx: BaseAudioContext, input: AudioNode, width:
   sideLeft.connect(side);
   sideRight.connect(side);
 
+  // Energy compensation factor when widening past 1.0 to prevent hot-signal clipping
+  const energyNorm = width > 1.0 ? 1 / Math.sqrt(0.5 + 0.5 * width * width) : 1.0;
+
   const toLeft = ctx.createGain();
-  toLeft.gain.value = width;
+  toLeft.gain.value = width * energyNorm;
   const toRight = ctx.createGain();
-  toRight.gain.value = -width;
+  toRight.gain.value = -width * energyNorm;
   side.connect(toLeft);
   side.connect(toRight);
   toLeft.connect(merger, 0, 0);
@@ -439,14 +462,15 @@ export function buildHaasBranch(
   // Left channel passes direct
   splitter.connect(merger, 0, 0);
 
-  // Right channel passes through delay
+  // Right channel passes through delay with equal-power balance
   const delay = ctx.createDelay(0.1);
-  delay.delayTime.value = clampNumber(spec.delayMs / 1000, 0.005, 0.05);
+  delay.delayTime.value = clampNumber(spec.delayMs / 1000, 0.005, 0.04);
 
+  const mix = clampNumber(spec.mix, 0, 1);
   const delayGain = ctx.createGain();
-  delayGain.gain.value = clampNumber(spec.mix, 0, 1);
+  delayGain.gain.value = mix;
   const dryGain = ctx.createGain();
-  dryGain.gain.value = 1 - clampNumber(spec.mix, 0, 1) * 0.5;
+  dryGain.gain.value = 1 - mix;
 
   splitter.connect(dryGain, 1);
   dryGain.connect(merger, 0, 1);
@@ -686,7 +710,13 @@ export async function renderProcessedAudio(
     );
   }
 
-  const targetRate = config.sampleRate === 0 ? renderRate : config.sampleRate;
+  let targetRate = config.sampleRate === 0 ? renderRate : config.sampleRate;
+  if (config.format === "mp3") {
+    // Auto-conform high-resolution or incompatible rates to standard MP3 sample rates
+    if (targetRate !== 32000 && targetRate !== 44100 && targetRate !== 48000) {
+      targetRate = targetRate % 44100 === 0 ? 44100 : 48000;
+    }
+  }
   const graphChannels = plan.mono
     ? 1
     : inputBuffer.numberOfChannels > 1 || plan.needsStereo
@@ -893,19 +923,12 @@ export async function renderProcessedAudio(
 
   assertActive();
 
-  const baseName =
-    originalFileName
-      .replace(/\.[^./\\]+$/, "")
-      .trim()
-      .replace(/[^\w\-. ]+/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "") || "audio";
-
-  const requestedName = config.outputFilename.trim().replace(/[\\/:*?"<>|]+/g, "-");
-  const filename = requestedName
-    ? `${requestedName.replace(/\.(wav|mp3|aiff|aif|opus)$/i, "")}.${extension}`
-    : `audify-${presetId ?? "custom"}-${baseName}.${extension}`;
+  const filename = formatExportFilename({
+    editType: presetId,
+    originalFileName,
+    extension,
+    customFilename: config.outputFilename,
+  });
 
   const url = URL.createObjectURL(blob);
   const endTime = typeof performance !== "undefined" ? performance.now() : Date.now();

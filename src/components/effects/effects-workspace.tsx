@@ -1212,7 +1212,7 @@ export function EffectsWorkspace() {
               <div className="flex items-center gap-2">
                 <DownloadButton
                 url={processedResult.url}
-                filename={`audify-${file?.name || "master"}`}
+                filename={processedResult.filename}
                 label="Download Master"
                 variant="outline"
                 size="sm"

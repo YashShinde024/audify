@@ -478,9 +478,9 @@ export function PresetExplorer() {
         </nav>
 
         {/* Category Description Banner */}
-        <div className="flex items-center justify-between text-xs text-muted border-b border-line pb-3">
-          <p className="italic">{currentCategory.tagline}</p>
-          <Button asChild variant="ghost" size="sm" className="h-7 text-[11px] text-muted hover:text-fg px-2.5">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-xs text-muted border-b border-line pb-3">
+          <p className="italic leading-relaxed">{currentCategory.tagline}</p>
+          <Button asChild variant="ghost" size="sm" className="h-7 text-[11px] text-muted hover:text-fg px-2.5 self-start sm:self-auto shrink-0">
             <Link href="/effects" className="flex items-center gap-1">
               <Sliders size={12} />
               <span>View DSP parameters</span>
