@@ -6,17 +6,17 @@
  *
  * Sound design:
  *   - Luminous D-Major triad arpeggio (D5 587.3 Hz -> F#5 739.9 Hz -> A5 880.0 Hz).
- *   - Total duration: ~220 ms.
- *   - Soft sinusoidal envelope with gentle 4 ms attack and smooth exponential decay.
- *   - Warm Butterworth lowpass smoothing (cutoff 2400 Hz) to eliminate harsh high-frequency beeps.
- *   - Low master gain (~0.08 peak) for non-intrusive notification.
+ *   - Total duration: ~290 ms (within 150-300 ms specification).
+ *   - Soft sinusoidal envelope with gentle 6 ms attack and smooth exponential decay.
+ *   - Warm Butterworth lowpass smoothing (cutoff 2600 Hz) to eliminate harsh high-frequency beeps.
+ *   - Master gain calibrated to ~0.18 peak (-15 dBFS) for clear, audible yet soothing notification.
  *
  * Safety & ergonomics:
- *   - Respects browser autoplay restrictions.
+ *   - Respects browser autoplay restrictions with proactive user-gesture priming.
  *   - Reuses AudioContext safely.
  *   - Gracefully no-ops if Web Audio is unsupported.
  *   - Duplicate suppression guards against React Strict Mode re-renders and rapid triggers.
- *   - Persistent preference stored in localStorage (`audify-completion-sound`, default: false).
+ *   - Persistent preference stored in localStorage (`audify-completion-sound`, default: true/enabled).
  *   - Toggling preference dispatches window event for instant UI synchronization.
  */
 
@@ -44,15 +44,16 @@ function getEventTarget(): EventTarget | null {
 
 /**
  * Returns whether the completion sound is enabled.
- * Sensible default is FALSE (opt-in) until the user explicitly enables it.
+ * Default is TRUE (enabled) unless the user explicitly toggles it off.
  */
 export function isCompletionSoundEnabled(): boolean {
   const storage = getTargetStorage();
-  if (!storage) return false;
+  if (!storage) return true;
   try {
-    return storage.getItem(COMPLETION_SOUND_STORAGE_KEY) === "true";
+    const val = storage.getItem(COMPLETION_SOUND_STORAGE_KEY);
+    return val !== "false";
   } catch {
-    return false;
+    return true;
   }
 }
 
@@ -102,6 +103,21 @@ function getNotificationAudioContext(): AudioContext | null {
 }
 
 /**
+ * Primes the AudioContext during a user interaction gesture (e.g. click),
+ * preventing browser autoplay blocks when async processing finishes later.
+ */
+export function primeCompletionSound(): void {
+  try {
+    const ctx = getNotificationAudioContext();
+    if (ctx && ctx.state === "suspended") {
+      void ctx.resume().catch(() => {});
+    }
+  } catch {
+    // Graceful no-op
+  }
+}
+
+/**
  * Synthesizes and plays the Audify signature completion sound chime.
  * Internal helper: does not check user preference so it can power previews.
  */
@@ -122,18 +138,19 @@ async function synthesizeChime(ctx: AudioContext): Promise<boolean> {
     const filter = ctx.createBiquadFilter();
 
     filter.type = "lowpass";
-    filter.frequency.setValueAtTime(2400, now);
-    filter.Q.setValueAtTime(1.0, now);
+    filter.frequency.setValueAtTime(2600, now);
+    filter.Q.setValueAtTime(0.9, now);
 
-    masterGain.gain.setValueAtTime(0.08, now);
+    // Master gain calibrated to ~0.24, combined with note peaks for a clear ~0.18 peak (~-15 dBFS)
+    masterGain.gain.setValueAtTime(0.24, now);
     masterGain.connect(filter);
     filter.connect(ctx.destination);
 
     // Three gentle ascending tones: D5 (587.33 Hz), F#5 (739.99 Hz), A5 (880.00 Hz)
     const tones = [
-      { freq: 587.33, startOffset: 0.0, duration: 0.08, peak: 0.07 },
-      { freq: 739.99, startOffset: 0.055, duration: 0.085, peak: 0.08 },
-      { freq: 880.0, startOffset: 0.11, duration: 0.11, peak: 0.075 },
+      { freq: 587.33, startOffset: 0.0, duration: 0.10, peak: 0.70 },
+      { freq: 739.99, startOffset: 0.065, duration: 0.11, peak: 0.75 },
+      { freq: 880.0, startOffset: 0.13, duration: 0.16, peak: 0.70 },
     ];
 
     tones.forEach(({ freq, startOffset, duration, peak }) => {

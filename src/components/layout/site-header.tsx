@@ -22,6 +22,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { primaryNav, secondaryNav } from "@/config/navigation";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
+import { SoundToggle, SoundSettings } from "@/components/ui/sound-settings";
 import { cn } from "@/lib/utils";
 
 const NAV_ICONS: Record<string, typeof Waveform> = {
@@ -232,6 +233,9 @@ export function SiteHeader() {
 
           {/* Right: Controls & Fast Launch Studio CTA */}
           <div className="flex items-center gap-2">
+            {/* Completion Sound Chime Quick Toggle */}
+            <SoundToggle />
+
             {/* Theme Toggle (Adapts Light & Dark Mode according to user choice) */}
             <ThemeToggle />
 
@@ -374,6 +378,11 @@ export function SiteHeader() {
                     </Link>
                   ))}
                 </div>
+              </div>
+
+              {/* Audio Completion Sound Preference */}
+              <div className="mt-4 pt-4 border-t border-line">
+                <SoundSettings variant="inline" />
               </div>
 
               {/* Mobile Drawer Footer */}

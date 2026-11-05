@@ -21,6 +21,7 @@ import { cn, formatBytes, formatTime } from "@/lib/utils";
 import { ExportPanel } from "./export-panel";
 import { MusicEditFacts } from "./music-facts";
 import { DownloadButton } from "@/components/ui/download-button";
+import { SoundSettings } from "@/components/ui/sound-settings";
 
 const easeOut = [0.2, 0.8, 0.2, 1] as const;
 
@@ -74,7 +75,10 @@ export function ProcessAndOutput() {
             </div>
           </div>
 
-          <DownloadButton url={processedResult.url} filename={processedResult.filename} />
+          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+            <SoundSettings variant="compact" />
+            <DownloadButton url={processedResult.url} filename={processedResult.filename} />
+          </div>
         </div>
 
         {isStale && (
@@ -214,7 +218,14 @@ export function ProcessAndOutput() {
         </div>
       )}
 
-      <div className="space-y-2.5 border-t border-line pt-5">
+      <div className="space-y-3.5 border-t border-line pt-5">
+        {/* Completion Sound Preference Bar */}
+        {!isProcessing && (
+          <div className="rounded-xl border border-line/60 bg-deep/40 px-3.5 py-2">
+            <SoundSettings variant="inline" />
+          </div>
+        )}
+
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div className="min-w-0">
             <h3 id="processing-action-heading" className="text-sm font-semibold text-fg">

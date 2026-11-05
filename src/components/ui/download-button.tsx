@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { downloadFile } from "@/lib/download";
 
 import { isNativeAndroid } from "@/lib/download";
+import { playCompletionSound, primeCompletionSound } from "@/lib/audio/completion-sound";
 
 type DownloadButtonProps = {
   /** Blob/object/remote URL of the resource to save. */
@@ -48,10 +49,12 @@ export function DownloadButton({
 
   const handleClick = useCallback(async () => {
     if (status === "saving") return;
+    primeCompletionSound();
     setStatus("saving");
     try {
       await downloadFile(url, filename);
       setStatus("done");
+      void playCompletionSound("export-download-" + filename);
       if (resetTimer.current) clearTimeout(resetTimer.current);
       resetTimer.current = setTimeout(() => setStatus("idle"), 3200);
     } catch {

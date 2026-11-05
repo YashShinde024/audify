@@ -6,6 +6,7 @@ import {
   setCompletionSoundEnabled,
   playCompletionSound,
   previewCompletionSound,
+  primeCompletionSound,
   resetCompletionSoundState,
 } from "../completion-sound";
 
@@ -42,8 +43,8 @@ describe("Completion Sound System", () => {
   });
 
   describe("Preference Persistence & Defaults", () => {
-    it("defaults to false (disabled) when no stored value exists", () => {
-      expect(isCompletionSoundEnabled()).toBe(false);
+    it("defaults to true (enabled) when no stored value exists", () => {
+      expect(isCompletionSoundEnabled()).toBe(true);
     });
 
     it("persists enabled state to localStorage when set to true", () => {
@@ -52,10 +53,7 @@ describe("Completion Sound System", () => {
       expect(isCompletionSoundEnabled()).toBe(true);
     });
 
-    it("persists disabled state when toggled back to false", () => {
-      setCompletionSoundEnabled(true);
-      expect(isCompletionSoundEnabled()).toBe(true);
-
+    it("persists disabled state when toggled to false", () => {
       setCompletionSoundEnabled(false);
       expect(localStorage.setItem).toHaveBeenCalledWith(COMPLETION_SOUND_STORAGE_KEY, "false");
       expect(isCompletionSoundEnabled()).toBe(false);
@@ -88,6 +86,18 @@ describe("Completion Sound System", () => {
 
       const played = await playCompletionSound("test-task-2");
       expect(played).toBe(false);
+    });
+
+    it("primes and resumes suspended AudioContext when called during user interaction", () => {
+      const mockResume = vi.fn().mockResolvedValue(undefined);
+      const mockCtx = {
+        state: "suspended",
+        resume: mockResume,
+      };
+      vi.stubGlobal("AudioContext", vi.fn(() => mockCtx));
+
+      primeCompletionSound();
+      expect(mockResume).toHaveBeenCalledTimes(1);
     });
   });
 

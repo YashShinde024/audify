@@ -13,7 +13,7 @@ import type { EffectValue, EffectValues, Preset, PresetCategoryId, SavedCustomPr
 import { DEFAULT_EXPORT_CONFIG, type ExportConfig, type ExportProfile } from "@/types/export";
 import { computeRenderSignature } from "@/lib/audio/dsp-plan";
 import { studioDspLimiter } from "@/lib/rate-limiter";
-import { playCompletionSound } from "@/lib/audio/completion-sound";
+import { playCompletionSound, primeCompletionSound } from "@/lib/audio/completion-sound";
 import {
   loadSavedCustomPresets,
   persistCustomPresets,
@@ -408,6 +408,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   },
 
   processAudio: async () => {
+    // Prime AudioContext during the user's click gesture so completion sound plays reliably
+    primeCompletionSound();
+
     const { decodedAudio, selectedPresetId, effectValues, file, isProcessing, exportConfig } = get();
     if (!decodedAudio || !file || isProcessing) return;
 

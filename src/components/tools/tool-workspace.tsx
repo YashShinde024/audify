@@ -19,7 +19,8 @@ import {
   triggerDownload,
 } from "@/lib/download";
 import { toolDspLimiter } from "@/lib/rate-limiter";
-import { playCompletionSound } from "@/lib/audio/completion-sound";
+import { playCompletionSound, primeCompletionSound } from "@/lib/audio/completion-sound";
+import { SoundSettings } from "@/components/ui/sound-settings";
 import {
   DownloadSimple,
   ArrowCounterClockwise,
@@ -79,6 +80,9 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
   // Start processing
   const handleProcess = async () => {
     if (files.length === 0) return;
+
+    // Prime Web Audio context during user interaction gesture
+    primeCompletionSound();
 
     // Rate-limiting safeguard to prevent client device thread lock & excessive memory allocations
     const rateCheck = toolDspLimiter.check();
@@ -204,7 +208,8 @@ export function ToolWorkspace({ tool }: ToolWorkspaceProps) {
               <span className="font-semibold text-fg">Processing:</span> 100% Client-Side in Browser Memory Â· Zero Cloud Uploads
             </div>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+              <SoundSettings variant="compact" />
               {displayState === "processing" ? (
                 <button
                   onClick={handleCancel}
