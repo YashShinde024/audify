@@ -385,27 +385,6 @@ export function SiteHeader() {
                 <SoundSettings variant="inline" />
               </div>
 
-              {/* Product Hunt & Community Link */}
-              <div className="mt-4 pt-3.5 border-t border-line">
-                <a
-                  href="https://www.producthunt.com/products/audify-4"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between rounded-xl border border-line bg-canvas/80 hover:bg-raised p-2.5 text-xs transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FF6154] text-white font-bold text-[10px] leading-none shrink-0 shadow-xs">
-                      P
-                    </span>
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-fg">Audify on Product Hunt</span>
-                      <span className="text-[10px] text-muted">Join the community discussion &amp; upvote</span>
-                    </div>
-                  </div>
-                  <span className="font-mono text-xs text-primary font-medium">↗</span>
-                </a>
-              </div>
-
               {/* Mobile Drawer Footer */}
               <div className="mt-4 pt-3 border-t border-line flex items-center justify-between text-[11px] text-muted">
                 <span>Audify by Nyxen × Xpert Melody</span>

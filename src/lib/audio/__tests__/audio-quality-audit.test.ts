@@ -268,9 +268,10 @@ describe("Audio Quality & DSP Engine Objective Audit", () => {
 
   describe("Extreme Slowdown & Effect Tail Durations", () => {
     it("computes accurate non-zero tails for extreme slowdown and long reverbs", () => {
-      // 0.5x speed with 85% reverb wetness
+      // 0.5x speed with pitch: 0 and 85% reverb wetness
       const plan = resolveProcessing("slowed-reverb", {
         speed: 50,
+        pitch: 0,
         reverb: 85,
         size: 90,
       });
@@ -283,6 +284,15 @@ describe("Audio Quality & DSP Engine Objective Audit", () => {
       const plannedSeconds = sourceDuration / plan.playbackRate + plan.tailSeconds;
       expect(plannedSeconds).toBeCloseTo(30 / 0.5 + plan.tailSeconds, 3);
       expect(Number.isFinite(plannedSeconds)).toBe(true);
+    });
+
+    it("applies the default -2 semitones pitch to slowed-reverb correctly", () => {
+      const defaultPlan = resolveProcessing("slowed-reverb", {
+        speed: 80,
+      });
+      // speed 80% (0.8) * 2^(-2/12)
+      const expectedRate = 0.8 * Math.pow(2, -2 / 12);
+      expect(defaultPlan.playbackRate).toBeCloseTo(expectedRate, 6);
     });
   });
 

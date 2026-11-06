@@ -130,10 +130,10 @@ const NYXEN_SOCIALS: NyxenSocial[] = [
   },
   {
     platform: "Product Hunt",
-    handle: "Audify on Product Hunt",
+    handle: "Discover Audify on Product Hunt",
     url: siteConfig.productHuntUrl,
-    description: "Featured audio workstation launch. Read community reviews, share feedback, and upvote the project.",
-    badge: "Featured Product",
+    description: "Community and product discovery hub. Explore features, share feedback, and join discussion with fellow audio creators.",
+    badge: "Community Hub",
     accentBorder: "hover:border-[#FF6154]/50",
     type: "producthunt",
   },

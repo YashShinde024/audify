@@ -191,22 +191,6 @@ export function SiteFooter() {
                     </Link>
                   </li>
                 ))}
-                <li>
-                  <a
-                    href={siteConfig.productHuntUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group inline-flex items-center gap-1 py-1 sm:py-0 text-xs text-muted transition-colors hover:text-[#FF6154] active:text-[#FF6154] min-h-[34px] sm:min-h-0"
-                  >
-                    <span>Product Hunt</span>
-                    <span
-                      aria-hidden="true"
-                      className="text-[9px] text-faint group-hover:text-[#FF6154] transition-colors"
-                    >
-                      ↗
-                    </span>
-                  </a>
-                </li>
                 {legalNav.map((item) => (
                   <li key={item.href}>
                     <Link
