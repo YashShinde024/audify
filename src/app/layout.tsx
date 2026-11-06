@@ -1,19 +1,30 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Sora, Manrope, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/layout/toast-provider";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { StudioShell } from "@/components/layout/studio-shell";
 import { siteConfig } from "@/config/site";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sora = Sora({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const manrope = Manrope({
+  variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -154,7 +165,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased ${initialTheme === "dark" ? "dark" : ""}`}
+      className={`${sora.variable} ${manrope.variable} ${ibmPlexMono.variable} font-sans h-full antialiased ${initialTheme === "dark" ? "dark" : ""}`}
     >
       <head>
         {/* Pre-hydration theme: paints the correct `dark` class before first

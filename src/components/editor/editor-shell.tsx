@@ -68,7 +68,7 @@ export function EditorShell() {
             {/* Title & Brand Attribution */}
             <div>
               <div className="flex items-center gap-2.5">
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-fg">
+                <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-fg">
                   Audify Studio
                 </h1>
                 <span className="rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 text-[10px] font-mono font-medium text-primary">

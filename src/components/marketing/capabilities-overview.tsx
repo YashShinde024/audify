@@ -184,7 +184,7 @@ export function CapabilitiesOverview() {
         <span className="font-mono text-[11px] font-semibold uppercase tracking-widest text-primary">
           Comprehensive Capabilities
         </span>
-        <h2 className="mt-2 text-3xl font-bold tracking-tight text-fg sm:text-4xl">
+        <h2 className="font-display mt-2 text-3xl font-bold tracking-tight text-fg sm:text-4xl">
           One unified toolkit for creative and technical audio.
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-muted">

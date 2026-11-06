@@ -243,7 +243,7 @@ export default function AboutPage() {
           <div className="space-y-5 max-w-3xl">
             <h1
               id="about-hero-heading"
-              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-fg text-balance leading-[1.12]"
+              className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-fg text-balance leading-[1.12]"
             >
               Sound engineering liberated from the cloud.
             </h1>

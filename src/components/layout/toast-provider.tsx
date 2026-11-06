@@ -11,7 +11,7 @@ export function ToastProvider() {
       toastOptions={{
         duration: 4500,
         style: {
-          fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+          fontFamily: "var(--font-sans), system-ui, sans-serif",
           background: "#15131f",
           color: "#f7f5ff",
           border: "1px solid #2a2640",

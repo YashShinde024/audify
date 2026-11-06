@@ -100,7 +100,7 @@ export default function HomePage() {
             </span>
             <h2
               id="workflow-heading"
-              className="mt-2 text-3xl font-bold tracking-tight text-fg sm:text-4xl"
+              className="font-display mt-2 text-3xl font-bold tracking-tight text-fg sm:text-4xl"
             >
               From raw audio to finished master.
             </h2>
@@ -140,7 +140,7 @@ export default function HomePage() {
             </span>
             <h2
               id="specs-heading"
-              className="mt-2 text-3xl font-bold tracking-tight text-fg sm:text-4xl"
+              className="font-display mt-2 text-3xl font-bold tracking-tight text-fg sm:text-4xl"
             >
               Engineered with transparent boundaries.
             </h2>
@@ -177,7 +177,7 @@ export default function HomePage() {
             </span>
             <h2
               id="faq-heading"
-              className="mt-2 text-3xl font-bold tracking-tight text-fg sm:text-4xl"
+              className="font-display mt-2 text-3xl font-bold tracking-tight text-fg sm:text-4xl"
             >
               Frequently asked questions
             </h2>
@@ -215,7 +215,7 @@ export default function HomePage() {
           </span>
           <h2
             id="final-cta-heading"
-            className="mt-4 text-3xl font-bold tracking-tight text-fg sm:text-5xl"
+            className="font-display mt-4 text-3xl font-bold tracking-tight text-fg sm:text-5xl"
           >
             Start sculpting your sound now.
           </h2>

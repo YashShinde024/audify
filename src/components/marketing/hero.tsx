@@ -40,7 +40,7 @@ export function Hero() {
           </div>
 
           {/* Art-directed headline */}
-          <h1 className="mt-5 text-4xl font-bold tracking-[-0.035em] text-fg sm:text-5xl lg:text-[3.85rem] leading-[1.04]">
+          <h1 className="mt-5 font-display text-4xl font-extrabold tracking-[-0.035em] text-fg sm:text-5xl lg:text-[3.85rem] leading-[1.04]">
             Shape your sound.
             <span className="block font-extrabold bg-gradient-to-r from-[#6b00f5] via-[#a81dfc] via-35% to-[#ff2a5f] bg-clip-text text-transparent">
               Process your audio.

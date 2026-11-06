@@ -142,7 +142,7 @@ export default function AudifyExplainerArticlePage() {
               <span>{articleMeta.category}</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-fg leading-tight">
+            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-fg leading-tight">
               {articleMeta.title}
             </h1>
 

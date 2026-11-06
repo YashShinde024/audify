@@ -139,7 +139,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
             <span>{tool.badge}</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-fg">
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-fg">
             {tool.name}
           </h1>
 

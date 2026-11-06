@@ -68,7 +68,7 @@ export function LegalPageLayout({
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
             <span>{eyebrow}</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-fg">
+          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-fg">
             {title}
           </h1>
           <p className="text-sm sm:text-base leading-relaxed text-muted">
