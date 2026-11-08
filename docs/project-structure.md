@@ -8,7 +8,8 @@ This document details the directory layout and architectural responsibilities of
 
 ```text
 audify/
-├── .env.example              # Template environment variables with safe defaults
+├── .github/                  # GitHub Actions CI workflow, issue and PR templates
+├── .gitignore                # Strict Git ignore rules (.env*, build outputs, caches)
 ├── AGENTS.md                 # Project-specific AI agent operational guidelines
 ├── CONTRIBUTING.md           # Contribution workflow, guidelines, and quality gates
 ├── LICENSE                   # MIT License

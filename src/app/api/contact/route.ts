@@ -302,8 +302,8 @@ export async function POST(request: Request) {
       message: delivered
         ? "Dispatch delivered to engineering team successfully."
         : simulated
-        ? "Dispatch received in local simulation mode. Configure RESEND_API_KEY or CONTACT_WEBHOOK_URL for live delivery."
-        : "Dispatch logged but delivery provider failed.",
+          ? "Dispatch received in local simulation mode. Configure RESEND_API_KEY or CONTACT_WEBHOOK_URL for live delivery."
+          : "Dispatch logged but delivery provider failed.",
       received: {
         name,
         topic,

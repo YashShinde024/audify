@@ -37,12 +37,11 @@ npm install
 This installs all required packages including Next.js 16, React 19, Tailwind CSS v4, Motion, Zustand v5, and Phosphor Icons.
 
 ### Step 3: Environment Configuration (Optional)
-Audify runs 100% in-browser without requiring external API keys. If you want to customize the site URL or test contact dispatch:
+Audify runs 100% in-browser without requiring external API keys. If you want to customize the site URL or test contact dispatch, create `.env.local` privately (it is strictly ignored by Git):
 ```bash
-# Copy the example environment template
-cp .env.example .env.local
+touch .env.local
 ```
-*(On Windows PowerShell: `Copy-Item .env.example .env.local`)*
+*(On Windows PowerShell: `New-Item .env.local -ItemType File`)*
 
 Refer to [Configuration Reference](./configuration.md) for details on available variables.
 

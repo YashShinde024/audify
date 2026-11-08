@@ -226,16 +226,16 @@ npm ci
 ```
 
 ### Step 3: Configure Environment (Optional)
-Audify does not require any environment variables to run locally. If you wish to test contact dispatches or customize the canonical URL:
+Audify does not require any environment variables to run locally. If you wish to test contact dispatches or customize the canonical URL, create `.env.local` privately (this file is ignored by Git):
 
 **Linux / macOS:**
 ```bash
-cp .env.example .env.local
+touch .env.local
 ```
 
 **Windows (PowerShell):**
 ```powershell
-Copy-Item .env.example .env.local
+New-Item .env.local -ItemType File
 ```
 
 ### Step 4: Run Development Server
