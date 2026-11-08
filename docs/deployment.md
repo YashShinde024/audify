@@ -24,8 +24,11 @@ When importing the repository to Vercel:
 5. **Environment Variables:**
    - `NEXT_PUBLIC_SITE_URL`: `https://audify.nyxen.in`
    - `RESEND_API_KEY`: *(Optional)* Your Resend API key for contact submissions.
-   - `CONTACT_TO_EMAIL`: *(Optional)* `hello@nyxen.in`.
-   - `CONTACT_FROM_EMAIL`: *(Optional)* `Audify Contact <onboarding@resend.dev>`.
+   - `CONTACT_TO_EMAIL`: *(Optional)* `support@nyxen.in`.
+   - `CONTACT_FROM_EMAIL`: *(Optional)* `Audify Contact <support@nyxen.in>`.
+   - `CONTACT_WEBHOOK_URL`: *(Optional)* Webhook URL endpoint.
+   - `NEXT_PUBLIC_ADS_ENABLED`: *(Optional)* `true` to enable Adsterra ads in production.
+   - `NEXT_PUBLIC_ADS_CONSENT_REQUIRED`: *(Optional)* `false` by default.
 
 ---
 
@@ -33,7 +36,7 @@ When importing the repository to Vercel:
 
 Before tagging a production release:
 1. **Type Check:** Run `npx tsc --noEmit` (Must output 0 errors).
-2. **Unit Tests:** Run `npm test` (All 16 suites / 196 tests must pass).
-3. **Audio Math Harness:** Run `npx tsx scripts/verify-audio.ts` (All 16 assertions pass).
-4. **Production Build:** Run `npm run build` (All 96 static/dynamic routes compile cleanly).
+2. **Unit Tests:** Run `npm test` (All 23 suites / 301 tests must pass).
+3. **Audio Math Harness:** Run `npx tsx scripts/verify-audio.ts` (All DSP assertions pass).
+4. **Production Build:** Run `npm run build` (All static and dynamic routes compile cleanly).
 5. **Sitemap & Robots:** Check `https://audify.nyxen.in/sitemap.xml` and `https://audify.nyxen.in/robots.txt`.

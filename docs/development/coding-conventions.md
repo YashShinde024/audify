@@ -28,7 +28,7 @@ This document outlines the coding standards, patterns, and style conventions use
 
 ## 3. Styling & Tailwind CSS v4
 
-Audify uses **Tailwind CSS v4** with `@theme inline` variables defined in [`src/app/globals.css`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/app/globals.css).
+Audify uses **Tailwind CSS v4** with `@theme inline` variables defined in [`src/app/globals.css`](../../src/app/globals.css).
 
 - **Colors:** Use semantic design tokens:
   - `bg-canvas`, `bg-surface`, `bg-raised`, `bg-deep`
@@ -46,7 +46,7 @@ Audify uses **Tailwind CSS v4** with `@theme inline` variables defined in [`src/
 
 ## 4. State Management with Zustand
 
-- Global store is in [`src/stores/editor-store.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/stores/editor-store.ts).
+- Global store is in [`src/stores/editor-store.ts`](../../src/stores/editor-store.ts).
 - Consuming state:
   ```typescript
   // Recommended: Use atomic selector

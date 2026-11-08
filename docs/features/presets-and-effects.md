@@ -2,7 +2,7 @@
 
 Audify includes **62 built-in audio modules**: **43 Creative Acoustic Presets** and **19 Audio Utilities**, organized into **9 acoustic categories**.
 
-Every preset is declared in [`src/config/presets.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/config/presets.ts) and mapped to genuine DSP pipelines in [`src/lib/audio/dsp-plan.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/lib/audio/dsp-plan.ts).
+Every preset is declared in [`src/config/presets.ts`](../../src/config/presets.ts) and mapped to genuine DSP pipelines in [`src/lib/audio/dsp-plan.ts`](../../src/lib/audio/dsp-plan.ts).
 
 ---
 

@@ -1,0 +1,40 @@
+name: Audio DSP / Quality Issue
+description: Report audio distortion, DSP inaccuracies, clipping, or encoding bugs
+title: "[DSP]: "
+labels: ["dsp", "audio-quality"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please use this template to report issues with Web Audio DSP calculations, peak limiters, frequency responses, or audio encoding.
+  - type: textarea
+    id: issue_summary
+    attributes:
+      label: DSP Issue Summary
+      description: What unexpected sound or calculation occurred?
+      placeholder: Excessive distortion at low frequencies, incorrect time calculation in split, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: preset_or_tool
+    attributes:
+      label: Preset or Tool Affected
+      placeholder: e.g. slowed-reverb, bass-booster, audio-splitter
+    validations:
+      required: true
+  - type: textarea
+    id: audio_parameters
+    attributes:
+      label: Test Audio Parameters & Settings
+      description: Input sample rate, bit depth, channel configuration, and slider parameter values.
+      placeholder: e.g. 48 kHz 24-bit stereo WAV, pitch slider set to -3 st, speed 85%
+    validations:
+      required: true
+  - type: textarea
+    id: expected_vs_actual
+    attributes:
+      label: Expected vs. Actual Audio Behavior
+      description: What was the expected signal behavior versus the measured/audible result?
+    validations:
+      required: true
+

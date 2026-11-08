@@ -78,7 +78,7 @@ Unlike legacy audio converters that require uploading multimegabyte files to clo
 
 ## 3. State Management Architecture
 
-State is centralized in **Zustand** at [`src/stores/editor-store.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/stores/editor-store.ts).
+State is centralized in **Zustand** at [`src/stores/editor-store.ts`](../src/stores/editor-store.ts).
 
 ```mermaid
 classDiagram

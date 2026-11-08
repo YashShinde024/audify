@@ -72,7 +72,7 @@ To confirm that your local environment is functioning correctly, run the full ve
 # 1. Typecheck the entire TypeScript codebase
 npx tsc --noEmit
 
-# 2. Run all unit & integration tests (16 test suites, 196 tests)
+# 2. Run all unit & integration tests (23 test suites, 301 tests)
 npm test
 
 # 3. Run the audio mathematical & DSP verification script
@@ -87,9 +87,9 @@ npm run build
 
 Expected output:
 - `tsc`: Exits with code 0.
-- `vitest`: `16 passed (16)`, `196 passed (196)`.
-- `verify-audio`: All 16 mathematical assertions report `✅ PASSED`.
-- `next build`: Successfully generates all 96 static/dynamic routes.
+- `vitest`: `23 passed (23)`, `301 passed (301)`.
+- `verify-audio`: All DSP mathematical assertions report `✅ PASSED`.
+- `next build`: Successfully generates all application routes.
 
 ---
 

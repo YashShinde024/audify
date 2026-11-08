@@ -12,15 +12,17 @@ Every variable listed below has been verified against the current codebase in `s
 | :--- | :---: | :--- | :--- | :--- | :--- |
 | `NEXT_PUBLIC_SITE_URL` | No | `https://audify.nyxen.in` | Client & Server | Canonical site URL used for OpenGraph tags, JSON-LD structured metadata, and sitemaps. | `src/config/site.ts` |
 | `RESEND_API_KEY` | No | *None* | Server-Only | API Key for Resend email dispatch service. When omitted, `/api/contact` logs safely to stdout and returns `{ delivered: false, simulated: true }`. | `src/app/api/contact/route.ts` |
-| `CONTACT_TO_EMAIL` | No | `hello@nyxen.in` | Server-Only | Destination email address where contact inquiries are sent when Resend is configured. | `src/app/api/contact/route.ts` |
-| `CONTACT_FROM_EMAIL` | No | `Audify Contact <onboarding@resend.dev>` | Server-Only | Verified sender email address configured in Resend. | `src/app/api/contact/route.ts` |
+| `CONTACT_TO_EMAIL` | No | `support@nyxen.in` | Server-Only | Destination email address where contact inquiries are sent when Resend is configured. | `src/app/api/contact/route.ts` |
+| `CONTACT_FROM_EMAIL` | No | `Audify Contact <support@nyxen.in>` | Server-Only | Verified sender email address configured in Resend. | `src/app/api/contact/route.ts` |
 | `CONTACT_WEBHOOK_URL` | No | *None* | Server-Only | Optional external webhook endpoint. When present, contact payloads are forwarded as HTTP POST requests. | `src/app/api/contact/route.ts` |
+| `NEXT_PUBLIC_ADS_ENABLED` | No | `false` | Client & Server | Set to `"true"` in production builds to enable Adsterra banner placements. Disabled in dev/test. | `src/config/ads.ts` |
+| `NEXT_PUBLIC_ADS_CONSENT_REQUIRED` | No | `false` | Client & Server | Conservative consent gate requiring prior explicit consent before serving ads if enabled. | `src/config/ads.ts` |
 
 ---
 
 ## 2. Site Configuration Constants
 
-Central application constants are declared in [`src/config/site.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/config/site.ts):
+Central application constants are declared in [`src/config/site.ts`](../src/config/site.ts):
 
 | Property | Value | Description |
 | :--- | :--- | :--- |

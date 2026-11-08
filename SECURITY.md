@@ -23,13 +23,13 @@ Security updates and patches are actively applied to the latest release on the `
 
 We take the security and integrity of Audify and our users seriously. If you discover a potential vulnerability, security defect, or privacy concern, please report it responsibly:
 
-1. **Email:** Send details to **`hello@nyxen.in`** with the subject `[Security Vulnerability] Audify`.
+1. **Email:** Send details to **`support@nyxen.in`** with the subject `[Security Vulnerability] Audify`.
 2. **Details to include:**
    - Description of the vulnerability and its potential impact.
    - Exact steps or minimal proof-of-concept to reproduce the behavior.
    - Affected browser(s), operating system, and Node.js version (if server-side).
    - Any proposed remediation or mitigation.
-3. **Response time:** We will acknowledge receipt of your report within 48 hours and provide a timeline for triage and resolution.
+3. **Response & Triage:** Maintainers will review reports, investigate the issue, and prepare an appropriate mitigation or patch before public disclosure.
 4. **Public disclosure:** Please refrain from publicly disclosing or discussing the issue until a patch has been published and confirmed.
 
 ---

@@ -7,8 +7,8 @@ Audify maintains a comprehensive, automated test suite covering unit tests, inte
 ## 1. Test Suite Overview
 
 - **Test Runner:** [Vitest v3.2.7](https://vitest.dev/)
-- **Configuration:** [`vitest.config.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/vitest.config.ts)
-- **Status:** **16 test files**, **196 tests** passing.
+- **Configuration:** [`vitest.config.ts`](../../vitest.config.ts)
+- **Status:** **23 test files**, **301 tests** passing (100% pass rate).
 
 ---
 

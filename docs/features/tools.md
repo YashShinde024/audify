@@ -9,8 +9,8 @@ Each standalone tool provides a streamlined single-task interface for creators w
 ## 1. Tools Directory & Workspace Engine
 
 The tools system is powered by two main modules:
-- **Registry ([`src/config/tools-registry.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/config/tools-registry.ts)):** Declares tool metadata, input/output constraints, parameters, and SEO descriptors.
-- **Execution Engine ([`src/lib/audio/tools-engine.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/lib/audio/tools-engine.ts)):** Executes the specialized algorithms for non-standard workflows (such as multi-file concatenation and interval slicing).
+- **Registry ([`src/config/tools-registry.ts`](../../src/config/tools-registry.ts)):** Declares tool metadata, input/output constraints, parameters, and SEO descriptors.
+- **Execution Engine ([`src/lib/audio/tools-engine.ts`](../../src/lib/audio/tools-engine.ts)):** Executes the specialized algorithms for non-standard workflows (such as multi-file concatenation and interval slicing).
 
 ---
 

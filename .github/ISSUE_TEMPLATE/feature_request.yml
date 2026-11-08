@@ -1,0 +1,30 @@
+name: Feature Request
+description: Propose a new feature, preset, or audio tool for Audify
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We welcome ideas for new DSP presets, audio editing utilities, or UI enhancements!
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement or Use Case
+      description: Is your feature request related to a problem or missing workflow?
+      placeholder: As an artist/podcaster, I want to...
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed Solution / Feature
+      description: Describe your proposed feature and how it should work in the UI or DSP pipeline.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any alternative solutions or features you've considered.
+

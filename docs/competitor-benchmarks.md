@@ -87,7 +87,7 @@ This document systematically benchmarks publicly documented presets, algorithmic
 ### 2.9 Loudness & Peak Normalization
 | Tool / Source | Published Parameters & Units | Original Date / URL | Audify DSP Mapping | Technical Uncertainty / Engine Difference |
 |---|---|---|---|---|
-| **AudioMass (Normalize)** | Peak normalize to `0 dBFS` or `-0.1 dBFS` | `https://audiomass.co` (Verified 2026) | `peak-normalizer`: Scans max absolute sample value and applies linear multiplier to reach `-0.3 dBFS` (`0.966`). | AudioMass normalizes to 0 dBFS, which can cause inter-sample clipping on MP3 encoding. Audify adheres to EBU/AES guidelines by leaving `0.3 dB` of true-peak safety headroom. |
+| **AudioMass (Normalize)** | Peak normalize to `0 dBFS` or `-0.1 dBFS` | `https://audiomass.co` (Verified 2026) | `peak-normalizer`: Scans max absolute sample value and applies linear multiplier to reach `-0.3 dBFS` (`0.966`). | AudioMass normalizes to 0 dBFS, which can cause inter-sample clipping on MP3 encoding. Audify adheres to EBU/AES guidelines by leaving `0.3 dB` of sample-peak safety headroom. |
 | **Audify Peak Limiter** | Look-ahead sliding minimum limiter with 5ms window | Internal Web Audio DSP | True look-ahead sample peak limiter preventing sample values $> 0.966$ (−0.3 dBFS). | Audify does NOT equate simple sample-peak normalization with ITU-R BS.1770 / EBU R128 integrated LUFS loudness normalization. |
 
 ---

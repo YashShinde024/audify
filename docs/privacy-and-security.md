@@ -18,7 +18,11 @@ Unlike traditional cloud converters that upload your audio files to remote serve
 ## 2. Telemetry, Cookies & Local Storage
 
 - **Zero Audio Fingerprinting:** No audio identification or acoustic fingerprinting algorithms run against user tracks.
-- **GDPR & CCPA Compliant Cookie Banner:** Audify uses essential storage for theme preference and cookie consent. Non-essential tracking is strictly disabled by default.
+- **Privacy & Cookie Management:** Audify uses client storage strictly for essential UI preferences (theme preference and consent choices). Non-essential advertising or optional analytics are gated by operational flags.
+- **Network Boundaries:**
+  - Audio files, waveforms, and DSP renders never generate network requests.
+  - Page hosting, static asset delivery, and external resources (e.g. Adsterra if enabled via `NEXT_PUBLIC_ADS_ENABLED=true`) follow standard HTTP/HTTPS transport.
+  - The contact form (`/api/contact`) is the sole application API endpoint receiving user input over the network.
 - **Stored Local Data:**
   - `audify-theme`: `"dark"` or `"light"`.
   - `audify-cookie-consent`: Consent status.

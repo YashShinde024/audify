@@ -8,7 +8,7 @@ This document outlines the workflow, coding standards, testing expectations, and
 
 ## Code of Conduct
 
-We are committed to providing a welcoming, inclusive, and professional environment for all contributors. Please treat others with respect and constructive feedback.
+We are committed to providing a welcoming, inclusive, and professional environment for all contributors. Please review our [Code of Conduct](./CODE_OF_CONDUCT.md). Instances of abusive or unacceptable behavior can be reported to **support@nyxen.in**.
 
 ---
 

@@ -23,7 +23,7 @@ docs/
 │   └── tools.md                    # Standalone audio tools (Merger, Splitter, Resampler, etc.)
 ├── development/
 │   ├── coding-conventions.md       # TypeScript, React 19, Tailwind CSS v4 & styling rules
-│   ├── testing.md                  # Vitest suite (196 tests), audio math harness & testing guide
+│   ├── testing.md                  # Vitest suite (23 suites / 301 tests), audio math harness & testing guide
 │   ├── troubleshooting.md          # Common developer errors, port issues & browser audio unlocks
 │   └── performance.md              # Client memory management, 10 MB ceiling & canvas rendering
 ├── design/

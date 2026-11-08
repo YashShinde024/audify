@@ -41,18 +41,9 @@ Audify combines local-first browser audio computing with server-side API protect
   - `audioFormat`: Optional string, max 30 characters.
 - Any request with invalid schema immediately terminates with `400 Bad Request` and structured field-level errors without triggering backend processing.
 
-### 2.3 Distributed & Multi-Instance Production Scaling
-For multi-region container or serverless deployments (e.g. Vercel Edge, AWS ECS, Fly.io):
-- The in-memory sliding window bucket can be mapped to an Upstash Redis or Memcached instance via `@upstash/ratelimit`:
-  ```typescript
-  import { Ratelimit } from "@upstash/ratelimit";
-  import { Redis } from "@upstash/redis";
-
-  const ratelimit = new Ratelimit({
-    redis: Redis.fromEnv(),
-    limiter: Ratelimit.slidingWindow(5, "10 m"),
-  });
-  ```
+### 2.3 Rate Limiting Architecture & Serverless Boundaries
+- The current implementation in `src/app/api/contact/route.ts` employs a **pure in-memory sliding-window bucket** (`ipBucketMap`) with automatic 60-second periodic stale eviction.
+- **Operational Boundary:** In multi-instance or serverless environments (such as Vercel Serverless Functions), each function isolate maintains its own local in-memory bucket. While this effectively mitigates rapid single-host hammering and burst spam, limits are not shared across separate serverless instances without an external centralized key-value store. Maintainers requiring strict cross-instance quotas can wire `@upstash/ratelimit` into the endpoint.
 
 ---
 

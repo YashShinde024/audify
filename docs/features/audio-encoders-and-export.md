@@ -1,6 +1,6 @@
 # Audio Encoders & Export
 
-Audify implements high-performance, client-side binary audio encoders in [`src/lib/audio/encoders.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/lib/audio/encoders.ts). All output files are generated directly into browser memory blobs without backend transcoding.
+Audify implements high-performance, client-side binary audio encoders in [`src/lib/audio/encoders.ts`](../../src/lib/audio/encoders.ts). All output files are generated directly into browser memory blobs without backend transcoding.
 
 ---
 
@@ -42,7 +42,7 @@ MP3 encoding is handled via bundled `lamejs`:
 
 ## 4. Standardized Export Filename Convention
 
-All audio outputs generated across Audify (Studio presets, Audio Utilities, standalone Tools, and partitioned Batch/Split downloads) follow a unified, deterministic naming standard implemented in [`src/lib/audio/export-filename.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/lib/audio/export-filename.ts):
+All audio outputs generated across Audify (Studio presets, Audio Utilities, standalone Tools, and partitioned Batch/Split downloads) follow a unified, deterministic naming standard implemented in [`src/lib/audio/export-filename.ts`](../../src/lib/audio/export-filename.ts):
 
 $$\mathbf{Audify\text{-}\{edit\text{-}type\}\text{-}\{song\text{-}name\}.\{extension\}}$$
 

@@ -3,8 +3,7 @@ import { z } from "zod";
 
 /**
  * Server-side sliding-window rate limiter for the contact dispatch endpoint.
- * Backed by in-memory sliding window with periodic eviction, and optionally
- * connected to Upstash Redis REST when credentials are configured.
+ * Backed by an in-memory sliding window with periodic eviction.
  */
 interface ServerRateLimitBucket {
   timestamps: number[];

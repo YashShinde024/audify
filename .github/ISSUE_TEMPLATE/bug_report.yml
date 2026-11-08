@@ -1,0 +1,51 @@
+name: Bug Report
+description: File a bug or unexpected behavior in Audify
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue! Please describe the problem clearly.
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: When I upload an audio file and apply preset X...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can maintainers reproduce the issue?
+      placeholder: |
+        1. Open Audify Studio at https://audify.nyxen.in/studio
+        2. Upload a WAV/MP3 track
+        3. Select preset ...
+        4. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Environment & Browser
+      description: Browser name, version, and Operating System (e.g. Chrome 132 on macOS Sonoma, Firefox 134 on Windows 11)
+      placeholder: e.g. Chrome 132 on Windows 11
+    validations:
+      required: true
+  - type: textarea
+    id: audio_file
+    attributes:
+      label: Audio File Details (if relevant)
+      description: Format, duration, sample rate, channels, bit depth (no proprietary audio uploads required)
+      placeholder: e.g. 44.1 kHz, 16-bit stereo WAV, 3 minutes 20 seconds
+

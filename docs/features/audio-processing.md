@@ -1,6 +1,6 @@
 # Audio Processing & DSP Architecture
 
-Audify's audio processing engine is implemented in [`src/lib/audio/`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/lib/audio/). It provides deterministic, studio-grade processing via native Web Audio nodes and specialized DSP algorithms.
+Audify's audio processing engine is implemented in [`src/lib/audio/`](../../src/lib/audio/). It provides deterministic, studio-grade processing via native Web Audio nodes and specialized DSP algorithms.
 
 ---
 
@@ -57,7 +57,7 @@ Audify's bass enhancement presets apply resonant low-shelving boosts at 50–65 
 - **Transient Preservation:** Musical kick drums and sub-bass fundamentals remain impactful and undistorted without squashing mid-range vocal clarity.
 
 ### F. Look-Ahead Soft-Knee Peak Limiter
-To prevent sample-level distortion on heavy bass boosts or aggressive gain boosts, Audify employs a sliding-window soft-knee peak limiter ([`src/lib/audio/dsp-utils.ts`](file:///c:/Users/Yash%20Shinde/OneDrive/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/Projects/Audify/src/lib/audio/dsp-utils.ts)):
+To prevent sample-level distortion on heavy bass boosts or aggressive gain boosts, Audify employs a sliding-window soft-knee peak limiter ([`src/lib/audio/dsp-utils.ts`](../../src/lib/audio/dsp-utils.ts)):
 - **Linear Region:** For inputs $|x| \le 0.90$ (−0.92 dBFS), the signal passes unaffected.
 - **Soft-Knee Compression:** For signals exceeding $0.90$, excess energy is compressed using a hyperbolic tangent ($\tanh$) transfer curve.
 - **Ceiling:** Guarantees peak amplitude never exceeds **$0.966$ (−0.3 dBFS)**, leaving standard headroom for lossy MP3 encoding.
